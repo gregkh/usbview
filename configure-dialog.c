@@ -44,7 +44,7 @@ static	char		*sFilename;
  */
 static void file_ok_sel (GtkWidget *w, GtkFileSelection *fs)
 {
-	char *sTempFile;
+	const char *sTempFile;
 
 	/* --- Get the name --- */
 	sTempFile = gtk_file_selection_get_filename (GTK_FILE_SELECTION (fs));
