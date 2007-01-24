@@ -9,6 +9,8 @@ VERSION = 1.1-bk
 
 bin_PROGRAMS = usbview
 
+man_MANS = usbview.8
+
 usbview_SOURCES =		\
 	main.c			\
 	interface.c		\
