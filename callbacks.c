@@ -1,6 +1,6 @@
 /*************************************************************************
-** config.h for USBView - a USB device viewer
-** Copyright (c) 1999 by Greg Kroah-Hartman, greg@kroah.com
+** callbacks.c for USBView - a USB device viewer
+** Copyright (c) 1999, 2000 by Greg Kroah-Hartman, <greg@kroah.com>
 **
 **  This program is free software; you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -19,7 +19,50 @@
 ** (See the included file COPYING)
 *************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+	#include <config.h>
+#endif
 
-extern void configure_dialog (void);
+#include <gtk/gtk.h>
 
+#include "usbtree.h"
+
+
+void on_buttonClose_clicked (GtkButton *button, gpointer user_data)
+{
+	gtk_exit(0);
+}
+
+
+gboolean on_window1_delete_event (GtkWidget *widget, GdkEvent *event, gpointer user_data)
+{
+	gtk_main_quit();
+
+	return FALSE;
+}
+
+
+void on_buttonRefresh_clicked (GtkButton *button, gpointer user_data)
+{
+	LoadUSBTree(1);
+}
+
+
+void on_buttonConfigure_clicked (GtkButton *button, gpointer user_data)
+{
+	configure_dialog ();
+}
+
+
+void on_buttonAbout_clicked (GtkButton *button, gpointer user_data)
+{
+	about_dialog ();
+}
+
+
+gint on_timer_timeout (gpointer user_data)
+{
+	LoadUSBTree(0);
+	return 1;
+}
 

@@ -1,6 +1,6 @@
 /*************************************************************************
-** config.c for USBView - a USB device viewer
-** Copyright (c) 1999 by Greg Kroah-Hartman, greg@kroah.com
+** configure-dialog.c for USBView - a USB device viewer
+** Copyright (c) 1999, 2000 by Greg Kroah-Hartman, <greg@kroah.com>
 **
 **  This program is free software; you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -30,13 +30,8 @@
 #include <string.h>
 #include <ctype.h>
 
-#include "callbacks.h"
-#include "interface.h"
-#include "support.h"
 #include "usbtree.h"
-#include "showmessage.h"
 #include "usbparse.h"
-#include "config.h"
 
 
 
@@ -150,8 +145,8 @@ static void OkConfigureDialog (GtkWidget *widget, gpointer data)
 	gtk_widget_destroy (dialogWidget);
 
 	strcpy (devicesFile, editString);
-
 	g_free (editString);
+	LoadUSBTree(0);
 }
 
 
@@ -240,8 +235,6 @@ void configure_dialog (void)
 	gtk_widget_show (fileSelectButton);
 
 	gtk_box_pack_start (GTK_BOX (hbox1), fileSelectButton, TRUE, TRUE, 1);
-//	gtk_container_add (GTK_CONTAINER (hbuttonbox2), cancelButton);
-//	GTK_WIDGET_SET_FLAGS (cancelButton, GTK_CAN_DEFAULT);
 
 	gtk_signal_connect (GTK_OBJECT (okButton), "clicked", GTK_SIGNAL_FUNC (OkConfigureDialog), configDialog);
 	gtk_signal_connect (GTK_OBJECT (cancelButton), "clicked", GTK_SIGNAL_FUNC (CancelConfigureDialog), configDialog);

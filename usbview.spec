@@ -1,5 +1,5 @@
 %define 	name	usbview
-%define 	version	0.8.1
+%define 	version	0.9.0
 %define 	release	1
 %define 	serial	1
 %define 	prefix	/usr
@@ -43,6 +43,25 @@ if [ -d $RPM_BUILD_ROOT ]; then rm -rf $RPM_BUILD_ROOT; fi
 %{prefix}/bin/usbview
 
 %changelog
+* Sun Sep 10 2000 Greg Kroah-Hartman <greg@kroah.com>
+[usbview-0.9.0]
+- added Trond Eivind Glomsrød's patch to always try to populate the
+  device tree when the program is started.
+- cleaned up the code layout, removing the i18n code for now. Also
+  got rid of some old Glade helper code that was not being used. This
+  reduced the tarball size by about 1/2!
+- usbview now updates the device list when devices are plugged in or
+  removed from the bus automatically (needs 2.4.0-test8 or later to
+  work properly due to a patch I made for drivers/usb/inode.c to 
+  enable this to work.)
+- Made any device that does not have a driver associated with it, show
+  up in red in the device listing.  This should help users with the
+  problem that "My device shows up properly in usbview, but it isn't
+  working," that a lot of people seem to have (it isn't obvious, I 
+  know...)
+- Added small, drab looking "About" dialog box, to make it easier to
+  determine which version this is.
+
 * Thu Jun 29 2000 Greg Kroah-Hartman <greg@kroah.com>
 [usbview-0.8.1]
 - fixed the Gtk-WARNING that happens the first time you press the

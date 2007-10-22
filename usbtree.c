@@ -1,6 +1,6 @@
 /*************************************************************************
 ** usbtree.c for USBView - a USB device viewer
-** Copyright (c) 1999 by Greg Kroah-Hartman, greg@kroah.com
+** Copyright (c) 1999, 2000 by Greg Kroah-Hartman, <greg@kroah.com>
 **
 **  This program is free software; you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -24,17 +24,16 @@
 	#include <config.h>
 #endif
 
-#include <gtk/gtk.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <errno.h>
+#include <gtk/gtk.h>
 
-#include "callbacks.h"
-#include "interface.h"
-#include "support.h"
 #include "usbtree.h"
-#include "showmessage.h"
 #include "usbparse.h"
 
 #define MAX_LINE_SIZE	1000
@@ -205,8 +204,6 @@ static void PopulateListBox (int deviceId)
 }
 
 
-
-//void SelectItem (GtkWidget *widget, gpointer data)
 void SelectItem (GtkWidget *widget, GtkCTreeNode *node, gint column, gpointer userData)
 {
 	int     data;
@@ -220,31 +217,19 @@ void SelectItem (GtkWidget *widget, GtkCTreeNode *node, gint column, gpointer us
 
 static void DisplayDevice (Device *parent, Device *device)
 {
-	int     i;
-	gchar   *text[1];
-	//GdkPixmap	*pixmap;
-	//GdkBitmap	*mask;
+	int		i;
+	gchar		*text[1];
+	int		configNum;
+	int		interfaceNum;
+	gboolean	driverAttached = TRUE;
 
 	if (device == NULL)
 		return;
 
-	//pixmap = gdk_pixmap_create_from_xpm_d (NULL, &mask, NULL, mouse_xpm);
-
+	/* build this node */
 	text[0] = device->name;
 	device->leaf = gtk_ctree_insert_node (GTK_CTREE(treeUSB), parent->leaf, NULL, text, 1, NULL, NULL, NULL, NULL, FALSE, FALSE);
 	gtk_ctree_node_set_row_data (GTK_CTREE(treeUSB), device->leaf, (gpointer)((device->deviceNumber<<8) | (device->busNumber)));
-
-
-#if 0	/* uncomment this when we want to show devices as not having a driver bound to it */
-	/* it didn't really look good for now. */
-	int             i;
-	int             configNum;
-	int             interfaceNum;
-	char            hasChildren;
-	gboolean        driverAttached = TRUE;
-
-	if (device == NULL)
-		return;
 
 	/* determine if this device has drivers attached to all interfaces */
 	for (configNum = 0; configNum < MAX_CONFIGS; ++configNum) {
@@ -264,46 +249,14 @@ static void DisplayDevice (Device *parent, Device *device)
 
 	/* change the color of this leaf if there are no drivers attached to it */
 	if (driverAttached == FALSE) {
-		GdkColor        red = {0, 0xffff, 0x0000, 0x0000};
-		GtkStyle        *defaultStyle;
-		GtkStyle        *style;
-
-		/* get the current style */
-		defaultStyle = gtk_widget_get_default_style();
-		style = gtk_style_copy (defaultStyle);
-		for (i = 0; i < 5; ++i) {
-			style->fg[i] = red;
-			style->bg[i] = red;
-			style->text[i] = red;
-			style->base[i] = red;
-			style->light[i] = red;
-			style->dark[i] = red;
-			style->mid[i] = red;
-		}
-		gtk_widget_set_style (device->leaf, style);
+		GdkColor        red;
+		 
+		red.red = 56000;
+		red.green = 0;
+		red.blue = 0;
+		red.pixel = 0;
+		gtk_ctree_node_set_foreground (GTK_CTREE(treeUSB), device->leaf, &red);
 	}
-
-	gtk_widget_show (device->leaf);
-
-	/* hook up our callback function to this node */
-	gtk_signal_connect (GTK_OBJECT (device->leaf), "select", GTK_SIGNAL_FUNC (SelectItem),
-			    (gpointer)((device->deviceNumber<<8) | (device->busNumber)));
-
-	/* if we have children, then make a subtree */
-	hasChildren = 0;
-	for (i = 0; i < MAX_CHILDREN; ++i) {
-		if (device->child[i]) {
-			hasChildren = 1;
-			break;
-		}
-	}
-	if (hasChildren) {
-		device->tree = gtk_tree_new();
-		gtk_tree_item_set_subtree (GTK_TREE_ITEM(device->leaf), device->tree);
-		gtk_tree_item_expand (GTK_TREE_ITEM(device->leaf));	/* make the tree expanded to start with */
-	}
-#endif	
-
 
 	/* create all of the children's leafs */
 	for (i = 0; i < MAX_CHILDREN; ++i) {
@@ -314,14 +267,56 @@ static void DisplayDevice (Device *parent, Device *device)
 }
 
 
+#define FILENAME_SIZE	1000;
 
 gchar devicesFile[1000];
+static gchar previousDevicesFile[1000];
+static time_t	previousChange;
 
 const char *verifyMessage =     "Verify that you have USB compiled into your kernel,\n"
 				"have the USB core modules loaded, and have the\n"
 				"usbdevfs filesystem mounted.";
 
-void LoadUSBTree (void)
+static void FileError (void)
+{
+	gchar *tempString = g_malloc0(strlen (verifyMessage) + strlen (devicesFile) + 50);
+	sprintf (tempString, "Can not open %s\n%s", devicesFile, verifyMessage);
+	ShowMessage ("USBView Error", tempString);
+	g_free (tempString);
+	return;
+}
+
+
+static int FileHasChanged (void)
+{
+	struct stat	file_info;
+	int		result;
+
+	if (strcmp (previousDevicesFile, devicesFile) == 0) {
+		/* we've looked at this filename before, so check the file time of the file */
+		result = stat (devicesFile, &file_info);
+		if (result) {
+			/* something wrong in looking for this file */
+			return 0;
+		}
+		
+		if (file_info.st_ctime == previousChange) {
+			/* no change */
+			return 0;
+		} else {
+			/* something changed */
+			previousChange = file_info.st_ctime;
+			return 1;
+		}
+	} else {
+		/* filenames are different, so save the name for the next time */
+		strcpy (previousDevicesFile, devicesFile);
+		return 1;
+	}
+}
+
+
+void LoadUSBTree (int refresh)
 {
 	static gboolean signal_connected = FALSE;
 	FILE            *usbFile;
@@ -329,13 +324,20 @@ void LoadUSBTree (void)
 	int             finished;
 	int             i;
 
+	if (MessageShown() == TRUE) {
+		return;
+	}
+
+	/* if refresh is selected, then always do a refresh, otherwise look at the file first */
+	if (!refresh) {
+		if (!FileHasChanged()) {
+			return;
+		}
+	}
 
 	usbFile = fopen (devicesFile, "r");
 	if (usbFile == NULL) {
-		gchar *tempString = g_malloc0(strlen (verifyMessage) + strlen (devicesFile) + 50);
-		sprintf (tempString, "Can not open %s\n%s", devicesFile, verifyMessage);
-		ShowMessage ("USBView Error", tempString);
-		g_free (tempString);
+		FileError();
 		return;
 	}
 	finished = 0;
@@ -389,7 +391,8 @@ void LoadUSBTree (void)
 void initialize_stuff (void)
 {
 	strcpy (devicesFile, "/proc/bus/usb/devices");
-//	strcpy (devicesFile, "/home/greg/uhci.proc"); /* for testing... */
+	memset (&previousDevicesFile[0], 0x00, sizeof(previousDevicesFile));
+	previousChange = 0;
 
 	return;
 }

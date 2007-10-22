@@ -12,9 +12,6 @@ AC_HEADER_STDC
 AM_PATH_GTK(1.2.0, ,
             AC_MSG_ERROR(Cannot find GTK: Is gtk-config in path?))
 
-dnl Add the languages which your application supports here.
-ALL_LINGUAS=""
-AM_GNU_GETTEXT
 
 dnl Set PACKAGE_LOCALE_DIR in config.h.
 if test "x${prefix}" = "xNONE"; then
@@ -50,8 +47,5 @@ changequote([,])dnl
 
 AC_OUTPUT([
 Makefile
-src/Makefile
-intl/Makefile
-po/Makefile.in
 ])
 

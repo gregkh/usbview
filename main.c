@@ -1,6 +1,6 @@
 /*************************************************************************
 ** main.c for USBView - a USB device viewer
-** Copyright (c) 1999 by Greg Kroah-Hartman, greg@kroah.com
+** Copyright (c) 1999, 2000 by Greg Kroah-Hartman, <greg@kroah.com>
 **
 **  This program is free software; you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -25,21 +25,14 @@
 
 #include <gtk/gtk.h>
 
-#include "interface.h"
-#include "support.h"
+#include "usbtree.h"
 
 int main (int argc, char *argv[])
 {
 	GtkWidget *window1;
 
-//	bindtextdomain (PACKAGE, PACKAGE_LOCALE_DIR);
-//	textdomain (PACKAGE);
-
 	gtk_set_locale ();
 	gtk_init (&argc, &argv);
-
-//	add_pixmap_directory (PACKAGE_DATA_DIR "/pixmaps");
-//	add_pixmap_directory (PACKAGE_SOURCE_DIR "/pixmaps");
 
 	initialize_stuff();
 
@@ -51,6 +44,7 @@ int main (int argc, char *argv[])
 	window1 = create_windowMain ();
 	gtk_widget_show (window1);
 
+	LoadUSBTree(0);
 	gtk_main ();
 	return 0;
 }

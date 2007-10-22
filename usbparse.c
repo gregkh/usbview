@@ -1,6 +1,6 @@
 /*************************************************************************
 ** usbparse.c for USBView - a USB device viewer
-** Copyright (c) 1999 by Greg Kroah-Hartman, greg@kroah.com
+** Copyright (c) 1999, 2000 by Greg Kroah-Hartman, <greg@kroah.com>
 **
 **  This program is free software; you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -29,11 +29,7 @@
 #include <string.h>
 #include <ctype.h>
 
-#include "callbacks.h"
-#include "interface.h"
-#include "support.h"
 #include "usbtree.h"
-#include "showmessage.h"
 #include "usbparse.h"		/* all of the usb structure definitions */
 
 #define MAX_LINE_SIZE	1000

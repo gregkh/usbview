@@ -1,6 +1,6 @@
 /*************************************************************************
 ** interface.c for USBView - a USB device viewer
-** Copyright (c) 1999 by Greg Kroah-Hartman, greg@kroah.com
+** Copyright (c) 1999, 2000 by Greg Kroah-Hartman, <greg@kroah.com>
 **
 **  This program is free software; you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -27,16 +27,14 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <string.h>
-
-#include <gdk/gdkkeysyms.h>
 #include <gtk/gtk.h>
 
-#include "callbacks.h"
-#include "interface.h"
-#include "support.h"
+#include "usbtree.h"
 
 GtkWidget *treeUSB;
 GtkWidget *textDescription;
+
+int timer;
 
 GtkWidget*
 create_windowMain ()
@@ -49,11 +47,12 @@ create_windowMain ()
 	GtkWidget *buttonRefresh;
 	GtkWidget *buttonConfigure;
 	GtkWidget *buttonClose;
+	GtkWidget *buttonAbout;
 
 	windowMain = gtk_window_new (GTK_WINDOW_TOPLEVEL);
 	gtk_widget_set_name (windowMain, "windowMain");
 	gtk_object_set_data (GTK_OBJECT (windowMain), "windowMain", windowMain);
-	gtk_window_set_title (GTK_WINDOW (windowMain), _("USB Viewer"));
+	gtk_window_set_title (GTK_WINDOW (windowMain), "USB Viewer");
 	gtk_window_set_default_size (GTK_WINDOW (windowMain), 500, 300);
 
 	vbox1 = gtk_vbox_new (FALSE, 0);
@@ -107,7 +106,7 @@ create_windowMain ()
 	gtk_widget_show (hbuttonbox1);
 	gtk_box_pack_start (GTK_BOX (vbox1), hbuttonbox1, FALSE, FALSE, 5);
 
-	buttonRefresh = gtk_button_new_with_label (_("Refresh"));
+	buttonRefresh = gtk_button_new_with_label ("Refresh");
 	gtk_widget_set_name (buttonRefresh, "buttonRefresh");
 	gtk_widget_ref (buttonRefresh);
 	gtk_object_set_data_full (GTK_OBJECT (windowMain), "buttonRefresh", buttonRefresh,
@@ -117,7 +116,7 @@ create_windowMain ()
 	gtk_container_set_border_width (GTK_CONTAINER (buttonRefresh), 4);
 	GTK_WIDGET_SET_FLAGS (buttonRefresh, GTK_CAN_DEFAULT);
 
-	buttonConfigure = gtk_button_new_with_label (_("Configure"));
+	buttonConfigure = gtk_button_new_with_label ("Configure");
 	gtk_widget_set_name (buttonConfigure, "buttonConfigure");
 	gtk_widget_ref (buttonConfigure);
 	gtk_object_set_data_full (GTK_OBJECT (windowMain), "buttonConfigure", buttonConfigure,
@@ -127,7 +126,17 @@ create_windowMain ()
 	gtk_container_set_border_width (GTK_CONTAINER (buttonConfigure), 4);
 	GTK_WIDGET_SET_FLAGS (buttonConfigure, GTK_CAN_DEFAULT);
 
-	buttonClose = gtk_button_new_with_label (_("Close"));
+	buttonAbout = gtk_button_new_with_label ("About");
+	gtk_widget_set_name (buttonAbout, "buttonAbout");
+	gtk_widget_ref (buttonAbout);
+	gtk_object_set_data_full (GTK_OBJECT (windowMain), "buttonAbout", buttonAbout,
+				  (GtkDestroyNotify) gtk_widget_unref);
+	gtk_widget_show (buttonAbout);
+	gtk_container_add (GTK_CONTAINER (hbuttonbox1), buttonAbout);
+	gtk_container_set_border_width (GTK_CONTAINER (buttonAbout), 4);
+	GTK_WIDGET_SET_FLAGS (buttonAbout, GTK_CAN_DEFAULT);
+
+	buttonClose = gtk_button_new_with_label ("Close");
 	gtk_widget_set_name (buttonClose, "buttonClose");
 	gtk_widget_ref (buttonClose);
 	gtk_object_set_data_full (GTK_OBJECT (windowMain), "buttonClose", buttonClose,
@@ -146,10 +155,16 @@ create_windowMain ()
 	gtk_signal_connect (GTK_OBJECT (buttonConfigure), "clicked",
 			    GTK_SIGNAL_FUNC (on_buttonConfigure_clicked),
 			    NULL);
+	gtk_signal_connect (GTK_OBJECT (buttonAbout), "clicked",
+			    GTK_SIGNAL_FUNC (on_buttonAbout_clicked),
+			    NULL);
 	gtk_signal_connect (GTK_OBJECT (buttonClose), "clicked",
 			    GTK_SIGNAL_FUNC (on_buttonClose_clicked),
 			    NULL);
 
+	/* create our timer */
+	timer = gtk_timeout_add (2000, on_timer_timeout, 0);
+	
 	return windowMain;
 }
 

@@ -1,13 +1,40 @@
+/*************************************************************************
+** showmessage.c for USBView - a USB device viewer
+** Copyright (c) 1999, 2000 by Greg Kroah-Hartman, <greg@kroah.com>
+**
+**  This program is free software; you can redistribute it and/or modify
+**  it under the terms of the GNU General Public License as published by
+**  the Free Software Foundation; either version 2 of the License, or
+**  (at your option) any later version.
+**
+**  This program is distributed in the hope that it will be useful,
+**  but WITHOUT ANY WARRANTY; without even the implied warranty of
+**  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**  GNU General Public License for more details.
+**
+**  You should have received a copy of the GNU General Public License
+**  along with this program; if not, write to the Free Software
+**  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+**
+** (See the included file COPYING)
+*************************************************************************/
+
 /*
- * Showmessage.c
- * 
  * This file taken from the book "Developing Linux Applications with GTK+ and GDK"
  * by Eric Harlow
  *
  */
 
 #include <gtk/gtk.h>
-#include "showmessage.h"
+#include "usbtree.h"
+
+static gboolean message_shown = FALSE;
+
+gboolean MessageShown (void)
+{
+	return message_shown;
+}
+
 
 /*
  * CloseShowMessage
@@ -22,6 +49,8 @@ static void CloseShowMessage (GtkWidget *widget, gpointer data)
 
 	/* --- Close the widget --- */
 	gtk_widget_destroy (dialogWidget);
+	
+	message_shown = FALSE;
 }
 
 
@@ -50,6 +79,8 @@ void ShowMessage (gchar *title, gchar *message)
 	GtkWidget *button;
 	GtkWidget *dialog_window;
 
+	message_shown = TRUE;
+	
 	/* --- Create a dialog window --- */
 	dialog_window = gtk_dialog_new ();
 

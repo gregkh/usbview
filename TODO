@@ -7,7 +7,8 @@ List of things that I think that would be nice to have in usbview:
   crashing the program.)
 
 - remove [Refresh] button and replace it with select(1) to track changes
-  in real time.
+  in real time. (kinda done, if kernel is > 2.4.0-test8, refresh happens
+  automatically.)
 
 - change layout to look something like gproc (removing the buttons and
   right info bar, only having a tree.) The device info would be accessed
