@@ -1,3 +1,10 @@
+version 0.6.0
+	- now can handle multiple root hubs.
+	- added display of bus bandwidth information for root hubs.
+	- added support for device strings to describe the device.
+	- made logic for device name to be smarter due to the availability
+	  of the string descriptors.
+
 version 0.5.0
 	- updated the parser to handle the fact that the interface now 
 	  dictates what driver is loaded.
