@@ -55,8 +55,6 @@
 #define CONFIG_MAXPOWER_SIZE		10
 
 #define INTERFACE_CLASS_SIZE		10
-#define INTERFACE_SUBCLASS_SIZE		3
-#define INTERFACE_PROTOCOL_SIZE		3
 
 #define ENDPOINT_TYPE_SIZE		5
 #define ENDPOINT_MAXPACKETSIZE_SIZE	5
@@ -128,9 +126,9 @@ typedef struct DeviceInterface {
 	gint		interfaceNumber;
 	gint		alternateNumber;
 	gint		numEndpoints;
+	gint		subClass;
+	gint		protocol;
 	gchar		*class;
-	gchar		*subClass;
-	gchar		*protocol;
 	DeviceEndpoint	*endpoint[MAX_ENDPOINTS];
 } DeviceInterface;
 	
@@ -260,8 +258,6 @@ static void DestroyInterface (DeviceInterface *interface)
 
 	g_free (interface->name);
 	g_free (interface->class);
-	g_free (interface->subClass);
-	g_free (interface->protocol);
 	
 	g_free (interface);
 	
@@ -605,17 +601,15 @@ static void AddInterface (Device *device, char *data)
 	interface = (DeviceInterface *)g_malloc0 (sizeof(DeviceInterface));
 
 	interface->class	= (gchar *)g_malloc0 ((INTERFACE_CLASS_SIZE) * sizeof(gchar));
-	interface->subClass	= (gchar *)g_malloc0 ((INTERFACE_SUBCLASS_SIZE) * sizeof(gchar));
-	interface->protocol	= (gchar *)g_malloc0 ((INTERFACE_PROTOCOL_SIZE) * sizeof(gchar));
 	interface->name		= (gchar *)g_malloc0 ((INTERFACE_DRIVERNAME_STRING_MAXLENGTH) * sizeof(gchar));
 
 	interface->interfaceNumber	= GetInt (data, INTERFACE_NUMBER_STRING, 10);
 	interface->alternateNumber	= GetInt (data, INTERFACE_ALTERNATESETTING_STRING, 10);
 	interface->numEndpoints		= GetInt (data, INTERFACE_NUMENDPOINTS_STRING, 10);
+	interface->subClass		= GetInt (data, INTERFACE_SUBCLASS_STRING, 10);
+	interface->protocol		= GetInt (data, INTERFACE_PROTOCOL_STRING, 10);
 
 	GetString (interface->class, data, INTERFACE_CLASS_STRING, INTERFACE_CLASS_SIZE);
-	GetString (interface->subClass, data, INTERFACE_SUBCLASS_STRING, INTERFACE_SUBCLASS_SIZE);
-	GetString (interface->protocol, data, INTERFACE_PROTOCOL_STRING, INTERFACE_PROTOCOL_SIZE);
 	GetString (interface->name, data, INTERFACE_DRIVERNAME_STRING, INTERFACE_DRIVERNAME_STRING_MAXLENGTH);
 
 	/* now point the config to this interface */
@@ -801,7 +795,7 @@ static void PopulateListBox (int deviceId)
 						}
 					
 					sprintf (string, "\n\t\tAlternate Number: %i\n\t\tClass: %s\n\t\t"
-						"Sub Class: %s\n\t\tProtocol: %s\n\t\tNumber of Endpoints: %i",
+						"Sub Class: %i\n\t\tProtocol: %i\n\t\tNumber of Endpoints: %i",
 						interface->alternateNumber, interface->class, 
 						interface->subClass, interface->protocol, interface->numEndpoints);
 					gtk_editable_insert_text (GTK_EDITABLE(textDescription), string, strlen(string), &position);
@@ -924,8 +918,20 @@ static void NameDevices (Device *device)
 						DeviceInterface	*interface = config->interface[interfaceNum];
 						if (interface->name != NULL) {
 							if (strstr (interface->name, "none") == NULL) {
+								if (strcmp (interface->name, "hid") == 0) {
+									if (interface->subClass == 1) {
+										switch (interface->protocol) {
+											case 1 :
+												strcat (device->name, "keyboard");
+												continue;
+											case 2 :
+												strcat (device->name, "mouse");
+												continue;
+											}
+										}
+									}
 								if (strlen (device->name) > 0) {
-									strcat (device->name, "/");
+									strcat (device->name, " / ");
 									}
 								strcat (device->name, interface->name);
 								}

@@ -1,3 +1,9 @@
+version 0.7.0
+	- the logic for determining the name of the device changed to 
+	  properly display the name of a keyboard or mouse when the 
+	  HID driver is used. This is needed for kernel versions 2.3.36
+	  and up.
+
 version 0.6.0
 	- now can handle multiple root hubs.
 	- added display of bus bandwidth information for root hubs.
