@@ -1,3 +1,9 @@
+version 0.2.0:
+	- Configuration, interface, and endpoint data is now displayed
+	  for each device.
+	- Fixed problem with processing the last line in the /proc/... file
+	  twice.
+
 Initial version 0.1.0:
 	- devices are read from /proc/bus/usb/devices and put into a tree view
 	- very basic information is displayed about each device when it is 
