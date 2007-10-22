@@ -24,18 +24,18 @@
 
 void
 on_buttonClose_clicked                 (GtkButton       *button,
-                                        gpointer         user_data);
+					gpointer         user_data);
 
 gboolean
 on_window1_delete_event                (GtkWidget       *widget,
-                                        GdkEvent        *event,
-                                        gpointer         user_data);
+					GdkEvent        *event,
+					gpointer         user_data);
 
 void
 on_buttonRefresh_clicked               (GtkButton       *button,
-                                        gpointer         user_data);
+					gpointer         user_data);
 
 void
 on_buttonConfigure_clicked             (GtkButton       *button,
-                                        gpointer         user_data);
+					gpointer         user_data);
 

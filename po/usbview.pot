@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-06-15 23:37-0700\n"
+"POT-Creation-Date: 2000-06-29 23:19-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,24 +18,24 @@ msgstr ""
 msgid "USB Viewer"
 msgstr ""
 
-#: src/interface.c:111
+#: src/interface.c:110
 msgid "Refresh"
 msgstr ""
 
-#: src/interface.c:121
+#: src/interface.c:120
 msgid "Configure"
 msgstr ""
 
-#: src/interface.c:131
+#: src/interface.c:130
 msgid "Close"
 msgstr ""
 
-#: src/support.c:117
+#: src/support.c:113
 #, c-format
 msgid "Couldn't find pixmap file: %s"
 msgstr ""
 
-#: src/support.c:126
+#: src/support.c:121
 #, c-format
 msgid "Error loading pixmap file: %s"
 msgstr ""

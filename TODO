@@ -2,9 +2,6 @@ List of things that I think that would be nice to have in usbview:
 
 (feel free to submit patches to implement these :)
 
-- fix the Gtk-WARNING that happens the first time you press the [Refresh]
-  button (I know the problem, just haven't fixed it yet.)
-
 - fix the potential buffer overflows (there are at least one of these, but 
   since usbview isn't running suid, the worst thing that can happen is 
   crashing the program.)

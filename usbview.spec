@@ -1,5 +1,5 @@
 %define 	name	usbview
-%define 	version	0.8.0
+%define 	version	0.8.1
 %define 	release	1
 %define 	serial	1
 %define 	prefix	/usr
@@ -43,6 +43,19 @@ if [ -d $RPM_BUILD_ROOT ]; then rm -rf $RPM_BUILD_ROOT; fi
 %{prefix}/bin/usbview
 
 %changelog
+* Thu Jun 29 2000 Greg Kroah-Hartman <greg@kroah.com>
+[usbview-0.8.1]
+- fixed the Gtk-WARNING that happens the first time you press the
+  [Refresh] button.
+- sped up the device info display a bunch. Should work a lot better
+  for devices that have a lot of interfaces and endpoints.
+- fixed #ifdef bug in code. Thanks to Trond Eivind Glomsrød for
+  noticing this and providing a patch.
+- fixed improper speed display for low speed devices. Thanks to
+  Brad Hards for noticing this and prompting me to add support
+  for high speed USB (like there will not be other changes for
+  high speed when it happens...)
+
 * Thu Jun 14 2000 Greg Kroah-Hartman <greg@kroah.com>
 [usbview-0.8.0]
 - Added ability to select where the devices file is located at.

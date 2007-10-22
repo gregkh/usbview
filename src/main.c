@@ -20,7 +20,7 @@
 *************************************************************************/
 
 #ifdef HAVE_CONFIG_H
-#  include <config.h>
+	#include <config.h>
 #endif
 
 #include <gtk/gtk.h>
@@ -30,28 +30,28 @@
 
 int main (int argc, char *argv[])
 {
-  GtkWidget *window1;
+	GtkWidget *window1;
 
-//  bindtextdomain (PACKAGE, PACKAGE_LOCALE_DIR);
-//  textdomain (PACKAGE);
+//	bindtextdomain (PACKAGE, PACKAGE_LOCALE_DIR);
+//	textdomain (PACKAGE);
 
-  gtk_set_locale ();
-  gtk_init (&argc, &argv);
+	gtk_set_locale ();
+	gtk_init (&argc, &argv);
 
-//  add_pixmap_directory (PACKAGE_DATA_DIR "/pixmaps");
-//  add_pixmap_directory (PACKAGE_SOURCE_DIR "/pixmaps");
+//	add_pixmap_directory (PACKAGE_DATA_DIR "/pixmaps");
+//	add_pixmap_directory (PACKAGE_SOURCE_DIR "/pixmaps");
 
-  initialize_stuff();
+	initialize_stuff();
 
-  /*
-   * The following code was added by Glade to create one of each component
-   * (except popup menus), just so that you see something after building
-   * the project. Delete any components that you don't want shown initially.
-   */
-  window1 = create_windowMain ();
-  gtk_widget_show (window1);
+	/*
+	 * The following code was added by Glade to create one of each component
+	 * (except popup menus), just so that you see something after building
+	 * the project. Delete any components that you don't want shown initially.
+	 */
+	window1 = create_windowMain ();
+	gtk_widget_show (window1);
 
-  gtk_main ();
-  return 0;
+	gtk_main ();
+	return 0;
 }
 

@@ -20,7 +20,7 @@
 *************************************************************************/
 
 #ifdef HAVE_CONFIG_H
-#  include <config.h>
+	#include <config.h>
 #endif
 
 #include <gtk/gtk.h>
@@ -32,36 +32,27 @@
 #include "config.h"
 
 
-void
-on_buttonClose_clicked                 (GtkButton       *button,
-                                        gpointer         user_data)
+void on_buttonClose_clicked (GtkButton *button, gpointer user_data)
 {
-  gtk_exit(0);
+	gtk_exit(0);
 }
 
 
-gboolean
-on_window1_delete_event                (GtkWidget       *widget,
-                                        GdkEvent        *event,
-                                        gpointer         user_data)
+gboolean on_window1_delete_event (GtkWidget *widget, GdkEvent *event, gpointer user_data)
 {
-  gtk_main_quit();
+	gtk_main_quit();
 
-  return FALSE;
+	return FALSE;
 }
 
 
-void
-on_buttonRefresh_clicked               (GtkButton       *button,
-                                        gpointer         user_data)
+void on_buttonRefresh_clicked (GtkButton *button, gpointer user_data)
 {
-  LoadUSBTree();
+	LoadUSBTree();
 }
 
 
-void
-on_buttonConfigure_clicked               (GtkButton       *button,
-                                        gpointer         user_data)
+void on_buttonConfigure_clicked (GtkButton *button, gpointer user_data)
 {
 	configure_dialog ();
 }

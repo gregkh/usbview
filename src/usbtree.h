@@ -23,7 +23,7 @@
 extern gchar devicesFile[1000];
 
 
-extern void LoadUSBTree (void);
-extern void initialize_stuff();
+extern void LoadUSBTree		(void);
+extern void initialize_stuff	(void);
 
 
