@@ -68,10 +68,13 @@
 #define TOPOLOGY_COUNT_STRING			"Cnt="
 #define TOPOLOGY_DEVICENUMBER_STRING		"Dev#="
 #define TOPOLOGY_SPEED_STRING			"Spd="
-#define TOPOLOGY_INTERFACENUMBER_STRING		"If#="
 #define TOPOLOGY_MAXCHILDREN_STRING		"MxCh="
-#define TOPOLOGY_DRIVERNAME_STRING		"Driver="
-#define TOPOLOGY_DRIVERNAME_STRING_MAXLENGTH	50
+
+#define BANDWIDTH_ALOCATED			"Alloc="
+#define BANDWIDTH_TOTAL				"/"
+#define BANDWIDTH_PERCENT			"us ("
+#define BANDWIDTH_INTERRUPT_TOTAL		"#Int="
+#define BANDWIDTH_ISOC_TOTAL			"#Iso="
 
 #define DEVICE_VERSION_STRING			"Ver="
 #define DEVICE_CLASS_STRING			"Cls="
@@ -94,6 +97,8 @@
 #define INTERFACE_CLASS_STRING			"Cls="
 #define INTERFACE_SUBCLASS_STRING		"Sub="
 #define INTERFACE_PROTOCOL_STRING		"Prot="
+#define INTERFACE_DRIVERNAME_STRING		"Driver="
+#define INTERFACE_DRIVERNAME_STRING_MAXLENGTH	50
 
 #define ENDPOINT_ADDRESS_STRING			"Ad="
 #define ENDPOINT_ATTRIBUTES_STRING		"Atr="
@@ -120,6 +125,7 @@ typedef struct DeviceEndpoint {
 
 
 typedef struct DeviceInterface {
+	gchar		*name;
 	gint		interfaceNumber;
 	gint		alternateNumber;
 	gint		numEndpoints;
@@ -140,6 +146,15 @@ typedef struct DeviceConfig {
 } DeviceConfig;
 
 
+typedef struct DeviceBandwidth {
+	gint		allocated;
+	gint		total;
+	gint		percent;
+	gint		numInterruptRequests;
+	gint		numIsocRequests;
+} DeviceBandwidth;
+
+
 typedef struct Device {
 	gchar		*name;
 	gint		level;
@@ -149,7 +164,7 @@ typedef struct Device {
 	gint		count;
 	gint		deviceNumber;
 	gint		speed;
-	gint		interfaceNumber;
+//	gint		interfaceNumber;
 	gint		maxChildren;
 	gchar		*version;
 	gchar		*class;
@@ -163,6 +178,7 @@ typedef struct Device {
 	DeviceConfig	*config[MAX_CONFIGS];
 	struct Device	*parent;
 	struct Device	*child[MAX_CHILDREN];
+	DeviceBandwidth	*bandwidth;
 	GtkWidget	*tree;
 	GtkWidget	*leaf;
 } Device;
@@ -239,6 +255,7 @@ static void DestroyInterface (DeviceInterface *interface)
 	for (i = 0; i < MAX_ENDPOINTS; ++i)
 		DestroyEndpoint (interface->endpoint[i]);
 
+	g_free (interface->name);
 	g_free (interface->class);
 	g_free (interface->subClass);
 	g_free (interface->protocol);
@@ -267,6 +284,13 @@ static void DestroyConfig (DeviceConfig *config)
 }
 
 
+static void DestroyBandwidth (DeviceBandwidth *bandwidth)
+{
+	/* nothing dynamic in the bandwidth structure yet. */
+	return;
+}
+
+
 static void DestroyDevice (Device *device)
 {
 	int	i;
@@ -279,6 +303,11 @@ static void DestroyDevice (Device *device)
 
 	for (i = 0; i < MAX_CONFIGS; ++i)
 		DestroyConfig (device->config[i]);
+
+	if (device->bandwidth != NULL) {
+		DestroyBandwidth (device->bandwidth);
+		g_free (device->bandwidth);
+		}
 
 	g_free (device->name);
 	g_free (device->version);
@@ -366,11 +395,11 @@ static Device *AddDevice (char *line)
 	device->count		= GetInt (line, TOPOLOGY_COUNT_STRING, 10);
 	device->deviceNumber	= GetInt (line, TOPOLOGY_DEVICENUMBER_STRING, 10);
 	device->speed		= GetInt (line, TOPOLOGY_SPEED_STRING, 10);
-	device->interfaceNumber	= GetInt (line, TOPOLOGY_INTERFACENUMBER_STRING, 10);
+//	device->interfaceNumber	= GetInt (line, TOPOLOGY_INTERFACENUMBER_STRING, 10);
 	device->maxChildren	= GetInt (line, TOPOLOGY_MAXCHILDREN_STRING, 10);
 	
-	device->name = (char *)g_malloc0 (TOPOLOGY_DRIVERNAME_STRING_MAXLENGTH);
-	GetString (device->name, line, TOPOLOGY_DRIVERNAME_STRING, TOPOLOGY_DRIVERNAME_STRING_MAXLENGTH);
+//	device->name = (char *)g_malloc0 (TOPOLOGY_DRIVERNAME_STRING_MAXLENGTH);
+//	GetString (device->name, line, TOPOLOGY_DRIVERNAME_STRING, TOPOLOGY_DRIVERNAME_STRING_MAXLENGTH);
 	
 	if (device->deviceNumber == -1)
 		device->deviceNumber = 0;
@@ -438,6 +467,23 @@ static void GetMoreDeviceInformation (Device *device, char *data)
 
 	device->revisionNumber	= (char *)g_malloc0 ((DEVICE_REVISION_NUMBER_SIZE) * sizeof(char));
 	GetString (device->revisionNumber, data, DEVICE_REVISION_STRING, DEVICE_REVISION_NUMBER_SIZE);
+
+	return;
+}
+
+
+static void AddBandwidth (Device *device, char *data)
+{
+	if (device == NULL)
+		return;
+		
+	device->bandwidth = (DeviceBandwidth *)g_malloc0 (sizeof(DeviceBandwidth));
+
+	device->bandwidth->allocated		= GetInt (data, BANDWIDTH_ALOCATED, 10);
+	device->bandwidth->total		= GetInt (data, BANDWIDTH_TOTAL, 10);
+	device->bandwidth->percent		= GetInt (data, BANDWIDTH_PERCENT, 10);
+	device->bandwidth->numInterruptRequests	= GetInt (data, BANDWIDTH_INTERRUPT_TOTAL, 10);
+	device->bandwidth->numIsocRequests	= GetInt (data, BANDWIDTH_ISOC_TOTAL, 10);
 
 	return;
 }
@@ -517,6 +563,7 @@ static void AddInterface (Device *device, char *data)
 	interface->class	= (gchar *)g_malloc0 ((INTERFACE_CLASS_SIZE) * sizeof(gchar));
 	interface->subClass	= (gchar *)g_malloc0 ((INTERFACE_SUBCLASS_SIZE) * sizeof(gchar));
 	interface->protocol	= (gchar *)g_malloc0 ((INTERFACE_PROTOCOL_SIZE) * sizeof(gchar));
+	interface->name		= (gchar *)g_malloc0 ((INTERFACE_DRIVERNAME_STRING_MAXLENGTH) * sizeof(gchar));
 
 	interface->interfaceNumber	= GetInt (data, INTERFACE_NUMBER_STRING, 10);
 	interface->alternateNumber	= GetInt (data, INTERFACE_ALTERNATESETTING_STRING, 10);
@@ -525,6 +572,7 @@ static void AddInterface (Device *device, char *data)
 	GetString (interface->class, data, INTERFACE_CLASS_STRING, INTERFACE_CLASS_SIZE);
 	GetString (interface->subClass, data, INTERFACE_SUBCLASS_STRING, INTERFACE_SUBCLASS_SIZE);
 	GetString (interface->protocol, data, INTERFACE_PROTOCOL_STRING, INTERFACE_PROTOCOL_SIZE);
+	GetString (interface->name, data, INTERFACE_DRIVERNAME_STRING, INTERFACE_DRIVERNAME_STRING_MAXLENGTH);
 
 	/* now point the config to this interface */
 	config->interface[i] = interface;
@@ -626,8 +674,10 @@ static void PopulateListBox (int deviceNumber)
 
 	string = (char *)g_malloc (1000);
 
-	/* add the name to the textbox */
-	gtk_editable_insert_text (GTK_EDITABLE(textDescription), device->name, strlen(device->name), &position);
+	/* add the name to the textbox if we have one*/
+	if (device->name != NULL) {
+		gtk_editable_insert_text (GTK_EDITABLE(textDescription), device->name, strlen(device->name), &position);
+		}
 
 	/* add speed */
 	sprintf (string, "\nSpeed: %iMb/s", device->speed);
@@ -636,6 +686,18 @@ static void PopulateListBox (int deviceNumber)
 	/* add ports if available */
 	if (device->maxChildren) {
 		sprintf (string, "\nNumber of Ports: %i", device->maxChildren);
+		gtk_editable_insert_text (GTK_EDITABLE(textDescription), string, strlen(string), &position);
+		}
+
+	/* add the bandwidth info if available */
+	if (device->bandwidth != NULL) {
+		sprintf (string, "\nBandwidth allocated: %i / %i (%i)", device->bandwidth->allocated, device->bandwidth->total, device->bandwidth->percent);
+		gtk_editable_insert_text (GTK_EDITABLE(textDescription), string, strlen(string), &position);
+		
+		sprintf (string, "\nTotal number of interrupt requests: %i", device->bandwidth->numInterruptRequests);
+		gtk_editable_insert_text (GTK_EDITABLE(textDescription), string, strlen(string), &position);
+
+		sprintf (string, "\nTotal number of isochronous requests: %i", device->bandwidth->numIsocRequests);
 		gtk_editable_insert_text (GTK_EDITABLE(textDescription), string, strlen(string), &position);
 		}
 
@@ -672,10 +734,18 @@ static void PopulateListBox (int deviceNumber)
 				if (config->interface[interfaceNum]) {
 					DeviceInterface	*interface = config->interface[interfaceNum];
 					
-					sprintf (string, "\n\n\tInterface Number: %i\n\t\tAlternate Number: %i\n\t\t"
-						"Class: %s\n\t\tSub Class: %s\n\t\tProtocol: %s\n\t\tNumber of Endpoints: %i",
-						interface->interfaceNumber, interface->alternateNumber, 
-						interface->class, interface->subClass, interface->protocol, interface->numEndpoints);
+					sprintf (string, "\n\n\tInterface Number: %i", interface->interfaceNumber);
+					gtk_editable_insert_text (GTK_EDITABLE(textDescription), string, strlen(string), &position);
+
+					if (interface->name != NULL) {
+						sprintf (string, "\n\t\tName: %s", interface->name);
+						gtk_editable_insert_text (GTK_EDITABLE(textDescription), string, strlen(string), &position);
+						}
+					
+					sprintf (string, "\n\t\tAlternate Number: %i\n\t\tClass: %s\n\t\t"
+						"Sub Class: %s\n\t\tProtocol: %s\n\t\tNumber of Endpoints: %i",
+						interface->alternateNumber, interface->class, 
+						interface->subClass, interface->protocol, interface->numEndpoints);
 					gtk_editable_insert_text (GTK_EDITABLE(textDescription), string, strlen(string), &position);
 
 					/* show all of the endpoints for this interface */
@@ -758,6 +828,55 @@ static void DisplayDevice (Device *parent, Device *device)
 }
 	
 
+/* Build all of the names of the devices */
+static void NameDevices (Device *device)
+{
+	int	configNum;
+	int	interfaceNum;
+	int	i;
+	
+	if (device == NULL)
+		return;
+		
+	/* build the name for this device */
+	if (device != rootDevice) {
+		if (device->name)
+			g_free (device->name);
+		device->name = (gchar *)g_malloc0 (255*sizeof (gchar));
+		
+		/* see if this device is a root hub */
+		if (device->level == 0) {
+			strcpy (device->name, "root hub");
+			}
+
+		/* look through all of the interfaces of this device, adding them all up to form a name */
+		for (configNum = 0; configNum < MAX_CONFIGS; ++configNum) {
+			if (device->config[configNum]) {
+				DeviceConfig	*config = device->config[configNum];
+				for (interfaceNum = 0; interfaceNum < MAX_INTERFACES; ++interfaceNum) {
+					if (config->interface[interfaceNum]) {
+						DeviceInterface	*interface = config->interface[interfaceNum];
+						if (interface->name != NULL) {
+							if (strlen (device->name) > 0) {
+								strcat (device->name, "/");
+								}
+							strcat (device->name, interface->name);
+							}
+						}
+					}
+				}
+			}
+		}
+
+	/* create all of the children's names */
+	for (i = 0; i < MAX_CHILDREN; ++i) {
+		NameDevices (device->child[i]);
+		}
+
+	return;
+}
+	
+
 static void ParseLine (char * line)
 {
 	/* chop off the trailing \n */
@@ -769,6 +888,10 @@ static void ParseLine (char * line)
 			lastDevice = AddDevice (line);
 			break;
 			
+		case 'B': /* bandwidth */
+			AddBandwidth (lastDevice, line);
+			break;
+
 		case 'D': /* device information */
 			GetDeviceInformation (lastDevice, line);
 			break;
@@ -826,6 +949,8 @@ void LoadUSBTree (void)
 		}
 
 	g_free (dataLine);
+
+	NameDevices (rootDevice);
 
 	DisplayDevice (rootDevice, rootDevice->child[0]);
 	
