@@ -1,3 +1,12 @@
+version 0.4.0
+	- redid the user interface slightly, making the tree always expanded,
+	  showing the top of the text field, and better balancing the splitter
+	  bar.
+
+version 0.3.0
+	- changed the parsing to make it easier to handle any future changes 
+	  in the way the format of /proc/bus/usb/devices 
+
 version 0.2.0:
 	- Configuration, interface, and endpoint data is now displayed
 	  for each device.

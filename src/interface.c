@@ -70,6 +70,7 @@ create_windowMain ()
                             (GtkDestroyNotify) gtk_widget_unref);
   gtk_widget_show (hpaned1);
   gtk_box_pack_start (GTK_BOX (vbox1), hpaned1, TRUE, TRUE, 0);
+  gtk_paned_set_position (GTK_PANED (hpaned1), 100);
 
   treeUSB = gtk_tree_new ();
   gtk_widget_set_name (treeUSB, "treeUSB");

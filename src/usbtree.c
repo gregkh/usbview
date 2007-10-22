@@ -61,12 +61,60 @@
 #define ENDPOINT_MAXPACKETSIZE_SIZE	5
 #define ENDPOINT_INTERVAL_SIZE		10
 
+
+#define TOPOLOGY_LEVEL_STRING			"Lev="
+#define TOPOLOGY_PARENT_STRING			"Prnt="
+#define TOPOLOGY_PORT_STRING			"Port="
+#define TOPOLOGY_COUNT_STRING			"Cnt="
+#define TOPOLOGY_DEVICENUMBER_STRING		"Dev#="
+#define TOPOLOGY_SPEED_STRING			"Spd="
+#define TOPOLOGY_INTERFACENUMBER_STRING		"If#="
+#define TOPOLOGY_MAXCHILDREN_STRING		"MxCh="
+#define TOPOLOGY_DRIVERNAME_STRING		"Driver="
+#define TOPOLOGY_DRIVERNAME_STRING_MAXLENGTH	50
+
+#define DEVICE_VERSION_STRING			"Ver="
+#define DEVICE_CLASS_STRING			"Cls="
+#define DEVICE_SUBCLASS_STRING			"Sub="
+#define DEVICE_PROTOCOL_STRING			"Prot="
+#define DEVICE_MAXPACKETSIZE_STRING		"MxPS="
+#define DEVICE_NUMCONFIGS_STRING		"#Cfgs="
+#define DEVICE_VENDOR_STRING			"Vendor="
+#define DEVICE_PRODUCTID_STRING			"ProdID="
+#define DEVICE_REVISION_STRING			"Rev="
+
+#define CONFIG_NUMINTERFACES_STRING		"#Ifs="
+#define CONFIG_CONFIGNUMBER_STRING		"Cfg#="
+#define CONFIG_ATTRIBUTES_STRING		"Atr="
+#define CONFIG_MAXPOWER_STRING			"MxPwr="
+
+#define INTERFACE_NUMBER_STRING			"If#="
+#define INTERFACE_ALTERNATESETTING_STRING	"Alt="
+#define INTERFACE_NUMENDPOINTS_STRING		"#EPs="
+#define INTERFACE_CLASS_STRING			"Cls="
+#define INTERFACE_SUBCLASS_STRING		"Sub="
+#define INTERFACE_PROTOCOL_STRING		"Prot="
+
+#define ENDPOINT_ADDRESS_STRING			"Ad="
+#define ENDPOINT_ATTRIBUTES_STRING		"Atr="
+#define ENDPOINT_MAXPACKETSIZE_STRING		"MxPS="
+#define ENDPOINT_INTERVAL_STRING		"Ivl="
+
+
+
+
+
+
+
+
+
+
 typedef struct DeviceEndpoint {
 	gint		address;
 	gboolean	in;		/* TRUE if in, FALSE if out */
 	gint		attribute;
 	gchar		*type;
-	gchar		*maxPacketSize;
+	gint		maxPacketSize;
 	gchar		*interval;
 } DeviceEndpoint;
 
@@ -86,32 +134,32 @@ typedef struct DeviceInterface {
 typedef struct DeviceConfig {
 	gint		configNumber;
 	gint		numInterfaces;
-	gchar		*attributes;
+	gint		attributes;
 	gchar		*maxPower;
 	DeviceInterface	*interface[MAX_INTERFACES];
 } DeviceConfig;
 
 
 typedef struct Device {
-	char		*name;
-	int		level;
-	int		parentNumber;
-	int		portNumber;
-	int		connectorNumber;
-	int		count;
-	int		deviceNumber;
-	int		speed;
-	int		interfaceNumber;
-	int		maxChildren;
-	char		*version;
-	char		*class;
-	char		*subClass;
-	char		*protocol;
-	int		maxPacketSize;
-	int		numConfigs;
-	char		*vendorId;
-	char		*productId;
-	char		*revisionNumber;
+	gchar		*name;
+	gint		level;
+	gint		parentNumber;
+	gint		portNumber;
+	gint		connectorNumber;
+	gint		count;
+	gint		deviceNumber;
+	gint		speed;
+	gint		interfaceNumber;
+	gint		maxChildren;
+	gchar		*version;
+	gchar		*class;
+	gchar		*subClass;
+	gchar		*protocol;
+	gint		maxPacketSize;
+	gint		numConfigs;
+	gint		vendorId;
+	gint		productId;
+	gchar		*revisionNumber;
 	DeviceConfig	*config[MAX_CONFIGS];
 	struct Device	*parent;
 	struct Device	*child[MAX_CHILDREN];
@@ -126,34 +174,44 @@ static Device	*rootDevice = NULL;
 static Device	*lastDevice;
 
 
-static signed int GetValue (char a, char b, char c)
+static signed int GetInt (char *string, char *pattern, int base)
 {
-	char		hundreds = 0;
-	char		tens = 0;
-	char		ones = 0;
-	char		positive = 1;
-	signed int	value;
-	
-	if (isdigit(a))
-		hundreds = a - '0';
-	else if (a == '-')
-		positive = 0;
-		
-	if (isdigit(b))
-		tens = b - '0';
-	else if (b == '-')
-		positive = 0;
+	char	*pointer;
 
-	if (isdigit(c))
-		ones = c - '0';
-	else if (c == '-')
-		positive = 0;
+	pointer = strstr (string, pattern);
+	if (pointer == NULL)
+		return (0);
 
-	value = (hundreds * 100) + (tens * 10) + ones;
-	if (!positive)
-		value = -value;
-	
-	return (value);
+	pointer += strlen(pattern);
+	return ((int)(strtol (pointer, NULL, base)));
+}
+
+/*
+static double GetFloat (char *string, char *pattern)
+{
+	char	*pointer;
+
+	pointer = strstr (string, pattern);
+	if (pointer == NULL)
+		return (0.0);
+
+	pointer += strlen(pattern);
+	return (strtod (pointer, NULL));
+}
+*/
+
+
+static void GetString (char *dest, char *source, char *pattern, int maxSize)
+{
+	char	*pointer;
+
+	pointer = strstr (source, pattern);
+	if (pointer == NULL)
+		return;
+
+	pointer += strlen(pattern);
+	strncpy (dest, pointer, maxSize);
+	return;
 }
 
 
@@ -163,7 +221,6 @@ static void DestroyEndpoint (DeviceEndpoint *endpoint)
 		return;
 		
 	g_free (endpoint->type);
-	g_free (endpoint->maxPacketSize);
 	g_free (endpoint->interval);
 	
 	g_free (endpoint);
@@ -202,7 +259,6 @@ static void DestroyConfig (DeviceConfig *config)
 	for (i = 0; i < MAX_INTERFACES; ++i)
 		DestroyInterface (config->interface[i]);
 
-	g_free (config->attributes);
 	g_free (config->maxPower);
 	
 	g_free (config);
@@ -229,8 +285,6 @@ static void DestroyDevice (Device *device)
 	g_free (device->class);
 	g_free (device->subClass);
 	g_free (device->protocol);
-	g_free (device->vendorId);
-	g_free (device->productId);
 	g_free (device->revisionNumber);
 
 	g_free (device);
@@ -301,32 +355,25 @@ static Device *FindDevice (int deviceNumber)
 static Device *AddDevice (char *line)
 {
 	Device	*device;
-	int	nameLength;
 	
 	/* create a new device */
 	device = (Device *)(g_malloc0 (sizeof(Device)));
 	
 	/* parse the line */
-	/* parsing in C sucks, I could do this a zillion different ways, but this
-	   is good enough for now. */
-	device->level		= GetValue (' ', line[8], line[9]);
-	device->parentNumber	= GetValue (' ', line[16], line[17]);
-	device->portNumber	= GetValue (' ', line[24], line[25]);
-	device->count		= GetValue (' ', line[31], line[32]);
-	device->deviceNumber	= GetValue (line[39], line[40], line[41]);
-	device->speed		= GetValue (line[47], line[48], line[49]);
-	device->interfaceNumber	= GetValue (line[55], line[56], line[57]);
-	device->maxChildren	= GetValue (' ', line[64], line[65]);
+	device->level		= GetInt (line, TOPOLOGY_LEVEL_STRING, 10);
+	device->parentNumber	= GetInt (line, TOPOLOGY_PARENT_STRING, 10);
+	device->portNumber	= GetInt (line, TOPOLOGY_PORT_STRING, 10);
+	device->count		= GetInt (line, TOPOLOGY_COUNT_STRING, 10);
+	device->deviceNumber	= GetInt (line, TOPOLOGY_DEVICENUMBER_STRING, 10);
+	device->speed		= GetInt (line, TOPOLOGY_SPEED_STRING, 10);
+	device->interfaceNumber	= GetInt (line, TOPOLOGY_INTERFACENUMBER_STRING, 10);
+	device->maxChildren	= GetInt (line, TOPOLOGY_MAXCHILDREN_STRING, 10);
 	
-	nameLength = strlen (&line[74])+1;
-	device->name = (char *)g_malloc0 (nameLength);
-	strncpy (device->name, &line[74], nameLength);
-	device->name[nameLength-2] = 0x00;
+	device->name = (char *)g_malloc0 (TOPOLOGY_DRIVERNAME_STRING_MAXLENGTH);
+	GetString (device->name, line, TOPOLOGY_DRIVERNAME_STRING, TOPOLOGY_DRIVERNAME_STRING_MAXLENGTH);
 	
 	if (device->deviceNumber == -1)
 		device->deviceNumber = 0;
-
-	/* printf ("%i %i %i %i %i %i %i %i %s\n", level, parentNumber, portNumber, count, deviceNumber, speed, interfaceNumber, maxChildren, name); */
 
 	/* Set up the parent / child relationship */
 	if (device->level == 0) {
@@ -356,8 +403,6 @@ static void GetDeviceInformation (Device *device, char *data)
 	if (device == NULL)
 		return;
 		
-	/* ok, this is a hack, I "should" turn the id's into the raw number, but for now, 
-	   let's just stick with the string representation */
 	g_free (device->version);
 	g_free (device->class);
 	g_free (device->subClass);
@@ -368,13 +413,13 @@ static void GetDeviceInformation (Device *device, char *data)
 	device->subClass	= (char *)g_malloc0 ((DEVICE_SUBCLASS_SIZE) * sizeof(char));
 	device->protocol	= (char *)g_malloc0 ((DEVICE_PROTOCOL_SIZE) * sizeof(char));
 
-	memcpy (device->version, &data[8], DEVICE_VERSION_SIZE-1);
-	memcpy (device->class, &data[18], DEVICE_CLASS_SIZE-1);
-	memcpy (device->subClass, &data[32], DEVICE_SUBCLASS_SIZE-1);
-	memcpy (device->protocol, &data[40], DEVICE_PROTOCOL_SIZE-1);
+	GetString (device->version, data, DEVICE_VERSION_STRING, DEVICE_VERSION_SIZE-1);
+	GetString (device->class, data, DEVICE_CLASS_STRING, DEVICE_CLASS_SIZE-1);
+	GetString (device->subClass, data, DEVICE_SUBCLASS_STRING, DEVICE_SUBCLASS_SIZE-1);
+	GetString (device->protocol, data, DEVICE_PROTOCOL_STRING, DEVICE_PROTOCOL_SIZE-1);
 	
-	device->maxPacketSize	= GetValue (' ', data[48], data[49]);
-	device->numConfigs	= GetValue (data[57], data[58], data[59]);
+	device->maxPacketSize	= GetInt (data, DEVICE_MAXPACKETSIZE_STRING, 10);
+	device->numConfigs	= GetInt (data, DEVICE_NUMCONFIGS_STRING, 10);
 
 	return;
 }
@@ -386,21 +431,13 @@ static void GetMoreDeviceInformation (Device *device, char *data)
 	if (device == NULL)
 		return;
 		
-	/* ok, this is a hack, I "should" turn the id's into the raw number, but for now, 
-	   let's just stick with the string representation */
-	g_free (device->vendorId);
-	g_free (device->productId);
 	g_free (device->revisionNumber);
-
-	device->vendorId	= (char *)g_malloc0 ((DEVICE_VENDOR_ID_SIZE) * sizeof(char));
-	device->productId	= (char *)g_malloc0 ((DEVICE_PRODUCT_ID_SIZE) * sizeof(char));
-	device->revisionNumber	= (char *)g_malloc0 ((DEVICE_REVISION_NUMBER_SIZE) * sizeof(char));
-
-	memcpy (device->vendorId, &data[11], DEVICE_VENDOR_ID_SIZE-1);
-	memcpy (device->productId, &data[23], DEVICE_PRODUCT_ID_SIZE-1);
-	memcpy (device->revisionNumber, &data[32], DEVICE_REVISION_NUMBER_SIZE-1);
 	
-	/* printf ("%s\t%s\t%s\n", device->vendorId, device->productId, device->revisionNumber); */
+	device->vendorId	= GetInt (data, DEVICE_VENDOR_STRING, 16);
+	device->productId	= GetInt (data, DEVICE_PRODUCTID_STRING, 16);
+
+	device->revisionNumber	= (char *)g_malloc0 ((DEVICE_REVISION_NUMBER_SIZE) * sizeof(char));
+	GetString (device->revisionNumber, data, DEVICE_REVISION_STRING, DEVICE_REVISION_NUMBER_SIZE);
 
 	return;
 }
@@ -427,16 +464,14 @@ static void AddConfig (Device *device, char *data)
 		}
 	
 	config = (DeviceConfig *)g_malloc0 (sizeof(DeviceConfig));
-	config->attributes	= (gchar *)g_malloc0 ((CONFIG_ATTRIBUTES_SIZE) * sizeof(gchar));
 	config->maxPower	= (gchar *)g_malloc0 ((CONFIG_MAXPOWER_SIZE) * sizeof(gchar));
 
-	config->numInterfaces	= GetValue (' ', data[9], data[10]);
-	config->configNumber	= GetValue (' ', data[17], data[18]);
+	config->numInterfaces	= GetInt (data, CONFIG_NUMINTERFACES_STRING, 10);
+	config->configNumber	= GetInt (data, CONFIG_CONFIGNUMBER_STRING, 10);
+	config->attributes	= GetInt (data, CONFIG_ATTRIBUTES_STRING, 16);
 
-	memcpy (config->attributes, &data[24], CONFIG_ATTRIBUTES_SIZE-1);
-	data[strlen(data)-1] = 0x00;
-	strncpy (config->maxPower, &data[33], CONFIG_MAXPOWER_SIZE-1);
-	
+	GetString (config->maxPower, data, CONFIG_MAXPOWER_STRING, CONFIG_MAXPOWER_SIZE);
+
 	/* have the device now point to this config */
 	device->config[i] = config;
 	
@@ -483,13 +518,13 @@ static void AddInterface (Device *device, char *data)
 	interface->subClass	= (gchar *)g_malloc0 ((INTERFACE_SUBCLASS_SIZE) * sizeof(gchar));
 	interface->protocol	= (gchar *)g_malloc0 ((INTERFACE_PROTOCOL_SIZE) * sizeof(gchar));
 
-	interface->interfaceNumber	= GetValue (' ', data[8], data[9]);
-	interface->alternateNumber	= GetValue (' ', data[15], data[16]);
-	interface->numEndpoints		= GetValue (' ', data[23], data[24]);
+	interface->interfaceNumber	= GetInt (data, INTERFACE_NUMBER_STRING, 10);
+	interface->alternateNumber	= GetInt (data, INTERFACE_ALTERNATESETTING_STRING, 10);
+	interface->numEndpoints		= GetInt (data, INTERFACE_NUMENDPOINTS_STRING, 10);
 
-	memcpy (interface->class, &data[30], INTERFACE_CLASS_SIZE-1);
-	memcpy (interface->subClass, &data[44], INTERFACE_SUBCLASS_SIZE-1);
-	memcpy (interface->protocol, &data[52], INTERFACE_PROTOCOL_SIZE-1);
+	GetString (interface->class, data, INTERFACE_CLASS_STRING, INTERFACE_CLASS_SIZE);
+	GetString (interface->subClass, data, INTERFACE_SUBCLASS_STRING, INTERFACE_SUBCLASS_SIZE);
+	GetString (interface->protocol, data, INTERFACE_PROTOCOL_STRING, INTERFACE_PROTOCOL_SIZE);
 
 	/* now point the config to this interface */
 	config->interface[i] = interface;
@@ -551,20 +586,20 @@ static void AddEndpoint (Device *device, char *data)
 	endpoint = (DeviceEndpoint *)g_malloc0 (sizeof(DeviceEndpoint));
 
 	endpoint->type		= (gchar *)g_malloc0 ((ENDPOINT_TYPE_SIZE) * sizeof(gchar));
-	endpoint->maxPacketSize	= (gchar *)g_malloc0 ((ENDPOINT_MAXPACKETSIZE_SIZE) * sizeof(gchar));
 	endpoint->interval	= (gchar *)g_malloc0 ((ENDPOINT_INTERVAL_SIZE) * sizeof(gchar));
 
-	endpoint->address	= GetValue (' ', data[7], data[8]);	/* not too good, this is a hex number...as most are...hmm...*/
+	endpoint->address	= GetInt (data, ENDPOINT_ADDRESS_STRING, 16);
 	if (data[10] == 'I')
 		endpoint->in = TRUE;
 	else
 		endpoint->in = FALSE;
-	endpoint->attribute	= GetValue (' ', data[17], data[18]);
+	endpoint->attribute	= GetInt (data, ENDPOINT_ATTRIBUTES_STRING, 16);
+	endpoint->maxPacketSize	= GetInt (data, ENDPOINT_MAXPACKETSIZE_STRING, 10);
 	
+	GetString (interface->class, data, INTERFACE_CLASS_STRING, INTERFACE_CLASS_SIZE);
+
 	memcpy (endpoint->type, &data[20], ENDPOINT_TYPE_SIZE-1);
-	memcpy (endpoint->maxPacketSize, &data[31], ENDPOINT_MAXPACKETSIZE_SIZE-1);
-	data[strlen(data)-1] = 0x00;
-	strncpy (endpoint->interval, &data[40], ENDPOINT_INTERVAL_SIZE-1);
+	GetString (endpoint->interval, data, ENDPOINT_INTERVAL_STRING, ENDPOINT_INTERVAL_SIZE);
 
 	/* point the interface to the endpoint */
 	interface->endpoint[i] = endpoint;
@@ -594,10 +629,9 @@ static void PopulateListBox (int deviceNumber)
 	/* add the name to the textbox */
 	gtk_editable_insert_text (GTK_EDITABLE(textDescription), device->name, strlen(device->name), &position);
 
-	/* add speed (commented out cauz we aren't currently grabbing this correctly
-	sprintf (string, "\nSpeed: %i", device->speed);
+	/* add speed */
+	sprintf (string, "\nSpeed: %iMb/s", device->speed);
 	gtk_editable_insert_text (GTK_EDITABLE(textDescription), string, strlen(string), &position);
-	*/
 
 	/* add ports if available */
 	if (device->maxChildren) {
@@ -616,7 +650,7 @@ static void PopulateListBox (int deviceNumber)
 
 	/* add the vendor id, product id, and revision number (if it is there) */
 	if (device->vendorId) {
-		sprintf (string, "\nVendor Id: %s\nProduct Id: %s\nRevision Number: %s",
+		sprintf (string, "\nVendor Id: %.4x\nProduct Id: %.4x\nRevision Number: %s",
 			 device->vendorId, device->productId, device->revisionNumber);
 		gtk_editable_insert_text (GTK_EDITABLE(textDescription), string, strlen(string), &position);
 		}
@@ -628,7 +662,7 @@ static void PopulateListBox (int deviceNumber)
 			
 			/* show this config */
 			sprintf (string, "\n\nConfig Number: %i\n\tNumber of Interfaces: %i\n\t"
-				"Attributes: %s\n\tMaxPower Needed: %s",
+				"Attributes: %.2x\n\tMaxPower Needed: %s",
 				config->configNumber, config->numInterfaces, 
 				config->attributes, config->maxPower);
 			gtk_editable_insert_text (GTK_EDITABLE(textDescription), string, strlen(string), &position);
@@ -649,9 +683,9 @@ static void PopulateListBox (int deviceNumber)
 						if (interface->endpoint[endpointNum]) {
 							DeviceEndpoint	*endpoint = interface->endpoint[endpointNum];
 							
-							sprintf (string, "\n\n\t\t\tEndpoint Address: %i\n\t\t\t"
+							sprintf (string, "\n\n\t\t\tEndpoint Address: %.2x\n\t\t\t"
 								"Direction: %s\n\t\t\tAttribute: %i\n\t\t\t"
-								"Type: %s\n\t\t\tMax Packet Size: %s\n\t\t\tInterval: %s",
+								"Type: %s\n\t\t\tMax Packet Size: %i\n\t\t\tInterval: %s",
 								endpoint->address, 
 								endpoint->in ? "in" : "out", endpoint->attribute,
 								endpoint->type, endpoint->maxPacketSize, endpoint->interval);
@@ -663,6 +697,10 @@ static void PopulateListBox (int deviceNumber)
 			}
 		}
 
+	/* throw the cursor back to the top so the user sees the top first */
+	gtk_editable_set_position (GTK_EDITABLE(textDescription), 0);
+
+	/* clean up our string */
 	g_free (string);
 
 	return;
@@ -708,6 +746,7 @@ static void DisplayDevice (Device *parent, Device *device)
 	if (hasChildren) {
 		device->tree = gtk_tree_new();
 		gtk_tree_item_set_subtree (GTK_TREE_ITEM(device->leaf), device->tree);
+		gtk_tree_item_expand (GTK_TREE_ITEM(device->leaf));	/* make the tree expanded to start with */
 		}
 	
 	/* create all of the children's leafs */
@@ -721,6 +760,9 @@ static void DisplayDevice (Device *parent, Device *device)
 
 static void ParseLine (char * line)
 {
+	/* chop off the trailing \n */
+	line[strlen(line)-1] = 0x00;
+
 	/* look at the first character to see what kind of line this is */
 	switch (line[0]) {
 		case 'T': /* topology */
