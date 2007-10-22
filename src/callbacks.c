@@ -29,6 +29,7 @@
 #include "interface.h"
 #include "support.h"
 #include "usbtree.h"
+#include "config.h"
 
 
 void
@@ -55,5 +56,13 @@ on_buttonRefresh_clicked               (GtkButton       *button,
                                         gpointer         user_data)
 {
   LoadUSBTree();
+}
+
+
+void
+on_buttonConfigure_clicked               (GtkButton       *button,
+                                        gpointer         user_data)
+{
+	configure_dialog ();
 }
 

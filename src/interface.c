@@ -47,13 +47,14 @@ create_windowMain ()
   GtkWidget *scrolledwindow1;
   GtkWidget *hbuttonbox1;
   GtkWidget *buttonRefresh;
+  GtkWidget *buttonConfigure;
   GtkWidget *buttonClose;
 
   windowMain = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_widget_set_name (windowMain, "windowMain");
   gtk_object_set_data (GTK_OBJECT (windowMain), "windowMain", windowMain);
   gtk_window_set_title (GTK_WINDOW (windowMain), _("USB Viewer"));
-  gtk_window_set_default_size (GTK_WINDOW (windowMain), 400, 300);
+  gtk_window_set_default_size (GTK_WINDOW (windowMain), 500, 300);
 
   vbox1 = gtk_vbox_new (FALSE, 0);
   gtk_widget_set_name (vbox1, "vbox1");
@@ -70,9 +71,10 @@ create_windowMain ()
                             (GtkDestroyNotify) gtk_widget_unref);
   gtk_widget_show (hpaned1);
   gtk_box_pack_start (GTK_BOX (vbox1), hpaned1, TRUE, TRUE, 0);
-  gtk_paned_set_position (GTK_PANED (hpaned1), 100);
+  gtk_paned_set_position (GTK_PANED (hpaned1), 200);
 
-  treeUSB = gtk_tree_new ();
+//  treeUSB = gtk_tree_new ();
+  treeUSB = gtk_ctree_new_with_titles (1, 0, NULL);
   gtk_widget_set_name (treeUSB, "treeUSB");
   gtk_widget_ref (treeUSB);
   gtk_object_set_data_full (GTK_OBJECT (windowMain), "treeUSB", treeUSB,
@@ -116,6 +118,16 @@ create_windowMain ()
   gtk_container_set_border_width (GTK_CONTAINER (buttonRefresh), 4);
   GTK_WIDGET_SET_FLAGS (buttonRefresh, GTK_CAN_DEFAULT);
 
+  buttonConfigure = gtk_button_new_with_label (_("Configure"));
+  gtk_widget_set_name (buttonConfigure, "buttonConfigure");
+  gtk_widget_ref (buttonConfigure);
+  gtk_object_set_data_full (GTK_OBJECT (windowMain), "buttonConfigure", buttonConfigure,
+                            (GtkDestroyNotify) gtk_widget_unref);
+  gtk_widget_show (buttonConfigure);
+  gtk_container_add (GTK_CONTAINER (hbuttonbox1), buttonConfigure);
+  gtk_container_set_border_width (GTK_CONTAINER (buttonConfigure), 4);
+  GTK_WIDGET_SET_FLAGS (buttonConfigure, GTK_CAN_DEFAULT);
+
   buttonClose = gtk_button_new_with_label (_("Close"));
   gtk_widget_set_name (buttonClose, "buttonClose");
   gtk_widget_ref (buttonClose);
@@ -132,10 +144,13 @@ create_windowMain ()
   gtk_signal_connect (GTK_OBJECT (buttonRefresh), "clicked",
                       GTK_SIGNAL_FUNC (on_buttonRefresh_clicked),
                       NULL);
+  gtk_signal_connect (GTK_OBJECT (buttonConfigure), "clicked",
+                      GTK_SIGNAL_FUNC (on_buttonConfigure_clicked),
+                      NULL);
   gtk_signal_connect (GTK_OBJECT (buttonClose), "clicked",
                       GTK_SIGNAL_FUNC (on_buttonClose_clicked),
                       NULL);
-
+  
   return windowMain;
 }
 

@@ -19,4 +19,11 @@
 ** (See the included file COPYING)
 *************************************************************************/
 
+
+extern gchar devicesFile[1000];
+
+
 extern void LoadUSBTree (void);
+extern void initialize_stuff();
+
+

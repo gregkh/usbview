@@ -1,5 +1,5 @@
 /*************************************************************************
-** callbacks.h for USBView - a USB device viewer
+** config.h for USBView - a USB device viewer
 ** Copyright (c) 1999 by Greg Kroah-Hartman, greg@kroah.com
 **
 **  This program is free software; you can redistribute it and/or modify
@@ -19,23 +19,7 @@
 ** (See the included file COPYING)
 *************************************************************************/
 
-#include <gtk/gtk.h>
 
+extern void configure_dialog (void);
 
-void
-on_buttonClose_clicked                 (GtkButton       *button,
-                                        gpointer         user_data);
-
-gboolean
-on_window1_delete_event                (GtkWidget       *widget,
-                                        GdkEvent        *event,
-                                        gpointer         user_data);
-
-void
-on_buttonRefresh_clicked               (GtkButton       *button,
-                                        gpointer         user_data);
-
-void
-on_buttonConfigure_clicked             (GtkButton       *button,
-                                        gpointer         user_data);
 

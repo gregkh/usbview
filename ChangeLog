@@ -1,3 +1,15 @@
+version 0.8.0
+	- Added ability to select where the devices file is located at.
+	  This allows you to view a usbdevfs devices file that comes
+	  from another user, for instance. It also accomidates those who
+	  do not mount usbdevfs at /proc/bus/usb.
+	- Fixed bug with devices that have a lot of interfaces.
+	- Changed the tree widget to a different style.
+	- Restructured the internal code a bit nicer (a lot of work to
+	  go with this...)
+	- Added a TODO file to the archive listing some potential changes
+	  that could be done.
+
 version 0.7.0
 	- the logic for determining the name of the device changed to 
 	  properly display the name of a keyboard or mouse when the 

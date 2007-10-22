@@ -35,660 +35,25 @@
 #include "support.h"
 #include "usbtree.h"
 #include "showmessage.h"
+#include "usbparse.h"
 
 #define MAX_LINE_SIZE	1000
 
-#define MAX_ENDPOINTS	32
-#define MAX_INTERFACES	8
-#define MAX_CONFIGS	8
-#define MAX_CHILDREN	8
-
-#define DEVICE_VERSION_SIZE		6
-#define DEVICE_CLASS_SIZE		10
-#define DEVICE_SUBCLASS_SIZE		3
-#define DEVICE_PROTOCOL_SIZE		3
-#define DEVICE_VENDOR_ID_SIZE		5
-#define DEVICE_PRODUCT_ID_SIZE		5
-#define DEVICE_REVISION_NUMBER_SIZE	6
-
-#define CONFIG_ATTRIBUTES_SIZE		3
-#define CONFIG_MAXPOWER_SIZE		10
-
-#define INTERFACE_CLASS_SIZE		10
-
-#define ENDPOINT_TYPE_SIZE		5
-#define ENDPOINT_MAXPACKETSIZE_SIZE	5
-#define ENDPOINT_INTERVAL_SIZE		10
-
-
-#define TOPOLOGY_BUS_STRING			"Bus="
-#define TOPOLOGY_LEVEL_STRING			"Lev="
-#define TOPOLOGY_PARENT_STRING			"Prnt="
-#define TOPOLOGY_PORT_STRING			"Port="
-#define TOPOLOGY_COUNT_STRING			"Cnt="
-#define TOPOLOGY_DEVICENUMBER_STRING		"Dev#="
-#define TOPOLOGY_SPEED_STRING			"Spd="
-#define TOPOLOGY_MAXCHILDREN_STRING		"MxCh="
-
-#define BANDWIDTH_ALOCATED			"Alloc="
-#define BANDWIDTH_TOTAL				"/"
-#define BANDWIDTH_PERCENT			"us ("
-#define BANDWIDTH_INTERRUPT_TOTAL		"#Int="
-#define BANDWIDTH_ISOC_TOTAL			"#Iso="
-
-#define DEVICE_VERSION_STRING			"Ver="
-#define DEVICE_CLASS_STRING			"Cls="
-#define DEVICE_SUBCLASS_STRING			"Sub="
-#define DEVICE_PROTOCOL_STRING			"Prot="
-#define DEVICE_MAXPACKETSIZE_STRING		"MxPS="
-#define DEVICE_NUMCONFIGS_STRING		"#Cfgs="
-#define DEVICE_VENDOR_STRING			"Vendor="
-#define DEVICE_PRODUCTID_STRING			"ProdID="
-#define DEVICE_REVISION_STRING			"Rev="
-#define DEVICE_MANUFACTURER_STRING		"Manufacturer="
-#define DEVICE_PRODUCT_STRING			"Product="
-#define DEVICE_SERIALNUMBER_STRING		"SerialNumber="
-#define DEVICE_STRING_MAXSIZE			255
-
-#define CONFIG_NUMINTERFACES_STRING		"#Ifs="
-#define CONFIG_CONFIGNUMBER_STRING		"Cfg#="
-#define CONFIG_ATTRIBUTES_STRING		"Atr="
-#define CONFIG_MAXPOWER_STRING			"MxPwr="
-
-#define INTERFACE_NUMBER_STRING			"If#="
-#define INTERFACE_ALTERNATESETTING_STRING	"Alt="
-#define INTERFACE_NUMENDPOINTS_STRING		"#EPs="
-#define INTERFACE_CLASS_STRING			"Cls="
-#define INTERFACE_SUBCLASS_STRING		"Sub="
-#define INTERFACE_PROTOCOL_STRING		"Prot="
-#define INTERFACE_DRIVERNAME_STRING		"Driver="
-#define INTERFACE_DRIVERNAME_STRING_MAXLENGTH	50
-
-#define ENDPOINT_ADDRESS_STRING			"Ad="
-#define ENDPOINT_ATTRIBUTES_STRING		"Atr="
-#define ENDPOINT_MAXPACKETSIZE_STRING		"MxPS="
-#define ENDPOINT_INTERVAL_STRING		"Ivl="
-
-
-
-typedef struct DeviceEndpoint {
-	gint		address;
-	gboolean	in;		/* TRUE if in, FALSE if out */
-	gint		attribute;
-	gchar		*type;
-	gint		maxPacketSize;
-	gchar		*interval;
-} DeviceEndpoint;
-
-
-typedef struct DeviceInterface {
-	gchar		*name;
-	gint		interfaceNumber;
-	gint		alternateNumber;
-	gint		numEndpoints;
-	gint		subClass;
-	gint		protocol;
-	gchar		*class;
-	DeviceEndpoint	*endpoint[MAX_ENDPOINTS];
-} DeviceInterface;
 	
-
-
-typedef struct DeviceConfig {
-	gint		configNumber;
-	gint		numInterfaces;
-	gint		attributes;
-	gchar		*maxPower;
-	DeviceInterface	*interface[MAX_INTERFACES];
-} DeviceConfig;
-
-
-typedef struct DeviceBandwidth {
-	gint		allocated;
-	gint		total;
-	gint		percent;
-	gint		numInterruptRequests;
-	gint		numIsocRequests;
-} DeviceBandwidth;
-
-
-typedef struct Device {
-	gchar		*name;
-	gint		busNumber;
-	gint		level;
-	gint		parentNumber;
-	gint		portNumber;
-	gint		connectorNumber;
-	gint		count;
-	gint		deviceNumber;
-	gint		speed;
-	gint		maxChildren;
-	gchar		*version;
-	gchar		*class;
-	gchar		*subClass;
-	gchar		*protocol;
-	gint		maxPacketSize;
-	gint		numConfigs;
-	gint		vendorId;
-	gint		productId;
-	gchar		*revisionNumber;
-	gchar		*manufacturer;
-	gchar		*product;
-	gchar		*serialNumber;
-	DeviceConfig	*config[MAX_CONFIGS];
-	struct Device	*parent;
-	struct Device	*child[MAX_CHILDREN];
-	DeviceBandwidth	*bandwidth;
-	GtkWidget	*tree;
-	GtkWidget	*leaf;
-} Device;
-
-	
-
-
-static Device		*rootDevice = NULL;
-static Device		*lastDevice = NULL;
-static DeviceBandwidth	*currentBandwidth = NULL;
-
-
-static signed int GetInt (char *string, char *pattern, int base)
-{
-	char	*pointer;
-
-	pointer = strstr (string, pattern);
-	if (pointer == NULL)
-		return (0);
-
-	pointer += strlen(pattern);
-	return ((int)(strtol (pointer, NULL, base)));
-}
-
-/*
-static double GetFloat (char *string, char *pattern)
-{
-	char	*pointer;
-
-	pointer = strstr (string, pattern);
-	if (pointer == NULL)
-		return (0.0);
-
-	pointer += strlen(pattern);
-	return (strtod (pointer, NULL));
-}
-*/
-
-
-static void GetString (char *dest, char *source, char *pattern, int maxSize)
-{
-	char	*pointer;
-
-	pointer = strstr (source, pattern);
-	if (pointer == NULL)
-		return;
-
-	pointer += strlen(pattern);
-	strncpy (dest, pointer, maxSize);
-	return;
-}
-
-
-static void DestroyEndpoint (DeviceEndpoint *endpoint)
-{
-	if (endpoint == NULL)
-		return;
-		
-	g_free (endpoint->type);
-	g_free (endpoint->interval);
-	
-	g_free (endpoint);
-	
-	return;
-}
-
-
-static void DestroyInterface (DeviceInterface *interface)
-{
-	int	i;
-	
-	if (interface == NULL)
-		return;
-		
-	for (i = 0; i < MAX_ENDPOINTS; ++i)
-		DestroyEndpoint (interface->endpoint[i]);
-
-	g_free (interface->name);
-	g_free (interface->class);
-	
-	g_free (interface);
-	
-	return;
-}
-
-
-static void DestroyConfig (DeviceConfig *config)
-{
-	int	i;
-	
-	if (config == NULL)
-		return;
-		
-	for (i = 0; i < MAX_INTERFACES; ++i)
-		DestroyInterface (config->interface[i]);
-
-	g_free (config->maxPower);
-	
-	g_free (config);
-	
-	return;
-}
-
-
-static void DestroyBandwidth (DeviceBandwidth *bandwidth)
-{
-	/* nothing dynamic in the bandwidth structure yet. */
-	return;
-}
-
-
-static void DestroyDevice (Device *device)
-{
-	int	i;
-	
-	if (device == NULL)
-		return;
-		
-	for (i = 0; i < MAX_CHILDREN; ++i)
-		DestroyDevice (device->child[i]);
-
-	for (i = 0; i < MAX_CONFIGS; ++i)
-		DestroyConfig (device->config[i]);
-
-	if (device->bandwidth != NULL) {
-		DestroyBandwidth (device->bandwidth);
-		g_free (device->bandwidth);
-		}
-
-	g_free (device->name);
-	g_free (device->version);
-	g_free (device->class);
-	g_free (device->subClass);
-	g_free (device->protocol);
-	g_free (device->revisionNumber);
-	g_free (device->manufacturer);
-	g_free (device->product);
-	g_free (device->serialNumber);
-
-	g_free (device);
-
-	return;
-}
-
 
 
 
 static void Init (void)
 {
+	/* blow away the tree if there is one */
 	if (rootDevice != NULL) {
-		DestroyDevice (rootDevice);
-		rootDevice = NULL;
-		}
-
-	rootDevice = (Device *)g_malloc0 (sizeof(Device));
-
-	/* clean up any bandwidth devices */
-	if (currentBandwidth != NULL) {
-		DestroyBandwidth (currentBandwidth);
-		g_free (currentBandwidth);
-		}
-
-	/* blow away the tree */
-	gtk_tree_clear_items (GTK_TREE(treeUSB), 0, -1);
+		gtk_ctree_remove_node (GTK_CTREE(treeUSB), GTK_CTREE_NODE(rootDevice->leaf));
+	}
 	
 	/* clean out the text box */
 	gtk_editable_delete_text (GTK_EDITABLE(textDescription), 0, -1);
 
-	lastDevice = NULL;
-
 	return;
-}
-
-
-static Device *FindDeviceNode (Device *device, int deviceNumber, int busNumber)
-{
-	int	i;
-	Device	*result;
-	
-	if (device == NULL)
-		return (NULL);
-
-	if ((device->deviceNumber == deviceNumber) &&
-		(device->busNumber == busNumber))
-		return (device);
-		
-	for (i = 0; i < MAX_CHILDREN; ++i) {
-		result = FindDeviceNode (device->child[i], deviceNumber, busNumber);
-		if (result != NULL)
-			return (result);
-		}
-
-	return (NULL);
-}
-
-
-static Device *FindDevice (int deviceNumber, int busNumber)
-{
-	int	i;
-	Device	*result;
-
-	/* search through the tree to try to find a device */
-	for (i = 0; i < MAX_CHILDREN; ++i) {
-		result = FindDeviceNode (rootDevice->child[i], deviceNumber, busNumber);
-		if (result != NULL)
-			return (result);
-		}
-	return (NULL);
-}
-
-
-static Device *AddDevice (char *line)
-{
-	Device	*device;
-	
-	/* create a new device */
-	device = (Device *)(g_malloc0 (sizeof(Device)));
-	
-	/* parse the line */
-	device->busNumber	= GetInt (line, TOPOLOGY_BUS_STRING, 10);
-	device->level		= GetInt (line, TOPOLOGY_LEVEL_STRING, 10);
-	device->parentNumber	= GetInt (line, TOPOLOGY_PARENT_STRING, 10);
-	device->portNumber	= GetInt (line, TOPOLOGY_PORT_STRING, 10);
-	device->count		= GetInt (line, TOPOLOGY_COUNT_STRING, 10);
-	device->deviceNumber	= GetInt (line, TOPOLOGY_DEVICENUMBER_STRING, 10);
-	device->speed		= GetInt (line, TOPOLOGY_SPEED_STRING, 10);
-	device->maxChildren	= GetInt (line, TOPOLOGY_MAXCHILDREN_STRING, 10);
-	
-	if (device->deviceNumber == -1)
-		device->deviceNumber = 0;
-
-	/* Set up the parent / child relationship */
-	if (device->level == 0) {
-		/* this is the root, don't go looking for a parent */
-		device->parent = rootDevice;
-		++rootDevice->maxChildren;
-		rootDevice->child[rootDevice->maxChildren-1] = device;
-		}
-	else {
-		/* need to find this device's parent */
-		device->parent = FindDevice (device->parentNumber, device->busNumber);
-		if (device->parent == NULL) {
-			printf ("can't find parent...not good.\n");
-			}
-		device->parent->child[device->portNumber] = device;
-		}
-
-	return (device);
-}
-
-
-
-
-
-static void GetDeviceInformation (Device *device, char *data)
-{
-	if (device == NULL)
-		return;
-		
-	g_free (device->version);
-	g_free (device->class);
-	g_free (device->subClass);
-	g_free (device->protocol);
-
-	device->version		= (char *)g_malloc0 ((DEVICE_VERSION_SIZE) * sizeof(char));
-	device->class		= (char *)g_malloc0 ((DEVICE_CLASS_SIZE) * sizeof(char));
-	device->subClass	= (char *)g_malloc0 ((DEVICE_SUBCLASS_SIZE) * sizeof(char));
-	device->protocol	= (char *)g_malloc0 ((DEVICE_PROTOCOL_SIZE) * sizeof(char));
-
-	GetString (device->version, data, DEVICE_VERSION_STRING, DEVICE_VERSION_SIZE-1);
-	GetString (device->class, data, DEVICE_CLASS_STRING, DEVICE_CLASS_SIZE-1);
-	GetString (device->subClass, data, DEVICE_SUBCLASS_STRING, DEVICE_SUBCLASS_SIZE-1);
-	GetString (device->protocol, data, DEVICE_PROTOCOL_STRING, DEVICE_PROTOCOL_SIZE-1);
-	
-	device->maxPacketSize	= GetInt (data, DEVICE_MAXPACKETSIZE_STRING, 10);
-	device->numConfigs	= GetInt (data, DEVICE_NUMCONFIGS_STRING, 10);
-
-	return;
-}
-
-
-
-static void GetMoreDeviceInformation (Device *device, char *data)
-{
-	if (device == NULL)
-		return;
-		
-	g_free (device->revisionNumber);
-	
-	device->vendorId	= GetInt (data, DEVICE_VENDOR_STRING, 16);
-	device->productId	= GetInt (data, DEVICE_PRODUCTID_STRING, 16);
-
-	device->revisionNumber	= (char *)g_malloc0 ((DEVICE_REVISION_NUMBER_SIZE) * sizeof(char));
-	GetString (device->revisionNumber, data, DEVICE_REVISION_STRING, DEVICE_REVISION_NUMBER_SIZE);
-
-	return;
-}
-
-
-static void GetDeviceString (Device *device, char *data)
-{
-	if (device == NULL)
-		return;
-
-	if (strstr (data, DEVICE_MANUFACTURER_STRING) != NULL) {
-		g_free (device->manufacturer);
-		device->manufacturer = (gchar *)g_malloc0 (DEVICE_STRING_MAXSIZE);
-		GetString (device->manufacturer, data, DEVICE_MANUFACTURER_STRING, DEVICE_STRING_MAXSIZE-1);
-		return;
-		}
-
-	if (strstr (data, DEVICE_PRODUCT_STRING) != NULL) {
-		g_free (device->product);
-		device->product = (gchar *)g_malloc0 (DEVICE_STRING_MAXSIZE);
-		GetString (device->product, data, DEVICE_PRODUCT_STRING, DEVICE_STRING_MAXSIZE-1);
-		return;
-		}
-
-	if (strstr (data, DEVICE_SERIALNUMBER_STRING) != NULL) {
-		g_free (device->serialNumber);
-		device->serialNumber = (gchar *)g_malloc0 (DEVICE_STRING_MAXSIZE);
-		GetString (device->serialNumber, data, DEVICE_SERIALNUMBER_STRING, DEVICE_STRING_MAXSIZE-1);
-		return;
-		}
-
-	return;
-}
-
-
-static void GetBandwidth (Device *device, char *data)
-{
-	DeviceBandwidth	*bandwidth;
-
-	if (device == NULL)
-		return;
-
-	bandwidth = (DeviceBandwidth *)g_malloc0 (sizeof(DeviceBandwidth));
-
-	bandwidth->allocated		= GetInt (data, BANDWIDTH_ALOCATED, 10);
-	bandwidth->total		= GetInt (data, BANDWIDTH_TOTAL, 10);
-	bandwidth->percent		= GetInt (data, BANDWIDTH_PERCENT, 10);
-	bandwidth->numInterruptRequests	= GetInt (data, BANDWIDTH_INTERRUPT_TOTAL, 10);
-	bandwidth->numIsocRequests	= GetInt (data, BANDWIDTH_ISOC_TOTAL, 10);
-
-	device->bandwidth = bandwidth;
-
-	return;
-}
-
-
-static void AddConfig (Device *device, char *data)
-{
-	DeviceConfig	*config;
-	int		i;
-
-	if (device == NULL)
-		return;
-
-	/* Find the next available config in this device */
-	for (i = 0; i < MAX_CONFIGS; ++i) {
-		if (device->config[i] == NULL) {
-			break;
-			}
-		}
-	if (i >= MAX_CONFIGS) {
-		/* ran out of room to hold this config */
-		g_warning ("Too many configs for this device.\n");
-		return;
-		}
-	
-	config = (DeviceConfig *)g_malloc0 (sizeof(DeviceConfig));
-	config->maxPower	= (gchar *)g_malloc0 ((CONFIG_MAXPOWER_SIZE) * sizeof(gchar));
-
-	config->numInterfaces	= GetInt (data, CONFIG_NUMINTERFACES_STRING, 10);
-	config->configNumber	= GetInt (data, CONFIG_CONFIGNUMBER_STRING, 10);
-	config->attributes	= GetInt (data, CONFIG_ATTRIBUTES_STRING, 16);
-
-	GetString (config->maxPower, data, CONFIG_MAXPOWER_STRING, CONFIG_MAXPOWER_SIZE);
-
-	/* have the device now point to this config */
-	device->config[i] = config;
-	
-	return;
-}
-
-
-static void AddInterface (Device *device, char *data)
-{
-	DeviceConfig	*config;
-	DeviceInterface	*interface;
-	int		i;
-	int		configNum;
-	
-	if (device == NULL)
-		return;
-
-	/* find the LAST config in the device */
-	configNum = -1;
-	for (i = 0; i < MAX_CONFIGS; ++i)
-		if (device->config[i])
-			configNum = i;
-	if (configNum == -1) {
-		/* no config to put this interface at, not good */
-		g_warning ("No config to put an interface at for this device.\n");
-		return;
-		}
-		
-	config = device->config[configNum];
-
-	/* now find a place in this config to place the interface */
-	for (i = 0; i < MAX_INTERFACES; ++i)
-		if (config->interface[i] == NULL)
-			break;
-	if (i >= MAX_INTERFACES) {
-		/* ran out of room to hold this interface */
-		g_warning ("Too many interfaces for this device.\n");
-		return;
-		}
-	
-	interface = (DeviceInterface *)g_malloc0 (sizeof(DeviceInterface));
-
-	interface->class	= (gchar *)g_malloc0 ((INTERFACE_CLASS_SIZE) * sizeof(gchar));
-	interface->name		= (gchar *)g_malloc0 ((INTERFACE_DRIVERNAME_STRING_MAXLENGTH) * sizeof(gchar));
-
-	interface->interfaceNumber	= GetInt (data, INTERFACE_NUMBER_STRING, 10);
-	interface->alternateNumber	= GetInt (data, INTERFACE_ALTERNATESETTING_STRING, 10);
-	interface->numEndpoints		= GetInt (data, INTERFACE_NUMENDPOINTS_STRING, 10);
-	interface->subClass		= GetInt (data, INTERFACE_SUBCLASS_STRING, 10);
-	interface->protocol		= GetInt (data, INTERFACE_PROTOCOL_STRING, 10);
-
-	GetString (interface->class, data, INTERFACE_CLASS_STRING, INTERFACE_CLASS_SIZE);
-	GetString (interface->name, data, INTERFACE_DRIVERNAME_STRING, INTERFACE_DRIVERNAME_STRING_MAXLENGTH);
-
-	/* now point the config to this interface */
-	config->interface[i] = interface;
-
-	return;
-}
-
-
-static void AddEndpoint (Device *device, char *data)
-{
-	DeviceConfig	*config;
-	DeviceInterface	*interface;
-	DeviceEndpoint	*endpoint;
-	int		i;
-	int		configNum;
-	int		interfaceNum;
-	
-	if (device == NULL)
-		return;
-
-	/* find the LAST config in the device */
-	configNum = -1;
-	for (i = 0; i < MAX_CONFIGS; ++i)
-		if (device->config[i])
-			configNum = i;
-	if (configNum == -1) {
-		/* no config to put this interface at, not good */
-		g_warning ("No config to put an interface at for this device.\n");
-		return;
-		}
-		
-	config = device->config[configNum];
-
-	/* find the LAST interface in the config */
-	interfaceNum = -1;
-	for (i = 0; i < MAX_INTERFACES; ++i)
-		if (config->interface[i])
-			interfaceNum = i;
-	if (interfaceNum == -1) {
-		/* no interface to put this endpoint at, not good */
-		g_warning ("No interface to put an endpoint at for this device.\n");
-		return;
-		}
-
-	interface = config->interface[interfaceNum];
-		
-	/* now find a place in this interface to place the endpoint */
-	for (i = 0; i < MAX_ENDPOINTS; ++i) {
-		if (interface->endpoint[i] == NULL) {
-			break;
-			}
-		}
-	if (i >= MAX_ENDPOINTS) {
-		/* ran out of room to hold this endpoint */
-		g_warning ("Too many endpoints for this device.\n");
-		return;
-		}
-	
-	endpoint = (DeviceEndpoint *)g_malloc0 (sizeof(DeviceEndpoint));
-
-	endpoint->type		= (gchar *)g_malloc0 ((ENDPOINT_TYPE_SIZE) * sizeof(gchar));
-	endpoint->interval	= (gchar *)g_malloc0 ((ENDPOINT_INTERVAL_SIZE) * sizeof(gchar));
-
-	endpoint->address	= GetInt (data, ENDPOINT_ADDRESS_STRING, 16);
-	if (data[10] == 'I')
-		endpoint->in = TRUE;
-	else
-		endpoint->in = FALSE;
-	endpoint->attribute	= GetInt (data, ENDPOINT_ATTRIBUTES_STRING, 16);
-	endpoint->maxPacketSize	= GetInt (data, ENDPOINT_MAXPACKETSIZE_STRING, 10);
-	
-	GetString (interface->class, data, INTERFACE_CLASS_STRING, INTERFACE_CLASS_SIZE);
-
-	memcpy (endpoint->type, &data[20], ENDPOINT_TYPE_SIZE-1);
-	GetString (endpoint->interval, data, ENDPOINT_INTERVAL_STRING, ENDPOINT_INTERVAL_SIZE);
-
-	/* point the interface to the endpoint */
-	interface->endpoint[i] = endpoint;
 }
 
 
@@ -703,7 +68,7 @@ static void PopulateListBox (int deviceId)
 	int	deviceNumber = (deviceId >> 8);
 	int	busNumber = (deviceId & 0x00ff);
 	
-	device = FindDevice (deviceNumber, busNumber);
+	device = usb_find_device (deviceNumber, busNumber);
 	if (device == NULL) {
 		printf ("Can't seem to find device info to display\n");
 		return;
@@ -830,8 +195,12 @@ static void PopulateListBox (int deviceId)
 
 
 
-void SelectItem (GtkWidget *widget, gpointer data)
+//void SelectItem (GtkWidget *widget, gpointer data)
+void SelectItem (GtkWidget *widget, GtkCTreeNode *node, gint column, gpointer userData)
 {
+	int	data;
+	data = (int) gtk_ctree_node_get_row_data (GTK_CTREE (widget), node);
+
 	PopulateListBox ((int)data);
 	
 	return;
@@ -841,17 +210,73 @@ void SelectItem (GtkWidget *widget, gpointer data)
 static void DisplayDevice (Device *parent, Device *device)
 {
 	int	i;
-	char	hasChildren;
+	gchar	*text[1];
+	//GdkPixmap	*pixmap;
+	//GdkBitmap	*mask;
+
+	if (device == NULL)
+		return;
+
+	//pixmap = gdk_pixmap_create_from_xpm_d (NULL, &mask, NULL, mouse_xpm);
+	
+	text[0] = device->name;
+	device->leaf = gtk_ctree_insert_node (GTK_CTREE(treeUSB), parent->leaf, NULL, text, 1, NULL, NULL, NULL, NULL, FALSE, FALSE);
+	gtk_ctree_node_set_row_data (GTK_CTREE(treeUSB), device->leaf, (gpointer)((device->deviceNumber<<8) | (device->busNumber)));
+	
+#ifdef 0
+	int		i;
+	int		configNum;
+	int		interfaceNum;
+	char		hasChildren;
+	gboolean	driverAttached = TRUE;
 	
 	if (device == NULL)
 		return;
 		
+	/* determine if this device has drivers attached to all interfaces */
+	for (configNum = 0; configNum < MAX_CONFIGS; ++configNum) {
+		if (device->config[configNum]) {
+			DeviceConfig	*config = device->config[configNum];
+			for (interfaceNum = 0; interfaceNum < MAX_INTERFACES; ++interfaceNum) {
+				if (config->interface[interfaceNum]) {
+					DeviceInterface	*interface = config->interface[interfaceNum];
+					if (interface->driverAttached == FALSE) {
+						driverAttached = FALSE;
+						break;
+						}
+					}
+				}
+			}
+		}
+	
 	/* create the leaf for this device */
 	device->leaf = gtk_tree_item_new_with_label (device->name);
 	if (parent->tree == NULL)
 		gtk_tree_append (GTK_TREE (treeUSB), device->leaf);
 	else
 		gtk_tree_append (GTK_TREE (parent->tree), device->leaf);
+	
+	/* change the color of this leaf if there are no drivers attached to it */
+	if (driverAttached == FALSE) {
+		GdkColor	red = {0, 0xffff, 0x0000, 0x0000};
+		GtkStyle	*defaultStyle;
+		GtkStyle	*style;
+
+		/* get the current style */
+		defaultStyle = gtk_widget_get_default_style();
+		style = gtk_style_copy (defaultStyle);
+		for (i = 0; i < 5; ++i) {
+			style->fg[i] = red;
+			style->bg[i] = red;
+			style->text[i] = red;
+			style->base[i] = red;
+			style->light[i] = red;
+			style->dark[i] = red;
+			style->mid[i] = red;
+			}
+		gtk_widget_set_style (device->leaf, style);
+		}
+	
 	gtk_widget_show (device->leaf);
 
 	/* hook up our callback function to this node */
@@ -871,7 +296,8 @@ static void DisplayDevice (Device *parent, Device *device)
 		gtk_tree_item_set_subtree (GTK_TREE_ITEM(device->leaf), device->tree);
 		gtk_tree_item_expand (GTK_TREE_ITEM(device->leaf));	/* make the tree expanded to start with */
 		}
-	
+#endif	
+
 	/* create all of the children's leafs */
 	for (i = 0; i < MAX_CHILDREN; ++i) {
 		DisplayDevice (device, device->child[i]);
@@ -881,124 +307,12 @@ static void DisplayDevice (Device *parent, Device *device)
 }
 	
 
-/* Build all of the names of the devices */
-static void NameDevices (Device *device)
-{
-	int	configNum;
-	int	interfaceNum;
-	int	i;
-	
-	if (device == NULL)
-		return;
-		
-	/* build the name for this device */
-	if (device != rootDevice) {
-		if (device->name)
-			g_free (device->name);
-		device->name = (gchar *)g_malloc0 (255*sizeof (gchar));
-		
-		/* see if this device has a product name */
-		if (device->product != NULL) {
-			strcpy (device->name, device->product);
-			goto create_children_names;
-			}
 
-		/* see if this device is a root hub */
-		if (device->level == 0) {
-			strcpy (device->name, "root hub");
-			goto create_children_names;
-			}
+gchar devicesFile[1000];
 
-		/* look through all of the interfaces of this device, adding them all up to form a name */
-		for (configNum = 0; configNum < MAX_CONFIGS; ++configNum) {
-			if (device->config[configNum]) {
-				DeviceConfig	*config = device->config[configNum];
-				for (interfaceNum = 0; interfaceNum < MAX_INTERFACES; ++interfaceNum) {
-					if (config->interface[interfaceNum]) {
-						DeviceInterface	*interface = config->interface[interfaceNum];
-						if (interface->name != NULL) {
-							if (strstr (interface->name, "none") == NULL) {
-								if (strcmp (interface->name, "hid") == 0) {
-									if (interface->subClass == 1) {
-										switch (interface->protocol) {
-											case 1 :
-												strcat (device->name, "keyboard");
-												continue;
-											case 2 :
-												strcat (device->name, "mouse");
-												continue;
-											}
-										}
-									}
-								if (strlen (device->name) > 0) {
-									strcat (device->name, " / ");
-									}
-								strcat (device->name, interface->name);
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-
-create_children_names:
-
-	/* create all of the children's names */
-	for (i = 0; i < MAX_CHILDREN; ++i) {
-		NameDevices (device->child[i]);
-		}
-
-	return;
-}
-	
-
-static void ParseLine (char * line)
-{
-	/* chop off the trailing \n */
-	line[strlen(line)-1] = 0x00;
-
-	/* look at the first character to see what kind of line this is */
-	switch (line[0]) {
-		case 'T': /* topology */
-			lastDevice = AddDevice (line);
-			break;
-			
-		case 'B': /* bandwidth */
-			GetBandwidth (lastDevice, line);
-			break;
-
-		case 'D': /* device information */
-			GetDeviceInformation (lastDevice, line);
-			break;
-
-		case 'P': /* more device information */
-			GetMoreDeviceInformation (lastDevice, line);
-			break;
-
-		case 'S': /* device string information */
-			GetDeviceString (lastDevice, line);
-			break;
-			
-		case 'C': /* config descriptor info */
-			AddConfig (lastDevice, line);
-			break;
-			
-		case 'I': /* interface descriptor info */
-			AddInterface (lastDevice, line);
-			break;
-			
-		case 'E': /* endpoint descriptor info */
-			AddEndpoint (lastDevice, line);
-			break;
-			
-		default:
-			break;
-		}
-
-	return;
-}
-
+const char *verifyMessage =	"Verify that you have USB compiled into your kernel,\n"
+				"have the USB core modules loaded, and have the\n"
+				"usbdevfs filesystem mounted.";
 
 void LoadUSBTree (void)
 {
@@ -1007,15 +321,19 @@ void LoadUSBTree (void)
 	int	finished;
 	int	i;
 
-	usbFile = fopen ("/proc/bus/usb/devices", "r");
+	usbFile = fopen (devicesFile, "r");
 	if (usbFile == NULL) {
-		ShowMessage ("USBView Error", "Can not open /proc/bus/usb/devices\n"
-				"Verify that you have this option compiled into your kernel,\n"
-				"and have the USB core modules loaded.");
+		gchar *tempString = g_malloc0(strlen (verifyMessage) + strlen (devicesFile) + 50);
+		sprintf (tempString, "Can not open %s\n%s", devicesFile, verifyMessage);
+		ShowMessage ("USBView Error", tempString);
+		g_free (tempString);
 		return;
 		}
 	finished = 0;
+	
 	Init();
+
+	usb_initialize_list ();
 
 	dataLine = (char *)g_malloc (MAX_LINE_SIZE);
 	while (!finished) {
@@ -1023,7 +341,7 @@ void LoadUSBTree (void)
 		fgets (dataLine, MAX_LINE_SIZE, usbFile);
 
 		if (dataLine[strlen(dataLine)-1] == '\n')
-			ParseLine (dataLine);
+			usb_parse_line (dataLine);
 		
 		if (feof (usbFile))
 			finished = 1;
@@ -1031,11 +349,37 @@ void LoadUSBTree (void)
 
 	g_free (dataLine);
 
-	NameDevices (rootDevice);
+	usb_name_devices ();
 
+	/* set up our tree */
+	gtk_ctree_set_line_style (GTK_CTREE(treeUSB), GTK_CTREE_LINES_DOTTED);
+        gtk_ctree_set_expander_style (GTK_CTREE(treeUSB), GTK_CTREE_EXPANDER_SQUARE);
+	gtk_ctree_set_indent (GTK_CTREE(treeUSB),10);
+	gtk_clist_column_titles_passive (GTK_CLIST(treeUSB));
+	
+	/* build our tree */
 	for (i = 0; i < rootDevice->maxChildren; ++i) {
 		DisplayDevice (rootDevice, rootDevice->child[i]);
 		}
 	
+ 	gtk_widget_show (treeUSB);
+
+	gtk_ctree_expand_recursive (GTK_CTREE(treeUSB), NULL);
+	
+	/* hook up our callback function to this tree */
+	gtk_signal_disconnect_by_func (GTK_OBJECT (treeUSB), GTK_SIGNAL_FUNC (SelectItem), NULL);
+	gtk_signal_connect (GTK_OBJECT (treeUSB), "tree-select-row", GTK_SIGNAL_FUNC (SelectItem), NULL);
+	
 	return;
 }
+
+
+
+void initialize_stuff (void)
+{
+	strcpy (devicesFile, "/proc/bus/usb/devices");
+//	strcpy (devicesFile, "/home/greg/uhci.proc");
+
+	return;
+}
+

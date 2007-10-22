@@ -28,19 +28,20 @@
 #include "interface.h"
 #include "support.h"
 
-int
-main (int argc, char *argv[])
+int main (int argc, char *argv[])
 {
   GtkWidget *window1;
 
-  bindtextdomain (PACKAGE, PACKAGE_LOCALE_DIR);
-  textdomain (PACKAGE);
+//  bindtextdomain (PACKAGE, PACKAGE_LOCALE_DIR);
+//  textdomain (PACKAGE);
 
   gtk_set_locale ();
   gtk_init (&argc, &argv);
 
-  add_pixmap_directory (PACKAGE_DATA_DIR "/pixmaps");
-  add_pixmap_directory (PACKAGE_SOURCE_DIR "/pixmaps");
+//  add_pixmap_directory (PACKAGE_DATA_DIR "/pixmaps");
+//  add_pixmap_directory (PACKAGE_SOURCE_DIR "/pixmaps");
+
+  initialize_stuff();
 
   /*
    * The following code was added by Glade to create one of each component

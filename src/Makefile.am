@@ -12,7 +12,9 @@ usbview_SOURCES = \
 	interface.c interface.h \
 	callbacks.c callbacks.h \
 	usbtree.c usbtree.h \
-	showmessage.c showmessage.h
+	showmessage.c showmessage.h \
+	usbparse.c usbparse.h \
+	config.c config.h
 
 usbview_LDADD = @GTK_LIBS@ $(INTLLIBS)
 

@@ -91,7 +91,7 @@ INCLUDES =  	-I$(top_srcdir)/intl 	@GTK_CFLAGS@
 
 bin_PROGRAMS = usbview
 
-usbview_SOURCES =  	main.c 	support.c support.h 	interface.c interface.h 	callbacks.c callbacks.h 	usbtree.c usbtree.h 	showmessage.c showmessage.h
+usbview_SOURCES =  	main.c 	support.c support.h 	interface.c interface.h 	callbacks.c callbacks.h 	usbtree.c usbtree.h 	showmessage.c showmessage.h 	usbparse.c usbparse.h 	config.c config.h
 
 
 usbview_LDADD = @GTK_LIBS@ $(INTLLIBS)
@@ -106,7 +106,7 @@ CPPFLAGS = @CPPFLAGS@
 LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
 usbview_OBJECTS =  main.o support.o interface.o callbacks.o usbtree.o \
-showmessage.o
+showmessage.o usbparse.o config.o
 usbview_DEPENDENCIES = 
 usbview_LDFLAGS = 
 CFLAGS = @CFLAGS@
@@ -120,8 +120,9 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
 TAR = gtar
 GZIP_ENV = --best
-DEP_FILES =  .deps/callbacks.P .deps/interface.P .deps/main.P \
-.deps/showmessage.P .deps/support.P .deps/usbtree.P
+DEP_FILES =  .deps/callbacks.P .deps/config.P .deps/interface.P \
+.deps/main.P .deps/showmessage.P .deps/support.P .deps/usbparse.P \
+.deps/usbtree.P
 SOURCES = $(usbview_SOURCES)
 OBJECTS = $(usbview_OBJECTS)
 
@@ -223,7 +224,7 @@ distdir: $(DISTFILES)
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
-	    cp -pr $$/$$file $(distdir)/$$file; \
+	    cp -pr $$d/$$file $(distdir)/$$file; \
 	  else \
 	    test -f $(distdir)/$$file \
 	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \

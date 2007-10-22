@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-10-13 11:46-0700\n"
+"POT-Creation-Date: 2000-06-15 23:37-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -14,15 +14,19 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: ENCODING\n"
 
-#: src/interface.c:55
+#: src/interface.c:56
 msgid "USB Viewer"
 msgstr ""
 
-#: src/interface.c:109
+#: src/interface.c:111
 msgid "Refresh"
 msgstr ""
 
-#: src/interface.c:119
+#: src/interface.c:121
+msgid "Configure"
+msgstr ""
+
+#: src/interface.c:131
 msgid "Close"
 msgstr ""
 
