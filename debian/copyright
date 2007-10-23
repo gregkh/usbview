@@ -1,0 +1,16 @@
+This is the Debian GNU/Linux packaged version of usbview version 0.7.0.
+
+The developer of this software is Greg Kroah-Hartman <greg@kroah.com>.
+
+It was put together by Raphael Bossek <bossekr@debian.org>
+from the following sources:
+
+  http://www.kroah.com/linux-usb/usbview-0.7.0.tar.gz
+
+Changes:
+  * Added Debian GNU/Linux packaging files.
+
+This software is released under the terms of the GNU General Public License.
+
+On Debian systems, the complete text of the GNU General Public License
+can be found in /usr/share/common-licenses/GPL.

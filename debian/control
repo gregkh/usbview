@@ -1,0 +1,21 @@
+Source: usbview
+Section: x11
+Priority: optional
+Maintainer: Mark Brown <broonie@debian.org>
+Standards-Version: 3.7.2
+Build-Depends: debhelper (>= 4), libgtk2.0-dev
+
+Package: usbview
+Architecture: any
+Depends: ${shlibs:Depends}
+Suggests: usbutils
+Description: USB device viewer
+ USBView is a small GTK application to show what the device tree of
+ the USB bus looks like. It shows a graphical representation of the 
+ devices that are currently plugged in, showing the topology of the
+ USB bus. It also displays information on each individual device on 
+ the bus.
+ .
+ More information can be found at the usbview web site
+ http://www.kroah.com/linux-usb/ .
+
