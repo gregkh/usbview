@@ -1,0 +1,28 @@
+.\"                                      Hey, EMACS: -*- nroff -*-
+.TH USBVIEW 8 "July 2002"
+.SH NAME
+usbview \- display information on USB devices
+.SH SYNOPSIS
+.B usbview
+.SH DESCRIPTION
+.B usbview
+provides a graphical summary of USB devices connected to the system.
+Detailed information may be displayed by selecting individual devices
+in the tree display.  Red items are those that have no driver associated
+with them.
+.SH OPTIONS
+No command line options are accepted by
+.B usbview.
+.SH FILES
+.TP
+.B /proc/bus/usb/devices
+Kernel file providing providing information on USB devices attached to
+the machine.
+.SH SEE ALSO
+.BR lsusb (8),
+.BR lspci (8).
+.SH AUTHOR
+.B usbview
+was written by Greg Kroah-Hartman <greg@kroah.com>.  This manual page
+was written by Mark Brown <broonie@sirena.org.uk>, for the Debian
+GNU/Linux system (but may be used freely by others).
