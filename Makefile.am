@@ -1,9 +1,11 @@
 ## Process this file with automake to produce Makefile.in
 
 INCLUDES = \
-	@GTK_CFLAGS@
+	$(GTK_CFLAGS)	\
+	$(GLIB_CFLAGS)	\
+	@CPPFLAGS@
 
-VERSION = 1.0
+VERSION = 1.1-bk
 
 bin_PROGRAMS = usbview
 
@@ -20,5 +22,7 @@ usbview_SOURCES =		\
 	usbview_logo.xcf	\
 	usbview.spec
 
-usbview_LDADD = @GTK_LIBS@ 
+usbview_LDADD = \
+	$(GTK_LIBS)	\
+	$(GLIB_LIBS)
 

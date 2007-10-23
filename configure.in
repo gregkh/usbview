@@ -4,13 +4,17 @@ AC_INIT(configure.in)
 AM_INIT_AUTOMAKE(usbview, 1.0)
 AM_CONFIG_HEADER(config.h)
 
+# required versions of other packages
+#m4_define([gtk_required_version], [2.2.0])
+
 AC_ISC_POSIX
 AC_PROG_CC
 AM_PROG_CC_STDC
 AC_HEADER_STDC
 
-AM_PATH_GTK(1.2.0, ,
-            AC_MSG_ERROR(Cannot find GTK: Is gtk-config in path?))
+PKG_CHECK_MODULES(GTK, gtk+-2.0 >= 2.0.5)
+AC_SUBST(GTK_FLAGS)
+AC_SUBST(GTK_LIBS)
 
 
 dnl Set PACKAGE_LOCALE_DIR in config.h.

@@ -24,7 +24,8 @@
 
 extern gchar		devicesFile[1000];
 extern GtkWidget	*treeUSB;
-extern GtkWidget	*textDescription;
+extern GtkWidget	*textDescriptionView;
+extern GtkTextBuffer	*textDescriptionBuffer;
 
 extern void	LoadUSBTree		(int refresh);
 extern void	initialize_stuff	(void);

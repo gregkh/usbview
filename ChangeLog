@@ -1,3 +1,8 @@
+	- added "..." to About and Configure dialogs based on comments by
+	  Emil Brink.
+	- added patch from Emil Brink <emil.brink@interactiveinstitute.se>
+	  that fixed gtk warning when about dialog was displayed.
+
 version 1.0
 	- fixed problem for devices that grabed more than one interface, the
 	  name of the device would show up repeated a bunch.  This was true

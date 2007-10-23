@@ -427,8 +427,8 @@ static void AddInterface (Device *device, char *data)
 	interface->interfaceNumber      = GetInt (data, INTERFACE_NUMBER_STRING, 10);
 	interface->alternateNumber      = GetInt (data, INTERFACE_ALTERNATESETTING_STRING, 10);
 	interface->numEndpoints         = GetInt (data, INTERFACE_NUMENDPOINTS_STRING, 10);
-	interface->subClass             = GetInt (data, INTERFACE_SUBCLASS_STRING, 10);
-	interface->protocol             = GetInt (data, INTERFACE_PROTOCOL_STRING, 10);
+	interface->subClass             = GetInt (data, INTERFACE_SUBCLASS_STRING, 16);
+	interface->protocol             = GetInt (data, INTERFACE_PROTOCOL_STRING, 16);
 
 	GetString (interface->class, data, INTERFACE_CLASS_STRING, INTERFACE_CLASS_SIZE);
 	GetString (interface->name, data, INTERFACE_DRIVERNAME_STRING, INTERFACE_DRIVERNAME_STRING_MAXLENGTH);
