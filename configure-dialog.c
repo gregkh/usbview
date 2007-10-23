@@ -170,6 +170,10 @@ void configure_dialog (void)
 	GtkWidget *dialog_vbox2;
 	GtkWidget *hbox1;
 	GtkWidget *label1;
+	GtkWidget *label41;
+	GtkWidget *label42;
+	GtkWidget *label43;
+	GtkWidget *vbox1;
 	GtkWidget *dialog_action_area2;
 	GtkWidget *hbuttonbox2;
 	GtkWidget *okButton;
@@ -185,13 +189,33 @@ void configure_dialog (void)
 	gtk_object_set_data (GTK_OBJECT (configDialog), "dialog_vbox2", dialog_vbox2);
 	gtk_widget_show (dialog_vbox2);
 
+	vbox1 = gtk_vbox_new (FALSE, 0);
+	gtk_widget_ref (vbox1);
+	gtk_object_set_data_full (GTK_OBJECT (configDialog), "vbox1", vbox1, (GtkDestroyNotify) gtk_widget_unref);
+	gtk_widget_show (vbox1);
+	gtk_box_pack_start (GTK_BOX (dialog_vbox2), vbox1, TRUE, TRUE, 0);
+
+	label41 = gtk_label_new ("");
+	gtk_widget_ref (label41);
+	gtk_object_set_data_full (GTK_OBJECT (configDialog), "label41", label41, (GtkDestroyNotify) gtk_widget_unref);
+	gtk_widget_show (label41);
+	gtk_box_pack_start (GTK_BOX (vbox1), label41, FALSE, FALSE, 0);
+
 	hbox1 = gtk_hbox_new (FALSE, 0);
 	gtk_widget_ref (hbox1);
 	gtk_object_set_data_full (GTK_OBJECT (configDialog), "hbox1", hbox1, (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (hbox1);
-	gtk_box_pack_start (GTK_BOX (dialog_vbox2), hbox1, TRUE, TRUE, 0);
+//	gtk_box_pack_start (GTK_BOX (dialog_vbox2), hbox1, TRUE, TRUE, 0);
+	gtk_box_pack_start (GTK_BOX (vbox1), hbox1, TRUE, TRUE, 0);
 
-	label1 = gtk_label_new ("location of usbdevfs devices file");
+	label42 = gtk_label_new ("");
+	gtk_widget_ref (label42);
+	gtk_object_set_data_full (GTK_OBJECT (configDialog), "label42", label42, (GtkDestroyNotify) gtk_widget_unref);
+	gtk_widget_show (label42);
+	gtk_box_pack_start (GTK_BOX (vbox1), label42, FALSE, FALSE, 0);
+
+
+	label1 = gtk_label_new ("  Location of usbdevfs devices file");
 	gtk_widget_ref (label1);
 	gtk_object_set_data_full (GTK_OBJECT (configDialog), "label1", label1, (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (label1);
@@ -215,14 +239,14 @@ void configure_dialog (void)
 	gtk_widget_show (hbuttonbox2);
 	gtk_box_pack_start (GTK_BOX (dialog_action_area2), hbuttonbox2, TRUE, TRUE, 11);
 
-	okButton = gtk_button_new_with_label ("OK");
+	okButton = gtk_button_new_with_label ("  OK  ");
 	gtk_widget_ref (okButton);
 	gtk_object_set_data_full (GTK_OBJECT (configDialog), "okButton", okButton, (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (okButton);
 	gtk_container_add (GTK_CONTAINER (hbuttonbox2), okButton);
 	GTK_WIDGET_SET_FLAGS (okButton, GTK_CAN_DEFAULT);
 
-	cancelButton = gtk_button_new_with_label ("Cancel");
+	cancelButton = gtk_button_new_with_label ("  Cancel  ");
 	gtk_widget_ref (cancelButton);
 	gtk_object_set_data_full (GTK_OBJECT (configDialog), "cancelButton", cancelButton, (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (cancelButton);
@@ -234,8 +258,14 @@ void configure_dialog (void)
 	gtk_object_set_data_full (GTK_OBJECT (configDialog), "fileSelectButton", fileSelectButton, (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (fileSelectButton);
 
-	gtk_box_pack_start (GTK_BOX (hbox1), fileSelectButton, TRUE, TRUE, 1);
+	gtk_box_pack_start (GTK_BOX (hbox1), fileSelectButton, TRUE, FALSE, 1);
 
+	label43 = gtk_label_new ("    ");
+	gtk_widget_ref (label43);
+	gtk_object_set_data_full (GTK_OBJECT (configDialog), "label43", label43, (GtkDestroyNotify) gtk_widget_unref);
+	gtk_widget_show (label43);
+	gtk_box_pack_start (GTK_BOX (hbox1), label43, FALSE, FALSE, 0);
+	
 	gtk_signal_connect (GTK_OBJECT (okButton), "clicked", GTK_SIGNAL_FUNC (OkConfigureDialog), configDialog);
 	gtk_signal_connect (GTK_OBJECT (cancelButton), "clicked", GTK_SIGNAL_FUNC (CancelConfigureDialog), configDialog);
 	gtk_signal_connect (GTK_OBJECT (fileSelectButton), "clicked", GTK_SIGNAL_FUNC (fileSelectButtonClick), configDialog);

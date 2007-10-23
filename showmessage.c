@@ -73,7 +73,7 @@ static void ClearShowMessage (GtkWidget *widget, gpointer data)
  *
  * Show a popup message to the user.
  */
-void ShowMessage (gchar *title, gchar *message)
+void ShowMessage (gchar *title, gchar *message, gboolean centered)
 {
 	GtkWidget *label;
 	GtkWidget *button;
@@ -91,13 +91,13 @@ void ShowMessage (gchar *title, gchar *message)
 	gtk_container_border_width (GTK_CONTAINER (dialog_window), 0);
 
 	/* --- Create an "Ok" button with the focus --- */
-	button = gtk_button_new_with_label ("OK");
+	button = gtk_button_new_with_label ("  OK  ");
 
 	gtk_signal_connect (GTK_OBJECT (button), "clicked", GTK_SIGNAL_FUNC (CloseShowMessage), dialog_window);
 
 	/* --- Default the "Ok" button --- */
 	GTK_WIDGET_SET_FLAGS (button, GTK_CAN_DEFAULT);
-	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->action_area), button, TRUE, TRUE, 0);
+	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->action_area), button, TRUE, FALSE, 10);
 	gtk_widget_grab_default (button);
 	gtk_widget_show (button);
 
@@ -111,6 +111,9 @@ void ShowMessage (gchar *title, gchar *message)
 	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->vbox), 
 			    label, TRUE, TRUE, 0);
 
+	if (centered == FALSE) {
+		gtk_label_set_justify (GTK_LABEL (label), GTK_JUSTIFY_LEFT);
+	}
 	/* --- Show the label --- */
 	gtk_widget_show (label);
 

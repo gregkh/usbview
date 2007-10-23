@@ -34,6 +34,7 @@
 #include "usbtree.h"
 #include "usbparse.h"
 
+#include "usbview_logo.xpm"	/* logo */
 
 
 static void OkAboutDialog (GtkWidget *widget, gpointer data)
@@ -54,29 +55,41 @@ void about_dialog (void)
 	GtkWidget *label1;
 	GtkWidget *dialog_action_area1;
 	GtkWidget *okButton;
+	static GdkPixmap *logo;
+        GdkBitmap *logoMask;
+	GtkWidget *logoWidget;
 	aboutDialog = gtk_dialog_new ();
 	gtk_object_set_data (GTK_OBJECT (aboutDialog), "aboutDialog", aboutDialog);
-	gtk_window_set_title (GTK_WINDOW (aboutDialog), "aboutDialog");
+	gtk_window_set_title (GTK_WINDOW (aboutDialog), "About usbview");
 	gtk_window_set_policy (GTK_WINDOW (aboutDialog), TRUE, TRUE, FALSE);
 	
 	dialog_vbox1 = GTK_DIALOG (aboutDialog)->vbox;
 	gtk_object_set_data (GTK_OBJECT (aboutDialog), "dialog_vbox1", dialog_vbox1);
 	gtk_widget_show (dialog_vbox1);
 	
-	label1 = gtk_label_new ("\n\tUSB View\n\tVersion " VERSION "\n\n\tby Greg Kroah-Hartman\n\t<greg@kroah.com>\n\n\thttp://usbview.sourceforge.net/\t\n");
+	logo = gdk_pixmap_create_from_xpm_d (aboutDialog->window, &logoMask, NULL, usbview_logo_xpm);
+	logoWidget = gtk_pixmap_new (logo, logoMask);
+	gtk_box_pack_start (GTK_BOX (dialog_vbox1), logoWidget, FALSE, FALSE, 0);
+	gtk_widget_show (logoWidget);
+	
+	label1 = gtk_label_new (//"\n"
+				//"  USBView   Version " VERSION "\n\n"
+				//"  Copyright (C) 1999, 2000\n"
+				//"  Greg Kroah-Hartman <greg@kroah.com>  \n\n"
+				"http://usbview.sourceforge.net/");
 	gtk_widget_ref (label1);
 	gtk_object_set_data_full (GTK_OBJECT (aboutDialog), "label1", label1,
 			    (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (label1);
 	gtk_box_pack_start (GTK_BOX (dialog_vbox1), label1, FALSE, FALSE, 0);
-	gtk_label_set_justify (GTK_LABEL (label1), GTK_JUSTIFY_LEFT);
+//	gtk_label_set_justify (GTK_LABEL (label1), GTK_JUSTIFY_LEFT);
 	
 	dialog_action_area1 = GTK_DIALOG (aboutDialog)->action_area;
 	gtk_object_set_data (GTK_OBJECT (aboutDialog), "dialog_action_area1", dialog_action_area1);
 	gtk_widget_show (dialog_action_area1);
 	gtk_container_set_border_width (GTK_CONTAINER (dialog_action_area1), 10);
 	
-	okButton = gtk_button_new_with_label ("Ok");
+	okButton = gtk_button_new_with_label ("  Ok  ");
 	gtk_widget_ref (okButton);
 	gtk_object_set_data_full (GTK_OBJECT (aboutDialog), "okButton", okButton,
 			    (GtkDestroyNotify) gtk_widget_unref);
@@ -97,5 +110,4 @@ void about_dialog (void)
 
 	return;
 }
-
 

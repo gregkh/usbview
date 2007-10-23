@@ -1,5 +1,5 @@
 %define 	name	usbview
-%define 	version	0.9.0
+%define 	version	1.0
 %define 	release	1
 %define 	serial	1
 %define 	prefix	/usr
@@ -27,7 +27,7 @@ a device is working properly or not.
 %setup -q
 
 %build
-%configure --prefix=%{prefix}
+./configure
 make
 
 %install
@@ -43,6 +43,19 @@ if [ -d $RPM_BUILD_ROOT ]; then rm -rf $RPM_BUILD_ROOT; fi
 %{prefix}/bin/usbview
 
 %changelog
+* Mon Dec 5 2000 Greg Kroah-Hartman <greg@kroah.com>
+[usbview-1.0]
+- fixed problem for devices that grabed more than one interface, the
+  name of the device would show up repeated a bunch.  This was true
+  for a lot of audio and video devices.
+- Tweaked the configuration dialog a bit.
+- Tweaked the about dialog a bit.
+- Everything seems stable, so let's put a major number on this release.
+- added a pixmap hacked up from an image by M G Berberich 
+  <berberic@fmi.uni-passau.de> to the about screen
+- cleaned up the spec file to hopefully build a bit better on different 
+  versions of different distros.
+
 * Sun Sep 10 2000 Greg Kroah-Hartman <greg@kroah.com>
 [usbview-0.9.0]
 - added Trond Eivind Glomsrød's patch to always try to populate the

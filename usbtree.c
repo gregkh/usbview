@@ -273,15 +273,15 @@ gchar devicesFile[1000];
 static gchar previousDevicesFile[1000];
 static time_t	previousChange;
 
-const char *verifyMessage =     "Verify that you have USB compiled into your kernel,\n"
-				"have the USB core modules loaded, and have the\n"
-				"usbdevfs filesystem mounted.";
+const char *verifyMessage =     " Verify that you have USB compiled into your kernel, \n"
+				" have the USB core modules loaded, and have the \n"
+				" usbdevfs filesystem mounted. ";
 
 static void FileError (void)
 {
 	gchar *tempString = g_malloc0(strlen (verifyMessage) + strlen (devicesFile) + 50);
-	sprintf (tempString, "Can not open %s\n%s", devicesFile, verifyMessage);
-	ShowMessage ("USBView Error", tempString);
+	sprintf (tempString, " Can not open the file %s \n\n%s", devicesFile, verifyMessage);
+	ShowMessage ("USBView Error", tempString, FALSE);
 	g_free (tempString);
 	return;
 }

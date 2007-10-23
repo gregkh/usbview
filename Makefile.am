@@ -3,6 +3,8 @@
 INCLUDES = \
 	@GTK_CFLAGS@
 
+VERSION = 1.0
+
 bin_PROGRAMS = usbview
 
 usbview_SOURCES =		\
@@ -13,7 +15,10 @@ usbview_SOURCES =		\
 	showmessage.c		\
 	usbparse.c usbparse.h	\
 	configure-dialog.c      \
-	about-dialog.c
+	about-dialog.c		\
+	usbview_logo.xpm	\
+	usbview_logo.xcf	\
+	usbview.spec
 
 usbview_LDADD = @GTK_LIBS@ 
 

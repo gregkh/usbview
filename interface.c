@@ -105,6 +105,9 @@ create_windowMain ()
 				  (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (hbuttonbox1);
 	gtk_box_pack_start (GTK_BOX (vbox1), hbuttonbox1, FALSE, FALSE, 5);
+	//gtk_button_box_set_spacing (GTK_BUTTON_BOX (hbuttonbox1), 10);
+	//gtk_button_box_set_child_size (GTK_BUTTON_BOX (hbuttonbox1), 50, 25);
+	//gtk_button_box_set_child_ipadding (GTK_BUTTON_BOX (hbuttonbox1), 25, 10);
 
 	buttonRefresh = gtk_button_new_with_label ("Refresh");
 	gtk_widget_set_name (buttonRefresh, "buttonRefresh");

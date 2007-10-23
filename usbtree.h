@@ -1,6 +1,6 @@
 /*************************************************************************
 ** usbtree.h for USBView - a USB device viewer
-** Copyright (c) 1999 by Greg Kroah-Hartman, greg@kroah.com
+** Copyright (c) 1999, 2000 by Greg Kroah-Hartman, greg@kroah.com
 **
 **  This program is free software; you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -39,7 +39,7 @@ extern void	on_buttonConfigure_clicked	(GtkButton *button, gpointer user_data);
 extern void	on_buttonAbout_clicked		(GtkButton *button, gpointer user_data);
 extern gint	on_timer_timeout		(gpointer user_data);
 
-extern void	ShowMessage	(gchar *title, gchar *message);
+extern void	ShowMessage	(gchar *title, gchar *message, gboolean centered);
 extern gboolean	MessageShown	(void);
 
 

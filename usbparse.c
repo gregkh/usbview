@@ -569,10 +569,12 @@ static void NameDevice (Device *device)
 										}
 									}
 								}
-								if (strlen (device->name) > 0) {
-									strcat (device->name, " / ");
+								if (strstr (device->name, interface->name) == NULL) {
+									if (strlen (device->name) > 0) {
+										strcat (device->name, " / ");
+									}
+									strcat (device->name, interface->name);
 								}
-								strcat (device->name, interface->name);
 							}
 						}
 					}

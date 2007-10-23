@@ -63,14 +63,15 @@ GTK_CONFIG = @GTK_CONFIG@
 GTK_LIBS = @GTK_LIBS@
 MAKEINFO = @MAKEINFO@
 PACKAGE = @PACKAGE@
-VERSION = @VERSION@
 
 INCLUDES =  	@GTK_CFLAGS@
 
 
+VERSION = 1.0
+
 bin_PROGRAMS = usbview
 
-usbview_SOURCES =  	main.c				interface.c			callbacks.c			usbtree.c usbtree.h		showmessage.c			usbparse.c usbparse.h		configure-dialog.c      	about-dialog.c
+usbview_SOURCES =  	main.c				interface.c			callbacks.c			usbtree.c usbtree.h		showmessage.c			usbparse.c usbparse.h		configure-dialog.c      	about-dialog.c			usbview_logo.xpm		usbview_logo.xcf		usbview.spec
 
 
 usbview_LDADD = @GTK_LIBS@ 
@@ -276,14 +277,6 @@ distdir: $(DISTFILES)
 	    || cp -p $$d/$$file $(distdir)/$$file || :; \
 	  fi; \
 	done
-about-dialog.o: about-dialog.c config.h usbtree.h usbparse.h
-callbacks.o: callbacks.c config.h usbtree.h
-configure-dialog.o: configure-dialog.c config.h usbtree.h usbparse.h
-interface.o: interface.c config.h usbtree.h
-main.o: main.c config.h usbtree.h
-showmessage.o: showmessage.c usbtree.h
-usbparse.o: usbparse.c config.h usbtree.h usbparse.h
-usbtree.o: usbtree.c config.h usbtree.h usbparse.h
 
 info-am:
 info: info-am
