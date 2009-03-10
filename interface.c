@@ -1,6 +1,6 @@
 /*************************************************************************
 ** interface.c for USBView - a USB device viewer
-** Copyright (c) 1999, 2000 by Greg Kroah-Hartman, <greg@kroah.com>
+** Copyright (c) 1999, 2000, 2009 by Greg Kroah-Hartman, <greg@kroah.com>
 **
 **  This program is free software; you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -113,7 +113,7 @@ create_windowMain ()
 	//gtk_button_box_set_child_size (GTK_BUTTON_BOX (hbuttonbox1), 50, 25);
 	//gtk_button_box_set_child_ipadding (GTK_BUTTON_BOX (hbuttonbox1), 25, 10);
 
-	buttonRefresh = gtk_button_new_with_label ("Refresh");
+	buttonRefresh = gtk_button_new_from_stock(GTK_STOCK_REFRESH);
 	gtk_widget_set_name (buttonRefresh, "buttonRefresh");
 	gtk_widget_ref (buttonRefresh);
 	gtk_object_set_data_full (GTK_OBJECT (windowMain), "buttonRefresh", buttonRefresh,
@@ -133,7 +133,7 @@ create_windowMain ()
 	gtk_container_set_border_width (GTK_CONTAINER (buttonConfigure), 4);
 	GTK_WIDGET_SET_FLAGS (buttonConfigure, GTK_CAN_DEFAULT);
 
-	buttonAbout = gtk_button_new_with_label ("About...");
+	buttonAbout = gtk_button_new_from_stock(GTK_STOCK_ABOUT);
 	gtk_widget_set_name (buttonAbout, "buttonAbout");
 	gtk_widget_ref (buttonAbout);
 	gtk_object_set_data_full (GTK_OBJECT (windowMain), "buttonAbout", buttonAbout,
@@ -143,7 +143,7 @@ create_windowMain ()
 	gtk_container_set_border_width (GTK_CONTAINER (buttonAbout), 4);
 	GTK_WIDGET_SET_FLAGS (buttonAbout, GTK_CAN_DEFAULT);
 
-	buttonClose = gtk_button_new_with_label ("Close");
+	buttonClose = gtk_button_new_from_stock(GTK_STOCK_QUIT);
 	gtk_widget_set_name (buttonClose, "buttonClose");
 	gtk_widget_ref (buttonClose);
 	gtk_object_set_data_full (GTK_OBJECT (windowMain), "buttonClose", buttonClose,
