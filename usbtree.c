@@ -60,7 +60,6 @@ static void Init (void)
 static void PopulateListBox (int deviceId)
 {
 	Device  *device;
-	//gint    position = 0;
 	char    *string;
 	char    *tempString;
 	int     configNum;
@@ -70,7 +69,6 @@ static void PopulateListBox (int deviceId)
 	int     busNumber = (deviceId & 0x00ff);
 	GtkTextIter begin;
 	GtkTextIter end;
-	GtkTextIter position;
 
 	device = usb_find_device (deviceNumber, busNumber);
 	if (device == NULL) {
