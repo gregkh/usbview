@@ -29,3 +29,4 @@ usbview_LDADD = \
 	$(GTK_LIBS)	\
 	$(GLIB_LIBS)
 
+EXTRA_DIST = $(man_MANS)
