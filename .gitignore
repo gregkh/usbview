@@ -1,7 +1,13 @@
 *.o
+*.swp
 acconfig.h
 aclocal.m4
 autom4te.cache/
+.deps/
+config.h
+config.log
+config.status
+stamp-h1
 configure
 depcomp
 install-sh
