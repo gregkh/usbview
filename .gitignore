@@ -1,8 +1,12 @@
 *.o
-configure
-Makefile
-Makefile.in
+acconfig.h
 aclocal.m4
 autom4te.cache/
+configure
 depcomp
+install-sh
+Makefile
+Makefile.in
+missing
+mkinstalldirs
 usbview
