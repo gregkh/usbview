@@ -22,6 +22,7 @@ usbview_SOURCES =		\
 	about-dialog.c		\
 	usbview_logo.xpm	\
 	usbview_logo.xcf	\
+	usb_icon.xpm		\
 	usbview.spec
 
 usbview_LDADD = \
