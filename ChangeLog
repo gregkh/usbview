@@ -1,3 +1,7 @@
+version 1.1
+	- pretty icon (thanks to Bernhard).
+	- gtk 2.0 support (finally, after many people submitted patches
+	  adding it, thanks for not letting me forget).
 	- added "..." to About and Configure dialogs based on comments by
 	  Emil Brink.
 	- added patch from Emil Brink <emil.brink@interactiveinstitute.se>
