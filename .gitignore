@@ -1,5 +1,6 @@
 *.o
 *.swp
+*.gz
 acconfig.h
 aclocal.m4
 autom4te.cache/
