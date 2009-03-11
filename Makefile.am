@@ -5,7 +5,7 @@ INCLUDES = \
 	$(GLIB_CFLAGS)	\
 	@CPPFLAGS@
 
-VERSION = 1.1-bk
+VERSION = 1.1
 
 bin_PROGRAMS = usbview
 
