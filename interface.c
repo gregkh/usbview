@@ -28,15 +28,16 @@
 #include "usb_icon.xpm"
 
 GtkWidget *treeUSB;
+GtkTreeStore *treeStore;
 GtkTextBuffer *textDescriptionBuffer;
 GtkWidget *textDescriptionView;
+GtkWidget *windowMain;
 
 int timer;
 
 GtkWidget*
 create_windowMain ()
 {
-	GtkWidget *windowMain;
 	GtkWidget *vbox1;
 	GtkWidget *hpaned1;
 	GtkWidget *scrolledwindow1;
@@ -46,68 +47,61 @@ create_windowMain ()
 	GtkWidget *buttonClose;
 	GtkWidget *buttonAbout;
 	GdkPixbuf *icon;
+	GtkCellRenderer *treeRenderer;
+	GtkTreeViewColumn *treeColumn;
 
 	windowMain = gtk_window_new (GTK_WINDOW_TOPLEVEL);
 	gtk_widget_set_name (windowMain, "windowMain");
-	gtk_object_set_data (GTK_OBJECT (windowMain), "windowMain", windowMain);
 	gtk_window_set_title (GTK_WINDOW (windowMain), "USB Viewer");
-	gtk_window_set_default_size (GTK_WINDOW (windowMain), 500, 300);
+	gtk_window_set_default_size (GTK_WINDOW (windowMain), 600, 300);
 
 	icon = gdk_pixbuf_new_from_xpm_data((const char **)usb_icon_xpm);
 	gtk_window_set_icon(GTK_WINDOW(windowMain), icon);
 
-	vbox1 = gtk_vbox_new (FALSE, 0);
+	vbox1 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
 	gtk_widget_set_name (vbox1, "vbox1");
-	gtk_widget_ref (vbox1);
-	gtk_object_set_data_full (GTK_OBJECT (windowMain), "vbox1", vbox1,
-				  (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (vbox1);
 	gtk_container_add (GTK_CONTAINER (windowMain), vbox1);
 
-	hpaned1 = gtk_hpaned_new ();
+	hpaned1 = gtk_paned_new (GTK_ORIENTATION_HORIZONTAL);
 	gtk_widget_set_name (hpaned1, "hpaned1");
-	gtk_widget_ref (hpaned1);
-	gtk_object_set_data_full (GTK_OBJECT (windowMain), "hpaned1", hpaned1,
-				  (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (hpaned1);
 	gtk_box_pack_start (GTK_BOX (vbox1), hpaned1, TRUE, TRUE, 0);
-	gtk_paned_set_position (GTK_PANED (hpaned1), 200);
 
-	treeUSB = gtk_ctree_new_with_titles (1, 0, NULL);
+	treeStore = gtk_tree_store_new (N_COLUMNS,
+				G_TYPE_STRING,	/* NAME_COLUMN */
+				G_TYPE_INT,	/* DEVICE_ADDR_COLUMN */
+				G_TYPE_STRING	/* COLOR_COLUMN */);
+	treeUSB = gtk_tree_view_new_with_model (GTK_TREE_MODEL (treeStore));
+	treeRenderer = gtk_cell_renderer_text_new ();
+	treeColumn = gtk_tree_view_column_new_with_attributes (
+					"USB devices",
+					treeRenderer,
+					"text", NAME_COLUMN,
+					"foreground", COLOR_COLUMN,
+					NULL);
+	gtk_tree_view_append_column (GTK_TREE_VIEW (treeUSB), treeColumn);
 	gtk_widget_set_name (treeUSB, "treeUSB");
-	gtk_widget_ref (treeUSB);
-	gtk_object_set_data_full (GTK_OBJECT (windowMain), "treeUSB", treeUSB,
-				  (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (treeUSB);
-	gtk_container_add (GTK_CONTAINER (hpaned1), treeUSB);
-	gtk_widget_set_usize (treeUSB, 200, -2);
+	gtk_paned_pack1 (GTK_PANED (hpaned1), treeUSB, FALSE, FALSE);
 
 	scrolledwindow1 = gtk_scrolled_window_new (NULL, NULL);
 	gtk_widget_set_name (scrolledwindow1, "scrolledwindow1");
-	gtk_widget_ref (scrolledwindow1);
-	gtk_object_set_data_full (GTK_OBJECT (windowMain), "scrolledwindow1", scrolledwindow1,
-				  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (scrolledwindow1);
-	gtk_container_add (GTK_CONTAINER (hpaned1), scrolledwindow1);
 	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwindow1), GTK_POLICY_NEVER, GTK_POLICY_ALWAYS);
+	gtk_widget_show (scrolledwindow1);
+	gtk_paned_pack2 (GTK_PANED (hpaned1), scrolledwindow1, TRUE, FALSE);
 
 	textDescriptionBuffer = gtk_text_buffer_new(NULL);
 	//textDescription = gtk_text_new (NULL, NULL);
 	textDescriptionView = gtk_text_view_new_with_buffer(textDescriptionBuffer);
 	gtk_widget_set_name (textDescriptionView, "textDescription");
-	gtk_widget_ref (textDescriptionView);
-	gtk_object_set_data_full (GTK_OBJECT (windowMain), "textDescription", textDescriptionView,
-				  (GtkDestroyNotify) gtk_widget_unref);
 	gtk_text_view_set_editable(GTK_TEXT_VIEW(textDescriptionView), FALSE);
 	gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(textDescriptionView), FALSE);
 	gtk_widget_show (textDescriptionView);
 	gtk_container_add (GTK_CONTAINER (scrolledwindow1), textDescriptionView);
 
-	hbuttonbox1 = gtk_hbutton_box_new ();
+	hbuttonbox1 = gtk_button_box_new (GTK_ORIENTATION_HORIZONTAL);
 	gtk_widget_set_name (hbuttonbox1, "hbuttonbox1");
-	gtk_widget_ref (hbuttonbox1);
-	gtk_object_set_data_full (GTK_OBJECT (windowMain), "hbuttonbox1", hbuttonbox1,
-				  (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (hbuttonbox1);
 	gtk_box_pack_start (GTK_BOX (vbox1), hbuttonbox1, FALSE, FALSE, 5);
 	//gtk_button_box_set_spacing (GTK_BUTTON_BOX (hbuttonbox1), 10);
@@ -116,58 +110,46 @@ create_windowMain ()
 
 	buttonRefresh = gtk_button_new_from_stock(GTK_STOCK_REFRESH);
 	gtk_widget_set_name (buttonRefresh, "buttonRefresh");
-	gtk_widget_ref (buttonRefresh);
-	gtk_object_set_data_full (GTK_OBJECT (windowMain), "buttonRefresh", buttonRefresh,
-				  (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (buttonRefresh);
 	gtk_container_add (GTK_CONTAINER (hbuttonbox1), buttonRefresh);
 	gtk_container_set_border_width (GTK_CONTAINER (buttonRefresh), 4);
-	GTK_WIDGET_SET_FLAGS (buttonRefresh, GTK_CAN_DEFAULT);
+	gtk_widget_set_can_default (buttonRefresh, TRUE);
 
 	buttonConfigure = gtk_button_new_with_label ("Configure...");
 	gtk_widget_set_name (buttonConfigure, "buttonConfigure");
-	gtk_widget_ref (buttonConfigure);
-	gtk_object_set_data_full (GTK_OBJECT (windowMain), "buttonConfigure", buttonConfigure,
-				  (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (buttonConfigure);
 	gtk_container_add (GTK_CONTAINER (hbuttonbox1), buttonConfigure);
 	gtk_container_set_border_width (GTK_CONTAINER (buttonConfigure), 4);
-	GTK_WIDGET_SET_FLAGS (buttonConfigure, GTK_CAN_DEFAULT);
+	gtk_widget_set_can_default (buttonConfigure, TRUE);
 
 	buttonAbout = gtk_button_new_from_stock(GTK_STOCK_ABOUT);
 	gtk_widget_set_name (buttonAbout, "buttonAbout");
-	gtk_widget_ref (buttonAbout);
-	gtk_object_set_data_full (GTK_OBJECT (windowMain), "buttonAbout", buttonAbout,
-				  (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (buttonAbout);
 	gtk_container_add (GTK_CONTAINER (hbuttonbox1), buttonAbout);
 	gtk_container_set_border_width (GTK_CONTAINER (buttonAbout), 4);
-	GTK_WIDGET_SET_FLAGS (buttonAbout, GTK_CAN_DEFAULT);
+	gtk_widget_set_can_default (buttonAbout, TRUE);
 
 	buttonClose = gtk_button_new_from_stock(GTK_STOCK_QUIT);
 	gtk_widget_set_name (buttonClose, "buttonClose");
-	gtk_widget_ref (buttonClose);
-	gtk_object_set_data_full (GTK_OBJECT (windowMain), "buttonClose", buttonClose,
-				  (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (buttonClose);
 	gtk_container_add (GTK_CONTAINER (hbuttonbox1), buttonClose);
 	gtk_container_set_border_width (GTK_CONTAINER (buttonClose), 4);
-	GTK_WIDGET_SET_FLAGS (buttonClose, GTK_CAN_DEFAULT);
+	gtk_widget_set_can_default (buttonClose, TRUE);
 
-	gtk_signal_connect (GTK_OBJECT (windowMain), "delete_event",
-			    GTK_SIGNAL_FUNC (on_window1_delete_event),
+	g_signal_connect (G_OBJECT (windowMain), "delete_event",
+			    G_CALLBACK (on_window1_delete_event),
 			    NULL);
-	gtk_signal_connect (GTK_OBJECT (buttonRefresh), "clicked",
-			    GTK_SIGNAL_FUNC (on_buttonRefresh_clicked),
+	g_signal_connect (G_OBJECT (buttonRefresh), "clicked",
+			    G_CALLBACK (on_buttonRefresh_clicked),
 			    NULL);
-	gtk_signal_connect (GTK_OBJECT (buttonConfigure), "clicked",
-			    GTK_SIGNAL_FUNC (on_buttonConfigure_clicked),
+	g_signal_connect (G_OBJECT (buttonConfigure), "clicked",
+			    G_CALLBACK (on_buttonConfigure_clicked),
 			    NULL);
-	gtk_signal_connect (GTK_OBJECT (buttonAbout), "clicked",
-			    GTK_SIGNAL_FUNC (on_buttonAbout_clicked),
+	g_signal_connect (G_OBJECT (buttonAbout), "clicked",
+			    G_CALLBACK (on_buttonAbout_clicked),
 			    NULL);
-	gtk_signal_connect (GTK_OBJECT (buttonClose), "clicked",
-			    GTK_SIGNAL_FUNC (on_buttonClose_clicked),
+	g_signal_connect (G_OBJECT (buttonClose), "clicked",
+			    G_CALLBACK (on_buttonClose_clicked),
 			    NULL);
 
 	/* create our timer */

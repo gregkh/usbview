@@ -19,13 +19,13 @@
 #endif
 
 #include <gtk/gtk.h>
-
 #include "usbtree.h"
+#include "usbview_logo.xpm"	/* logo */
 
 
 void on_buttonClose_clicked (GtkButton *button, gpointer user_data)
 {
-	gtk_exit(0);
+	gtk_main_quit();
 }
 
 
@@ -51,7 +51,21 @@ void on_buttonConfigure_clicked (GtkButton *button, gpointer user_data)
 
 void on_buttonAbout_clicked (GtkButton *button, gpointer user_data)
 {
-	about_dialog ();
+	GdkPixbuf *logo;
+	gchar *authors[] = { "Greg Kroah-Hartman <greg@kroah.com>", NULL };
+
+	logo = gdk_pixbuf_new_from_xpm_data ((const char **)usbview_logo_xpm);
+	gtk_show_about_dialog (GTK_WINDOW (windowMain),
+		"logo", logo,
+		"program-name", "usbview",
+		"version", VERSION,
+		"comments", "Display information on USB devices",
+		"website-label", "http://www.kroah.com/linux-usb/",
+		"website", "http://www.kroah.com/linux-usb/",
+		"copyright", "Copyright © 1999-2012",
+		"authors", authors,
+		NULL);
+	g_object_unref (logo);
 }
 
 

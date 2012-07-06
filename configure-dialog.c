@@ -20,264 +20,78 @@
 #endif
 
 #include <gtk/gtk.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
-
 #include "usbtree.h"
 #include "usbparse.h"
 
-
-
-
 static	GtkWidget	*fileEntry;
-static	GtkWidget	*filew;
-static	char		*sFilename;
-
-/* 
- * Get the selected filename and print it to the console 
- */
-static void file_ok_sel (GtkWidget *w, GtkFileSelection *fs)
-{
-	const char *sTempFile;
-
-	/* --- Get the name --- */
-	sTempFile = gtk_file_selection_get_filename (GTK_FILE_SELECTION (fs));
-
-	/* --- Allocate space and save it. --- */
-	sFilename = malloc (sizeof (char) * (strlen (sTempFile) + 1));
-	strcpy (sFilename, sTempFile);
-
-	/* --- Destroy the file selection --- */
-	gtk_widget_destroy (filew);
-}
-
-
-static void file_cancel_sel (GtkWidget *w, GtkFileSelection *fs)
-{
-	/* --- Destroy the file selection --- */
-	gtk_widget_destroy (filew);
-}
-
-
-/*
- * DestroyDialog
- *
- * Destroy the dialog (obvious, eh?) but also remove the
- * grab and close the modal. 
- */
-static int DestroyDialog (GtkWidget *widget, gpointer *data)
-{
-	gtk_grab_remove (widget);
-	gtk_main_quit ();
-	return(FALSE);
-}
-
-
-/*
- * GetFilename 
- */
-static char *GetFilename (char *sTitle, char *initialFilename)
-{
-	sFilename = NULL;
-
-	/* --- Create a new file selection widget --- */
-	filew = gtk_file_selection_new (sTitle);
-
-	/* --- If it's destroyed --- */
-	gtk_signal_connect (GTK_OBJECT (filew), "destroy", (GtkSignalFunc) DestroyDialog, &filew);
-
-	/* --- Connect the ok_button to file_ok_sel function  --- */
-	gtk_signal_connect (GTK_OBJECT (GTK_FILE_SELECTION (filew)->ok_button), "clicked", (GtkSignalFunc) file_ok_sel, filew );
-
-	/* --- Connect the cancel_button to destroy the widget  --- */
-	gtk_signal_connect (GTK_OBJECT (GTK_FILE_SELECTION (filew)->cancel_button), "clicked", (GtkSignalFunc) file_cancel_sel, filew);
-
-	/* --- Lets set the filename --- */
-	gtk_file_selection_set_filename (GTK_FILE_SELECTION(filew), initialFilename);
-
-	/* --- Turn off the file operation buttons --- */
-	gtk_file_selection_hide_fileop_buttons (GTK_FILE_SELECTION(filew));
-
-	/* --- Of course, we show it --- */
-	gtk_widget_show (filew);
-
-	/* --- Make sure we keep the focus --- */
-	gtk_grab_add (filew);
-
-	gtk_main ();
-
-	return(sFilename);
-}
-
-
-static void ClearShowMessage (GtkWidget *widget, gpointer data)
-{
-	gtk_grab_remove (widget);
-}
-
-static void CancelConfigureDialog (GtkWidget *widget, gpointer data)
-{
-	GtkWidget *dialogWidget = (GtkWidget *) data;
-
-	gtk_grab_remove (dialogWidget);
-
-	/* --- Close the widget --- */
-	gtk_widget_destroy (dialogWidget);
-}
-
-static void OkConfigureDialog (GtkWidget *widget, gpointer data)
-{
-	GtkWidget       *dialogWidget = (GtkWidget *) data;
-	gchar           *editString;
-
-	editString = gtk_editable_get_chars (GTK_EDITABLE (fileEntry), 0, -1);
-
-	gtk_grab_remove (dialogWidget);
-
-	/* --- Close the widget --- */
-	gtk_widget_destroy (dialogWidget);
-
-	strcpy (devicesFile, editString);
-	g_free (editString);
-	LoadUSBTree(0);
-}
-
 
 static void fileSelectButtonClick (GtkWidget *widget, gpointer data)
 {
-	gchar   *newFilename;
+	GtkWidget *dialog;
+	gchar *filename;
 
-	newFilename = GetFilename ("locate usbdevfs devices file", devicesFile);
+	dialog = gtk_file_chooser_dialog_new (
+				"locate usbdevfs devices file",
+				GTK_WINDOW (windowMain),
+				GTK_FILE_CHOOSER_ACTION_OPEN,
+				GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
+				GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT,
+				NULL);
 
-	if (newFilename != NULL) {
-		gtk_entry_set_text (GTK_ENTRY (fileEntry), newFilename);
-		gtk_widget_show (fileEntry);
-		g_free (newFilename);
+	if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT)
+	{
+		filename = gtk_file_chooser_get_filename(
+						GTK_FILE_CHOOSER (dialog));
+		gtk_entry_set_text (GTK_ENTRY (fileEntry), filename);
+		g_free (filename);
 	}
+			  
+	gtk_widget_destroy (dialog);
 }
-
 
 void configure_dialog (void)
 {
-	GtkWidget *configDialog;
-	GtkWidget *dialog_vbox2;
+	GtkWidget *dialog, *content_area;
 	GtkWidget *hbox1;
 	GtkWidget *label1;
-	GtkWidget *label41;
-	GtkWidget *label42;
-	GtkWidget *label43;
-	GtkWidget *vbox1;
-	GtkWidget *dialog_action_area2;
-	GtkWidget *hbuttonbox2;
-	GtkWidget *okButton;
-	GtkWidget *cancelButton;
 	GtkWidget *fileSelectButton;
+	gchar *editString;
+	gint result;
 
-	configDialog = gtk_dialog_new ();
-	gtk_object_set_data (GTK_OBJECT (configDialog), "configDialog", configDialog);
-	gtk_window_set_title (GTK_WINDOW (configDialog), "USB View Configuration");
-	gtk_window_set_policy (GTK_WINDOW (configDialog), TRUE, TRUE, FALSE);
+	dialog = gtk_dialog_new_with_buttons (
+				"USB View Configuration",
+				GTK_WINDOW (windowMain),
+				GTK_DIALOG_DESTROY_WITH_PARENT,
+				GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
+				GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT,
+				NULL);
 
-	dialog_vbox2 = GTK_DIALOG (configDialog)->vbox;
-	gtk_object_set_data (GTK_OBJECT (configDialog), "dialog_vbox2", dialog_vbox2);
-	gtk_widget_show (dialog_vbox2);
+	content_area = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
 
-	vbox1 = gtk_vbox_new (FALSE, 0);
-	gtk_widget_ref (vbox1);
-	gtk_object_set_data_full (GTK_OBJECT (configDialog), "vbox1", vbox1, (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (vbox1);
-	gtk_box_pack_start (GTK_BOX (dialog_vbox2), vbox1, TRUE, TRUE, 0);
+	hbox1 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+	gtk_container_add (GTK_CONTAINER (content_area), hbox1);
 
-	label41 = gtk_label_new ("");
-	gtk_widget_ref (label41);
-	gtk_object_set_data_full (GTK_OBJECT (configDialog), "label41", label41, (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (label41);
-	gtk_box_pack_start (GTK_BOX (vbox1), label41, FALSE, FALSE, 0);
-
-	hbox1 = gtk_hbox_new (FALSE, 0);
-	gtk_widget_ref (hbox1);
-	gtk_object_set_data_full (GTK_OBJECT (configDialog), "hbox1", hbox1, (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (hbox1);
-//	gtk_box_pack_start (GTK_BOX (dialog_vbox2), hbox1, TRUE, TRUE, 0);
-	gtk_box_pack_start (GTK_BOX (vbox1), hbox1, TRUE, TRUE, 0);
-
-	label42 = gtk_label_new ("");
-	gtk_widget_ref (label42);
-	gtk_object_set_data_full (GTK_OBJECT (configDialog), "label42", label42, (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (label42);
-	gtk_box_pack_start (GTK_BOX (vbox1), label42, FALSE, FALSE, 0);
-
-
-	label1 = gtk_label_new ("  Location of usbdevfs devices file");
-	gtk_widget_ref (label1);
-	gtk_object_set_data_full (GTK_OBJECT (configDialog), "label1", label1, (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (label1);
+	label1 = gtk_label_new ("Location of usbdevfs devices file");
 	gtk_box_pack_start (GTK_BOX (hbox1), label1, FALSE, FALSE, 5);
 
 	fileEntry = gtk_entry_new ();
-	gtk_widget_ref (fileEntry);
-	gtk_object_set_data_full (GTK_OBJECT (configDialog), "fileEntry", fileEntry, (GtkDestroyNotify) gtk_widget_unref);
 	gtk_entry_set_text (GTK_ENTRY (fileEntry), devicesFile);
-	gtk_widget_show (fileEntry);
 	gtk_box_pack_start (GTK_BOX (hbox1), fileEntry, TRUE, TRUE, 0);
 
-	dialog_action_area2 = GTK_DIALOG (configDialog)->action_area;
-	gtk_object_set_data (GTK_OBJECT (configDialog), "dialog_action_area2", dialog_action_area2);
-	gtk_widget_show (dialog_action_area2);
-	gtk_container_set_border_width (GTK_CONTAINER (dialog_action_area2), 1);
-
-	hbuttonbox2 = gtk_hbutton_box_new ();
-	gtk_widget_ref (hbuttonbox2);
-	gtk_object_set_data_full (GTK_OBJECT (configDialog), "hbuttonbox2", hbuttonbox2, (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (hbuttonbox2);
-	gtk_box_pack_start (GTK_BOX (dialog_action_area2), hbuttonbox2, TRUE, TRUE, 11);
-
-	okButton = gtk_button_new_with_label ("  OK  ");
-	gtk_widget_ref (okButton);
-	gtk_object_set_data_full (GTK_OBJECT (configDialog), "okButton", okButton, (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (okButton);
-	gtk_container_add (GTK_CONTAINER (hbuttonbox2), okButton);
-	GTK_WIDGET_SET_FLAGS (okButton, GTK_CAN_DEFAULT);
-
-	cancelButton = gtk_button_new_with_label ("  Cancel  ");
-	gtk_widget_ref (cancelButton);
-	gtk_object_set_data_full (GTK_OBJECT (configDialog), "cancelButton", cancelButton, (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (cancelButton);
-	gtk_container_add (GTK_CONTAINER (hbuttonbox2), cancelButton);
-	GTK_WIDGET_SET_FLAGS (cancelButton, GTK_CAN_DEFAULT);
-
 	fileSelectButton = gtk_button_new_with_label ("...");
-	gtk_widget_ref (fileSelectButton);
-	gtk_object_set_data_full (GTK_OBJECT (configDialog), "fileSelectButton", fileSelectButton, (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (fileSelectButton);
-
+	g_signal_connect (G_OBJECT (fileSelectButton), "clicked",
+			  G_CALLBACK (fileSelectButtonClick), NULL);
 	gtk_box_pack_start (GTK_BOX (hbox1), fileSelectButton, TRUE, FALSE, 1);
 
-	label43 = gtk_label_new ("    ");
-	gtk_widget_ref (label43);
-	gtk_object_set_data_full (GTK_OBJECT (configDialog), "label43", label43, (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (label43);
-	gtk_box_pack_start (GTK_BOX (hbox1), label43, FALSE, FALSE, 0);
-	
-	gtk_signal_connect (GTK_OBJECT (okButton), "clicked", GTK_SIGNAL_FUNC (OkConfigureDialog), configDialog);
-	gtk_signal_connect (GTK_OBJECT (cancelButton), "clicked", GTK_SIGNAL_FUNC (CancelConfigureDialog), configDialog);
-	gtk_signal_connect (GTK_OBJECT (fileSelectButton), "clicked", GTK_SIGNAL_FUNC (fileSelectButtonClick), configDialog);
-
-	/* --- Default the "Ok" button --- */
-	GTK_WIDGET_SET_FLAGS (okButton, GTK_CAN_DEFAULT);
-	gtk_widget_grab_default (okButton);
-
-	gtk_signal_connect (GTK_OBJECT (configDialog), "destroy", GTK_SIGNAL_FUNC (ClearShowMessage), NULL);
-
-	/* --- Show the dialog --- */
-	gtk_widget_show (configDialog);
-
-	/* --- Only this window can have actions done. --- */
-	gtk_grab_add (configDialog);
-
-	return;
+	gtk_widget_show_all (dialog);
+	result = gtk_dialog_run(GTK_DIALOG (dialog));
+	if (result == GTK_RESPONSE_ACCEPT) {
+		editString = gtk_editable_get_chars (
+					GTK_EDITABLE (fileEntry), 0, -1);
+		strcpy (devicesFile, editString);
+		g_free (editString);
+		LoadUSBTree (0);
+	}
+	gtk_widget_destroy (dialog);
 }
-
-

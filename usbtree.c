@@ -41,7 +41,7 @@ static void Init (void)
 
 	/* blow away the tree if there is one */
 	if (rootDevice != NULL) {
-		gtk_ctree_remove_node (GTK_CTREE(treeUSB), GTK_CTREE_NODE(rootDevice->leaf));
+		gtk_tree_store_clear (treeStore);
 	}
 
 	/* clean out the text box */
@@ -204,32 +204,37 @@ static void PopulateListBox (int deviceId)
 }
 
 
-void SelectItem (GtkWidget *widget, GtkCTreeNode *node, gint column, gpointer userData)
+void SelectItem (GtkTreeSelection *selection, gpointer userData)
 {
-	int     data;
-	data = (int) gtk_ctree_node_get_row_data (GTK_CTREE (widget), node);
+	GtkTreeIter iter;
+	GtkTreeModel *model;
+	gint deviceAddr;
 
-	PopulateListBox ((int)data);
-
-	return;
+	if (gtk_tree_selection_get_selected (selection, &model, &iter)) {
+		gtk_tree_model_get (model, &iter,
+				DEVICE_ADDR_COLUMN, &deviceAddr,
+				-1);
+		PopulateListBox (deviceAddr);
+	}
 }
 
 
 static void DisplayDevice (Device *parent, Device *device)
 {
 	int		i;
-	gchar		*text[1];
 	int		configNum;
 	int		interfaceNum;
 	gboolean	driverAttached = TRUE;
+	gint		deviceAddr;
+	const gchar	*color = "black";
 
 	if (device == NULL)
 		return;
 
 	/* build this node */
-	text[0] = device->name;
-	device->leaf = gtk_ctree_insert_node (GTK_CTREE(treeUSB), parent->leaf, NULL, text, 1, NULL, NULL, NULL, NULL, FALSE, FALSE);
-	gtk_ctree_node_set_row_data (GTK_CTREE(treeUSB), device->leaf, (gpointer)((device->deviceNumber<<8) | (device->busNumber)));
+	deviceAddr = (device->deviceNumber << 8) | device->busNumber;
+	gtk_tree_store_append (treeStore, &device->leaf,
+			       (device->level != 0) ? &parent->leaf : NULL);
 
 	/* determine if this device has drivers attached to all interfaces */
 	for (configNum = 0; configNum < MAX_CONFIGS; ++configNum) {
@@ -248,15 +253,14 @@ static void DisplayDevice (Device *parent, Device *device)
 	}
 
 	/* change the color of this leaf if there are no drivers attached to it */
-	if (driverAttached == FALSE) {
-		GdkColor        red;
-		 
-		red.red = 56000;
-		red.green = 0;
-		red.blue = 0;
-		red.pixel = 0;
-		gtk_ctree_node_set_foreground (GTK_CTREE(treeUSB), device->leaf, &red);
-	}
+	if (driverAttached == FALSE)
+		color = "red";
+
+	gtk_tree_store_set (treeStore, &device->leaf,
+			    NAME_COLUMN, device->name,
+			    DEVICE_ADDR_COLUMN, deviceAddr,
+			    COLOR_COLUMN, color,
+			    -1);
 
 	/* create all of the children's leafs */
 	for (i = 0; i < MAX_CHILDREN; ++i) {
@@ -279,11 +283,16 @@ const char *verifyMessage =     " Verify that you have USB compiled into your ke
 
 static void FileError (void)
 {
-	gchar *tempString = g_malloc0(strlen (verifyMessage) + strlen (devicesFile) + 50);
-	sprintf (tempString, " Can not open the file %s \n\n%s", devicesFile, verifyMessage);
-	ShowMessage ("USBView Error", tempString, FALSE);
-	g_free (tempString);
-	return;
+	GtkWidget *dialog;
+
+	dialog = gtk_message_dialog_new (
+				    GTK_WINDOW (windowMain),
+				    GTK_DIALOG_DESTROY_WITH_PARENT,
+				    GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE,
+				    "Can not open the file %s\n\n%s",
+				    devicesFile, verifyMessage);
+	gtk_dialog_run (GTK_DIALOG (dialog));
+	gtk_widget_destroy (dialog);
 }
 
 
@@ -324,10 +333,6 @@ void LoadUSBTree (int refresh)
 	int             finished;
 	int             i;
 
-	if (MessageShown() == TRUE) {
-		return;
-	}
-
 	/* if refresh is selected, then always do a refresh, otherwise look at the file first */
 	if (!refresh) {
 		if (!FileHasChanged()) {
@@ -363,12 +368,6 @@ void LoadUSBTree (int refresh)
 
 	usb_name_devices ();
 
-	/* set up our tree */
-	gtk_ctree_set_line_style (GTK_CTREE(treeUSB), GTK_CTREE_LINES_DOTTED);
-	gtk_ctree_set_expander_style (GTK_CTREE(treeUSB), GTK_CTREE_EXPANDER_SQUARE);
-	gtk_ctree_set_indent (GTK_CTREE(treeUSB),10);
-	gtk_clist_column_titles_passive (GTK_CLIST(treeUSB));
-
 	/* build our tree */
 	for (i = 0; i < rootDevice->maxChildren; ++i) {
 		DisplayDevice (rootDevice, rootDevice->child[i]);
@@ -376,11 +375,14 @@ void LoadUSBTree (int refresh)
 
 	gtk_widget_show (treeUSB);
 
-	gtk_ctree_expand_recursive (GTK_CTREE(treeUSB), NULL);
+	gtk_tree_view_expand_all (GTK_TREE_VIEW (treeUSB));
 
 	/* hook up our callback function to this tree if we haven't yet */
 	if (!signal_connected) {
-		gtk_signal_connect (GTK_OBJECT (treeUSB), "tree-select-row", GTK_SIGNAL_FUNC (SelectItem), NULL);
+		GtkTreeSelection *select;
+		select = gtk_tree_view_get_selection (GTK_TREE_VIEW (treeUSB));
+		g_signal_connect (G_OBJECT (select), "changed",
+				  G_CALLBACK (SelectItem), NULL);
 		signal_connected = TRUE;
 	}
 

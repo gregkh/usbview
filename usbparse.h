@@ -162,7 +162,7 @@ typedef struct Device {
 	struct Device	*child[MAX_CHILDREN];
 	DeviceBandwidth	*bandwidth;
 	GtkWidget	*tree;
-	GtkCTreeNode	*leaf;
+	GtkTreeIter	leaf;
 } Device;
 
 
