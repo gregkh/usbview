@@ -393,7 +393,7 @@ void LoadUSBTree (int refresh)
 
 void initialize_stuff (void)
 {
-	strcpy (devicesFile, "/proc/bus/usb/devices");
+	strcpy (devicesFile, "/sys/kernel/debug/usb/devices");
 	memset (&previousDevicesFile[0], 0x00, sizeof(previousDevicesFile));
 	previousChange = 0;
 
