@@ -110,6 +110,14 @@ static void PopulateListBox (int deviceId)
 	sprintf (string, "\nSpeed: %s", tempString);
 	gtk_text_buffer_insert_at_cursor(textDescriptionBuffer, string,strlen(string));
 
+	/* Add Bus number */
+	sprintf (string, "\nBus:%4d", busNumber);
+	gtk_text_buffer_insert_at_cursor(textDescriptionBuffer, string,strlen(string));
+
+	/* Add device address */
+	sprintf (string, "\nAddress:%4d", deviceNumber);
+	gtk_text_buffer_insert_at_cursor(textDescriptionBuffer, string,strlen(string));
+
 	/* add ports if available */
 	if (device->maxChildren) {
 		sprintf (string, "\nNumber of Ports: %i", device->maxChildren);
