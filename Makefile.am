@@ -5,8 +5,6 @@ AM_CPPFLAGS = \
 	$(GLIB_CFLAGS)	\
 	$(CPPFLAGS)
 
-VERSION = 2.0
-
 bin_PROGRAMS = usbview
 
 man_MANS = usbview.8
