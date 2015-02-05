@@ -16,15 +16,7 @@ PKG_CHECK_MODULES(GTK, gtk+-3.0 >= 3.0)
 AC_SUBST(GTK_FLAGS)
 AC_SUBST(GTK_LIBS)
 
-dnl Use -Wall if we have gcc.
-changequote(,)dnl
-if test "x$GCC" = "xyes"; then
-  case " $CFLAGS " in
-  *[\ \	]-Wall[\ \	]*) ;;
-  *) CFLAGS="$CFLAGS -Wall" ;;
-  esac
-fi
-changequote([,])dnl
+AX_CFLAGS_WARN_ALL
 
 AC_CONFIG_FILES([
 Makefile
