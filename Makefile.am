@@ -1,9 +1,9 @@
 ## Process this file with automake to produce Makefile.in
 
-INCLUDES = \
+AM_CPPFLAGS = \
 	$(GTK_CFLAGS)	\
 	$(GLIB_CFLAGS)	\
-	@CPPFLAGS@
+	$(CPPFLAGS)
 
 VERSION = 2.0
 

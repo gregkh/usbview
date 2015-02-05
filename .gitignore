@@ -5,7 +5,9 @@ acconfig.h
 aclocal.m4
 autom4te.cache/
 .deps/
+compile
 config.h
+config.h.in
 config.log
 config.status
 stamp-h1
