@@ -1,9 +1,7 @@
 ## Process this file with automake to produce Makefile.in
 
-AM_CPPFLAGS = \
-	$(GTK_CFLAGS)	\
-	$(GLIB_CFLAGS)	\
-	$(CPPFLAGS)
+AM_CPPFLAGS = $(GTK_CFLAGS)
+usbview_LDADD = $(GTK_LIBS)
 
 bin_PROGRAMS = usbview
 
@@ -20,9 +18,5 @@ usbview_SOURCES =		\
 	usbview_logo.xcf	\
 	usb_icon.xpm		\
 	usbview.spec
-
-usbview_LDADD = \
-	$(GTK_LIBS)	\
-	$(GLIB_LIBS)
 
 EXTRA_DIST = $(man_MANS)
