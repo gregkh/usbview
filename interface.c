@@ -25,7 +25,7 @@
 #include <gtk/gtk.h>
 
 #include "usbtree.h"
-#include "usb_icon.xpm"
+#include "hicolor/64x64/apps/usbview_icon.xpm"
 
 GtkWidget *treeUSB;
 GtkTreeStore *treeStore;
@@ -55,7 +55,7 @@ create_windowMain ()
 	gtk_window_set_title (GTK_WINDOW (windowMain), "USB Viewer");
 	gtk_window_set_default_size (GTK_WINDOW (windowMain), 600, 300);
 
-	icon = gdk_pixbuf_new_from_xpm_data((const char **)usb_icon_xpm);
+	icon = gdk_pixbuf_new_from_xpm_data((const char **)usbview_icon);
 	gtk_window_set_icon(GTK_WINDOW(windowMain), icon);
 
 	vbox1 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
