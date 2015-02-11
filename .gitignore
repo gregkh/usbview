@@ -10,9 +10,11 @@
 /config.status
 /configure
 /depcomp
+/hicolor/
 /install-sh
 /missing
 /stamp-h1
 /usbview
+/usbview_icon.xpm
 Makefile
 Makefile.in
