@@ -16,12 +16,14 @@ usbview_SOURCES =		\
 	configure-dialog.c      \
 	usbview_logo.xpm
 
-BUILT_SOURCES = $(src_icon_bitmap)
+interface.o: $(src_icon_bitmap)
 
 EXTRA_DIST = $(man_MANS) usbview_icon.svg usbview.spec usbview_logo.xcf
 
 desktopdir = $(datadir)/applications
+if DESKTOP
 desktop_DATA = usbview.desktop
+endif
 
 icondir = $(datadir)/icons
 
@@ -35,7 +37,9 @@ icon_bitmaps = \
 
 src_icon_bitmap = hicolor/64x64/apps/usbview_icon.xpm
 
+if ICONS
 nobase_icon_DATA = $(icon_scalable) $(icon_bitmaps)
+endif
 
 $(icon_bitmaps) $(src_icon_bitmap): usbview_icon.svg
 	mkdir -p $$(dirname $@)
