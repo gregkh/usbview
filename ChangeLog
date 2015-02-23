@@ -1,3 +1,27 @@
+version 2.0+
+	- usbview.desktop: Add desktop file.
+	- usbview_icon.svg: Convert xpm bitmap icon into a scalable svg icon.
+	- configure.in configure.ac: Rename former to latter.
+	- autgen.sh, config.h.in: Remove in favour of "autoreconf --install".
+	- configure.ac, Makefile.am:
+	  - Autotools tweaks and normalization.
+	  - Don't include CPPFLAGS in AM_CPPFLAGS.
+	  - Remove references to unset GLIB_CFLAGS and GLIB_LIBS in Makefile.am
+	  - Reorder clauses to usual order.
+	  - Remove obsolete comments.
+	  - Add m4 quoting to configure.ac per autoconf documentation.
+	  - VERSION belongs in config.h from configure.ac, not Makefile.am.
+	  - Use AX_CFLAGS_WARN_ALL instead of custom code.
+	  - Address "autoupdate" and "autoreconf --warn=all" output.
+	  - Support (conditional) installation of icons, including bitmap
+	    icons at various resolutions, and desktop file.
+	  - remove NEWS, now unnecessary due to automake foreign option.
+	- Makefile.am, interface.c: Generate icon compiled into executable from scalable icon.
+	- .gitignore: Updates.
+	- ChangeLog: trim whitespace
+	- squelch compiler warning: examine fgets return value
+	- squelch compiler warning: do not use gtk stock items
+
 version 2.0
 	- use debugfs (Hans de Goede)
 	- convert to use gtk 3.0 (Hans de Goede)
