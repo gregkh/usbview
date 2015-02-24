@@ -5,8 +5,6 @@ AC_CONFIG_SRCDIR([usbtree.c])
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE([foreign subdir-objects -Wall])
 
-AC_CHECK_PROG([have_convert],[convert],[yes],[no])
-
 AC_MSG_CHECKING([whether to try to install icons])
 AC_ARG_ENABLE(icons,
 	[AS_HELP_STRING([--enable-icons],[try to install icons (default=yes)])],
@@ -21,11 +19,19 @@ AC_ARG_ENABLE(desktop,
 	[desktop=yes])
 AC_MSG_RESULT([$desktop])
 
-AS_IF([test "$have_convert" = "no" && "$icons" = "yes"],
-	[AC_MSG_WARN([convert not available, disabling icon installation])
-	 icons=no])
+AC_CHECK_PROG([have_inkscape],[inkscape],[yes],[no])
+AC_CHECK_PROG([have_convert],[convert],[yes],[no])
+AC_SUBST(INKSCAPE,[inkscape])
+AC_SUBST(CONVERT,[convert])
+AM_CONDITIONAL(USE_INKSCAPE,[test "$have_inkscape" = "yes"])
+AM_CONDITIONAL(USE_CONVERT, [test "$have_inkscape" = "no" && test "$have_convert" = "yes"])
+AM_CONDITIONAL(HAVE_INKSCAPE,[test "$have_inkscape" = "yes"])
+AM_CONDITIONAL(HAVE_CONVERT, [test "$have_convert" = "yes"])
 
-AM_CONDITIONAL(HAVE_CONVERT,[test "$have_convert" = "yes"])
+AS_IF([test "$have_inkscape" = "no" && test "$have_convert" = "no"],
+      [AC_MSG_WARN([no bitmap conversion utility, disabling icon installation])
+       icons=no])
+
 AM_CONDITIONAL(DESKTOP,[test x${desktop} = xyes])
 AM_CONDITIONAL(ICONS,[test x${icons} = xyes])
 
