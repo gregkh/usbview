@@ -35,8 +35,8 @@ static void fileSelectButtonClick (GtkWidget *widget, gpointer data)
 				"locate usbdevfs devices file",
 				GTK_WINDOW (windowMain),
 				GTK_FILE_CHOOSER_ACTION_OPEN,
-				GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
-				GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT,
+				"_OK", GTK_RESPONSE_ACCEPT,
+				"_Cancel", GTK_RESPONSE_REJECT,
 				NULL);
 
 	if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT)
@@ -63,8 +63,8 @@ void configure_dialog (void)
 				"USB View Configuration",
 				GTK_WINDOW (windowMain),
 				GTK_DIALOG_DESTROY_WITH_PARENT,
-				GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
-				GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT,
+				"_OK", GTK_RESPONSE_ACCEPT,
+				"_Cancel", GTK_RESPONSE_REJECT,
 				NULL);
 
 	content_area = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
