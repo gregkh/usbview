@@ -1,9 +1,14 @@
 dnl Process this file with autoconf to produce a configure script.
 
+# Prologue.
+
+AC_PREREQ([2.54])
 AC_INIT([USBView],[2.0],[Greg Kroah-Hartman <greg@kroah.com>],[usbview],[http://www.kroah.com/linux-usb/])
 AC_CONFIG_SRCDIR([usbtree.c])
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE([foreign subdir-objects -Wall])
+
+# Process options.
 
 AC_MSG_CHECKING([whether to try to install icons])
 AC_ARG_ENABLE(icons,
@@ -19,8 +24,14 @@ AC_ARG_ENABLE(desktop,
 	[desktop=yes])
 AC_MSG_RESULT([$desktop])
 
+# Checks for programs.
+
+AC_PROG_CC
 AC_CHECK_PROG([have_inkscape],[inkscape],[yes],[no])
 AC_CHECK_PROG([have_convert],[convert],[yes],[no])
+
+# Set automake conditionals.
+
 AC_SUBST(INKSCAPE,[inkscape])
 AC_SUBST(CONVERT,[convert])
 AM_CONDITIONAL(USE_INKSCAPE,[test "$have_inkscape" = "yes"])
@@ -35,19 +46,28 @@ AS_IF([test "$have_inkscape" = "no" && test "$have_convert" = "no"],
 AM_CONDITIONAL(DESKTOP,[test x${desktop} = xyes])
 AM_CONDITIONAL(ICONS,[test x${icons} = xyes])
 
-AC_PROG_CC
-
-AC_HEADER_STDC
+# Checks for libraries.
 
 AC_SEARCH_LIBS([strerror],[cposix])
 PKG_CHECK_MODULES([GTK], [gtk+-3.0 >= 3.0])
 AC_SUBST([GTK_FLAGS])
 AC_SUBST([GTK_LIBS])
 
+# Checks for header files.
+
+AC_CHECK_HEADERS([ctype.h errno.h stdio.h],,
+ AC_ERROR([required system header file unavailable]))
+
+# Checks for typedefs, structures, and compiler characteristics.
+
 AX_CFLAGS_WARN_ALL
 
-AC_CONFIG_FILES([
-Makefile
-])
-AC_OUTPUT
+# Checks for library functions.
 
+AC_CHECK_FUNCS([memset strstr strtol],,
+ AC_ERROR([required library function unavailable]))
+
+# Epilogue.
+
+AC_CONFIG_FILES([Makefile])
+AC_OUTPUT
