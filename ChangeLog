@@ -18,6 +18,8 @@ version 2.0+
 	- Makefile.am, interface.c: Generate icon compiled into executable from scalable icon.
 	- .gitignore: Updates.
 	- ChangeLog: trim whitespace
+	- squelch compiler warning: examine fgets return value
+	- squelch compiler warning: do not use gtk stock items
 
 version 2.0
 	- use debugfs (Hans de Goede)
