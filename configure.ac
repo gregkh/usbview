@@ -2,7 +2,7 @@ dnl Process this file with autoconf to produce a configure script.
 
 # Prologue.
 
-AC_PREREQ([2.54])
+AC_PREREQ([2.69])
 AC_INIT([USBView],[2.0],[Greg Kroah-Hartman <greg@kroah.com>],[usbview],[http://www.kroah.com/linux-usb/])
 AC_CONFIG_SRCDIR([usbtree.c])
 AC_CONFIG_HEADERS([config.h])
@@ -56,7 +56,7 @@ AC_SUBST([GTK_LIBS])
 # Checks for header files.
 
 AC_CHECK_HEADERS([ctype.h errno.h stdio.h],,
- AC_ERROR([required system header file unavailable]))
+ AC_MSG_ERROR(required system header file unavailable))
 
 # Checks for typedefs, structures, and compiler characteristics.
 
@@ -65,7 +65,7 @@ AX_CFLAGS_WARN_ALL
 # Checks for library functions.
 
 AC_CHECK_FUNCS([memset strstr strtol],,
- AC_ERROR([required library function unavailable]))
+ AC_MSG_ERROR(required library function unavailable))
 
 # Epilogue.
 
