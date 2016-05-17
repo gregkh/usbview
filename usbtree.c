@@ -104,7 +104,9 @@ static void PopulateListBox (int deviceId)
 	switch (device->speed) {
 		case 1 :        tempString = "1.5Mb/s (low)";   break;
 		case 12 :       tempString = "12Mb/s (full)";   break;
-		case 480 :      tempString = "480Mb/s (high)";  break;		/* planning ahead... */
+		case 480 :      tempString = "480Mb/s (high)";  break;
+		case 5000 :     tempString = "5Gb/s (super)";   break;
+		case 10000 :    tempString = "10Gb/s (super+)"; break;
 		default :       tempString = "unknown";         break;
 	}
 	sprintf (string, "\nSpeed: %s", tempString);
