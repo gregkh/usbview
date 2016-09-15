@@ -416,8 +416,8 @@ static void AddInterface (Device *device, char *data)
 
 	interface = (DeviceInterface *)g_malloc0 (sizeof(DeviceInterface));
 
-	interface->class        = (gchar *)g_malloc0 ((INTERFACE_CLASS_SIZE) * sizeof(gchar));
-	interface->name         = (gchar *)g_malloc0 ((INTERFACE_DRIVERNAME_STRING_MAXLENGTH) * sizeof(gchar));
+	interface->class        = (gchar *)g_malloc0 ((INTERFACE_CLASS_SIZE + 1) * sizeof(gchar));
+	interface->name         = (gchar *)g_malloc0 ((INTERFACE_DRIVERNAME_STRING_MAXLENGTH + 1) * sizeof(gchar));
 
 	interface->interfaceNumber      = GetInt (data, INTERFACE_NUMBER_STRING, 10);
 	interface->alternateNumber      = GetInt (data, INTERFACE_ALTERNATESETTING_STRING, 10);
