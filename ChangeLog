@@ -1,3 +1,27 @@
+version 2.0+
+	- usbview.desktop: Add desktop file.
+	- usbview_icon.svg: Convert xpm bitmap icon into a scalable svg icon.
+	- configure.in configure.ac: Rename former to latter.
+	- autgen.sh, config.h.in: Remove in favour of "autoreconf --install".
+	- configure.ac, Makefile.am:
+	  - Autotools tweaks and normalization.
+	  - Don't include CPPFLAGS in AM_CPPFLAGS.
+	  - Remove references to unset GLIB_CFLAGS and GLIB_LIBS in Makefile.am
+	  - Reorder clauses to usual order.
+	  - Remove obsolete comments.
+	  - Add m4 quoting to configure.ac per autoconf documentation.
+	  - VERSION belongs in config.h from configure.ac, not Makefile.am.
+	  - Use AX_CFLAGS_WARN_ALL instead of custom code.
+	  - Address "autoupdate" and "autoreconf --warn=all" output.
+	  - Support (conditional) installation of icons, including bitmap
+	    icons at various resolutions, and desktop file.
+	  - remove NEWS, now unnecessary due to automake foreign option.
+	- Makefile.am, interface.c: Generate icon compiled into executable from scalable icon.
+	- .gitignore: Updates.
+	- ChangeLog: trim whitespace
+	- squelch compiler warning: examine fgets return value
+	- squelch compiler warning: do not use gtk stock items
+
 version 2.0
 	- use debugfs (Hans de Goede)
 	- convert to use gtk 3.0 (Hans de Goede)
@@ -22,7 +46,7 @@ version 1.0
 	  <berberic@fmi.uni-passau.de> to the about screen
 	- cleaned up the spec file to hopefully build a bit better on
 	  different versions of different distros.
-    
+
 version 0.9.0
 	- added Trond Eivind Glomsrød's patch to always try to populate the
 	  device tree when the program is started.
@@ -31,12 +55,12 @@ version 0.9.0
 	  reduced the tarball size by about 1/2!
 	- usbview now updates the device list when devices are plugged in or
 	  removed from the bus automatically (needs 2.4.0-test8 or later to
-	  work properly due to a patch I made for drivers/usb/inode.c to 
+	  work properly due to a patch I made for drivers/usb/inode.c to
 	  enable this to work.)
 	- Made any device that does not have a driver associated with it, show
 	  up in red in the device listing.  This should help users with the
 	  problem that "My device shows up properly in usbview, but it isn't
-	  working," that a lot of people seem to have (it isn't obvious, I 
+	  working," that a lot of people seem to have (it isn't obvious, I
 	  know...)
 	- Added small, drab looking "About" dialog box, to make it easier to
 	  determine which version this is.
@@ -66,8 +90,8 @@ version 0.8.0
 	  that could be done.
 
 version 0.7.0
-	- the logic for determining the name of the device changed to 
-	  properly display the name of a keyboard or mouse when the 
+	- the logic for determining the name of the device changed to
+	  properly display the name of a keyboard or mouse when the
 	  HID driver is used. This is needed for kernel versions 2.3.36
 	  and up.
 
@@ -79,7 +103,7 @@ version 0.6.0
 	  of the string descriptors.
 
 version 0.5.0
-	- updated the parser to handle the fact that the interface now 
+	- updated the parser to handle the fact that the interface now
 	  dictates what driver is loaded.
 	- Tested on kernel version 2.3.29
 
@@ -89,8 +113,8 @@ version 0.4.0
 	  bar.
 
 version 0.3.0
-	- changed the parsing to make it easier to handle any future changes 
-	  in the way the format of /proc/bus/usb/devices 
+	- changed the parsing to make it easier to handle any future changes
+	  in the way the format of /proc/bus/usb/devices
 
 version 0.2.0:
 	- Configuration, interface, and endpoint data is now displayed
@@ -100,6 +124,6 @@ version 0.2.0:
 
 Initial version 0.1.0:
 	- devices are read from /proc/bus/usb/devices and put into a tree view
-	- very basic information is displayed about each device when it is 
+	- very basic information is displayed about each device when it is
 	  selected
-	  
+

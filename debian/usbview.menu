@@ -1,3 +1,0 @@
-?package(usbview):needs="X11" section="Apps/Tools" \
-  title="USB View" command="/usr/bin/usbview"
-

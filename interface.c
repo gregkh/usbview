@@ -25,7 +25,7 @@
 #include <gtk/gtk.h>
 
 #include "usbtree.h"
-#include "usb_icon.xpm"
+#include "hicolor/64x64/apps/usbview_icon.xpm"
 
 GtkWidget *treeUSB;
 GtkTreeStore *treeStore;
@@ -55,7 +55,7 @@ create_windowMain ()
 	gtk_window_set_title (GTK_WINDOW (windowMain), "USB Viewer");
 	gtk_window_set_default_size (GTK_WINDOW (windowMain), 600, 300);
 
-	icon = gdk_pixbuf_new_from_xpm_data((const char **)usb_icon_xpm);
+	icon = gdk_pixbuf_new_from_xpm_data((const char **)usbview_icon);
 	gtk_window_set_icon(GTK_WINDOW(windowMain), icon);
 
 	vbox1 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
@@ -108,7 +108,7 @@ create_windowMain ()
 	//gtk_button_box_set_child_size (GTK_BUTTON_BOX (hbuttonbox1), 50, 25);
 	//gtk_button_box_set_child_ipadding (GTK_BUTTON_BOX (hbuttonbox1), 25, 10);
 
-	buttonRefresh = gtk_button_new_from_stock(GTK_STOCK_REFRESH);
+	buttonRefresh = gtk_button_new_with_label("Refresh");
 	gtk_widget_set_name (buttonRefresh, "buttonRefresh");
 	gtk_widget_show (buttonRefresh);
 	gtk_container_add (GTK_CONTAINER (hbuttonbox1), buttonRefresh);
@@ -122,14 +122,14 @@ create_windowMain ()
 	gtk_container_set_border_width (GTK_CONTAINER (buttonConfigure), 4);
 	gtk_widget_set_can_default (buttonConfigure, TRUE);
 
-	buttonAbout = gtk_button_new_from_stock(GTK_STOCK_ABOUT);
+	buttonAbout = gtk_button_new_with_label("About");
 	gtk_widget_set_name (buttonAbout, "buttonAbout");
 	gtk_widget_show (buttonAbout);
 	gtk_container_add (GTK_CONTAINER (hbuttonbox1), buttonAbout);
 	gtk_container_set_border_width (GTK_CONTAINER (buttonAbout), 4);
 	gtk_widget_set_can_default (buttonAbout, TRUE);
 
-	buttonClose = gtk_button_new_from_stock(GTK_STOCK_QUIT);
+	buttonClose = gtk_button_new_with_label("Quit");
 	gtk_widget_set_name (buttonClose, "buttonClose");
 	gtk_widget_show (buttonClose);
 	gtk_container_add (GTK_CONTAINER (hbuttonbox1), buttonClose);
