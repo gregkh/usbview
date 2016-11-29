@@ -1,9 +1,10 @@
 [Desktop Entry]
 Name=USBView
+GenericName=USB Device Viewer
 Comment=View USB devices attached to system
-Exec=su-to-root -X -c /usr/bin/usbview
+Exec=pkexec /usr/bin/usbview
 Icon=usbview
 Terminal=false
 Type=Application
 Keywords=USB;devices;connected;removable;
-Categories=GTK;HardwareSettings;Settings;
+Categories=GTK;System;HardwareSettings;Monitor;
