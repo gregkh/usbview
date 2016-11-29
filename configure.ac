@@ -27,6 +27,7 @@ AC_MSG_RESULT([$desktop])
 # Checks for programs.
 
 AC_PROG_CC
+AX_CFLAGS_WARN_ALL
 AC_CHECK_PROG([have_inkscape],[inkscape],[yes],[no])
 AC_CHECK_PROG([have_convert],[convert],[yes],[no])
 
