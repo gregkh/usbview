@@ -27,6 +27,11 @@ if DESKTOP
 desktop_DATA = usbview.desktop
 endif
 
+polkitactiondir = $(datadir)/polkit-1/actions
+if POLKIT
+polkitaction_DATA = org.freedesktop.pkexec.usbview.policy
+endif
+
 icondir = $(datadir)/icons
 
 icon_bitmaps_png = \
