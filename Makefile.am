@@ -18,11 +18,18 @@ usbview_SOURCES =		\
 
 interface.o: $(icon_bitmaps_xpm)
 
-EXTRA_DIST = $(man_MANS) usbview_icon.svg usbview.desktop usbview.spec usbview_logo.xcf
+EXTRA_DIST = $(man_MANS) usbview_icon.svg usbview.desktop	\
+	usbview.spec usbview_logo.xcf				\
+	org.freedesktop.pkexec.usbview.policy
 
 desktopdir = $(datadir)/applications
 if DESKTOP
 desktop_DATA = usbview.desktop
+endif
+
+polkitactiondir = $(datadir)/polkit-1/actions
+if POLKIT
+polkitaction_DATA = org.freedesktop.pkexec.usbview.policy
 endif
 
 icondir = $(datadir)/icons
