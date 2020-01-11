@@ -1,20 +1,8 @@
-/*************************************************************************
-** interface.c for USBView - a USB device viewer
-** Copyright (c) 1999, 2000, 2009 by Greg Kroah-Hartman, <greg@kroah.com>
-**
-**  This program is free software; you can redistribute it and/or modify
-**  it under the terms of the GNU General Public License as published by
-**  the Free Software Foundation; version 2 of the License.
-**
-**  This program is distributed in the hope that it will be useful,
-**  but WITHOUT ANY WARRANTY; without even the implied warranty of
-**  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**  GNU General Public License for more details.
-**
-** (See the included file COPYING)
-*************************************************************************/
-
-
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * interface.c for USBView - a USB device viewer
+ * Copyright (c) 1999, 2000, 2009 by Greg Kroah-Hartman, <greg@kroah.com>
+ */
 #ifdef HAVE_CONFIG_H
 	#include <config.h>
 #endif
