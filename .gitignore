@@ -16,5 +16,6 @@
 /stamp-h1
 /usbview
 /usbview_icon.xpm
+/usbview_logo.xcf
 Makefile
 Makefile.in
