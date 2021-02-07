@@ -13,7 +13,7 @@
 #include <gtk/gtk.h>
 
 #include "usbtree.h"
-#include "hicolor/64x64/apps/usbview_icon.xpm"
+#include "usbview_icon.xpm"
 
 GtkWidget *treeUSB;
 GtkTreeStore *treeStore;
