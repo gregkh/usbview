@@ -19,7 +19,7 @@ usbview_SOURCES =		\
 interface.o: $(icon_bitmaps_xpm)
 
 EXTRA_DIST = $(man_MANS) usbview_icon.svg usbview.desktop	\
-	usbview.spec usbview_logo.xcf				\
+	usbview_logo.xcf				\
 	org.freedesktop.pkexec.usbview.policy
 
 desktopdir = $(datadir)/applications
