@@ -1,4 +1,11 @@
-version 2.0+
+version 2.1
+	- build warnings fixed
+	- increased max number of interfaces allowed, fixing problem with some
+	  USB sound devices.
+	- autogen.sh added
+	- LICENSES directory added and license moved to it
+	- SPDX license headers added
+	- policykit support added
 	- usbview.desktop: Add desktop file.
 	- usbview_icon.svg: Convert xpm bitmap icon into a scalable svg icon.
 	- configure.in configure.ac: Rename former to latter.
