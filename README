@@ -1,5 +1,5 @@
 -- README for USBView - a USB device viewer
--- Copyright (c) 1999, 2000 by Greg Kroah-Hartman, greg@kroah.com
+-- Copyright (c) 1999-2012, 2021 by Greg Kroah-Hartman, greg@kroah.com
 --
 --  This program is free software; you can redistribute it and/or modify
 --  it under the terms of the GNU General Public License as published by
@@ -10,12 +10,12 @@
 --  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 --  GNU General Public License for more details.
 --
--- (See the included file COPYING)
+-- (See the full license text in the LICENSES directory)
 --
 
 USBView is a small GTK application to show what the device tree of
-the USB bus looks like. It shows a graphical representation of the 
+the USB bus looks like. It shows a graphical representation of the
 devices that are currently plugged in, showing the topology of the
-USB bus. It also displays information on each individual device on 
+USB bus. It also displays information on each individual device on
 the bus.
 
