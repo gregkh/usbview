@@ -10,6 +10,7 @@ MYCFLAGS="-g -Wall \
 -Wnested-externs -Wpointer-arith \
 -Wpointer-arith -Wsign-compare -Wchar-subscripts \
 -Wstrict-prototypes -Wshadow \
+-Wno-stringop-truncation \
 -Wformat=2 -Wtype-limits"
 
 case "$CFLAGS" in
