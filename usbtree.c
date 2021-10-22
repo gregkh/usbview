@@ -202,7 +202,7 @@ static void PopulateListBox (int deviceId)
 }
 
 
-void SelectItem (GtkTreeSelection *selection, gpointer userData)
+static void SelectItem (GtkTreeSelection *selection, gpointer userData)
 {
 	GtkTreeIter iter;
 	GtkTreeModel *model;
