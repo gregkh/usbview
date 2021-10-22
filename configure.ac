@@ -35,7 +35,6 @@ AC_MSG_RESULT([$polkit])
 # Checks for programs.
 
 AC_PROG_CC
-AX_CFLAGS_WARN_ALL
 AC_CHECK_PROG([have_convert],[convert],[yes],[no])
 
 # Set automake conditionals.
@@ -65,8 +64,6 @@ AC_CHECK_HEADERS([ctype.h errno.h stdio.h],,
 
 # Checks for typedefs, structures, and compiler characteristics.
 
-AX_CFLAGS_WARN_ALL
-
 # Checks for library functions.
 
 AC_CHECK_FUNCS([memset strstr strtol],,
@@ -76,3 +73,16 @@ AC_CHECK_FUNCS([memset strstr strtol],,
 
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
+AC_MSG_RESULT([
+	usbview $VERSION
+	===========
+
+	prefix:                 ${prefix}
+	datarootdir:            ${datarootdir}
+	datadir:                ${datadir}
+	mandir:                 ${mandir}
+
+	compiler:               ${CC}
+	cflags:                 ${CFLAGS}
+	ldflags:                ${LDFLAGS}
+])
