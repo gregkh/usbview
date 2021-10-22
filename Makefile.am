@@ -20,7 +20,8 @@ interface.o: $(icon_bitmaps_xpm)
 
 EXTRA_DIST = $(man_MANS) usbview_icon.svg usbview.desktop	\
 	usbview_logo.xcf				\
-	org.freedesktop.pkexec.usbview.policy
+	org.freedesktop.pkexec.usbview.policy		\
+	LICENSES/GPL-2.0-only.txt
 
 desktopdir = $(datadir)/applications
 if DESKTOP
