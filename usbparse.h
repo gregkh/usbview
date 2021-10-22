@@ -8,7 +8,7 @@
 
 /* should make these dynamic someday... */
 #define MAX_ENDPOINTS				32
-#define MAX_INTERFACES				32
+#define MAX_INTERFACES				128
 #define MAX_CONFIGS				32
 #define MAX_CHILDREN				32
 
