@@ -50,15 +50,11 @@ endif
 
 $(icon_bitmaps_png): usbview_icon.svg
 	mkdir -p $$(dirname $@)
-if USE_INKSCAPE
-	$(INKSCAPE) --export-png=$@ --export-width=$$(basename $$(dirname $$(dirname $@))) $<
-else
-if USE_CONVERT
+if HAVE_CONVERT
 	$(CONVERT) -geometry $$(basename $$(dirname $$(dirname $@))) $< $@
 else
 	echo "error: unable to generate $@ from $<"
 	exit 1
-endif
 endif
 
 $(icon_bitmaps_xpm): usbview_icon.svg

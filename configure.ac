@@ -36,19 +36,14 @@ AC_MSG_RESULT([$polkit])
 
 AC_PROG_CC
 AX_CFLAGS_WARN_ALL
-AC_CHECK_PROG([have_inkscape],[inkscape],[yes],[no])
 AC_CHECK_PROG([have_convert],[convert],[yes],[no])
 
 # Set automake conditionals.
 
-AC_SUBST(INKSCAPE,[inkscape])
 AC_SUBST(CONVERT,[convert])
-AM_CONDITIONAL(USE_INKSCAPE,[test "$have_inkscape" = "yes"])
-AM_CONDITIONAL(USE_CONVERT, [test "$have_inkscape" = "no" && test "$have_convert" = "yes"])
-AM_CONDITIONAL(HAVE_INKSCAPE,[test "$have_inkscape" = "yes"])
 AM_CONDITIONAL(HAVE_CONVERT, [test "$have_convert" = "yes"])
 
-AS_IF([test "$have_inkscape" = "no" && test "$have_convert" = "no"],
+AS_IF([test "$have_convert" = "no"],
       [AC_MSG_WARN([no bitmap conversion utility, disabling icon installation])
        icons=no])
 
