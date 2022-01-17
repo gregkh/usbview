@@ -20,8 +20,46 @@ GtkTreeStore *treeStore;
 GtkTextBuffer *textDescriptionBuffer;
 GtkWidget *textDescriptionView;
 GtkWidget *windowMain;
+static GtkTreeViewColumn *treeColumn;
 
 int timer;
+
+static gboolean
+query_tooltip_cb(GtkWidget *widget, gint x, gint y,
+			gboolean keyboard_tip, GtkTooltip *tooltip, void *unused)
+{
+	GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW(treeUSB));
+	GtkTreePath *path = NULL;
+	GtkTreeIter iter;
+	gint cellx = 0, celly = 0;
+	gchar *color;
+	gchar *tooltip_text;
+	gboolean return_val = FALSE;
+
+	if (!model)
+		return FALSE;
+
+	/* This -30 is a kludge. It seems that if you don't do this, gtk_tree_view_get_path_at_pos()
+	 * gives you the wrong path, the path for the cell that is 30 or so pixels down below the
+	 * mouse. I don't know why it does that. Either we're doing something wrong, or it's a gtk-3
+	 * bug.
+	 */
+	y = y - 30;
+
+	if (!gtk_tree_view_get_path_at_pos(GTK_TREE_VIEW(widget), x, y, &path, &treeColumn, &cellx, &celly))
+		return FALSE;
+	if (!path)
+		return FALSE;
+	/* Get the color, if it's red, set tooltip to indicate device has no driver. */
+	gtk_tree_model_get_iter(model, &iter, path);
+	gtk_tree_model_get(model, &iter, COLOR_COLUMN, &color, -1);
+	if (strncmp(color, "red", 4) == 0) {
+		gtk_tooltip_set_text(tooltip, "This device has no attached driver");
+		return_val = TRUE;
+	}
+	gtk_tree_path_free(path);
+	return return_val;
+}
 
 GtkWidget*
 create_windowMain ()
@@ -36,7 +74,6 @@ create_windowMain ()
 	GtkWidget *buttonAbout;
 	GdkPixbuf *icon;
 	GtkCellRenderer *treeRenderer;
-	GtkTreeViewColumn *treeColumn;
 
 	windowMain = gtk_window_new (GTK_WINDOW_TOPLEVEL);
 	gtk_widget_set_name (windowMain, "windowMain");
@@ -139,6 +176,8 @@ create_windowMain ()
 	g_signal_connect (G_OBJECT (buttonClose), "clicked",
 			    G_CALLBACK (on_buttonClose_clicked),
 			    NULL);
+	g_object_set(G_OBJECT (treeUSB), "has-tooltip", TRUE, NULL);
+	g_signal_connect(G_OBJECT (treeUSB), "query-tooltip", G_CALLBACK (query_tooltip_cb), NULL);
 
 	/* create our timer */
 	//timer = gtk_timeout_add (2000, on_timer_timeout, 0);
