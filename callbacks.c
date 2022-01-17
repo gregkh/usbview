@@ -51,7 +51,7 @@ void on_buttonAbout_clicked (GtkButton *button, gpointer user_data)
 		"comments", "Display information on USB devices",
 		"website-label", "http://www.kroah.com/linux-usb/",
 		"website", "http://www.kroah.com/linux-usb/",
-		"copyright", "Copyright © 1999-2012",
+		"copyright", "Copyright © 1999-2012, 2021",
 		"authors", authors,
 		NULL);
 	g_object_unref (logo);
