@@ -33,7 +33,6 @@ query_tooltip_cb(GtkWidget *widget, gint x, gint y,
 	GtkTreeIter iter;
 	gint cellx = 0, celly = 0;
 	gchar *color;
-	gchar *tooltip_text;
 	gboolean return_val = FALSE;
 
 	if (!model)
