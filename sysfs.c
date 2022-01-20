@@ -147,10 +147,14 @@ static char *sysfs_string(const char *directory, const char *filename)
 	return temp;
 }
 
-static char *sysfs_int(const char *dir, const char *filename)
+static int sysfs_int(const char *dir, const char *filename, int base)
 {
 	char *string = sysfs_string(dir, filename);
-	int value = strtol(string, NULL, 10);
+
+	if (!string)
+		return 0;
+
+	int value = strtol(string, NULL, base);
 
 	free(string);
 	return value;
@@ -327,7 +331,7 @@ Device *usb_find_device (int deviceNumber, int busNumber)
 	return(NULL);
 }
 
-
+#if 0
 static Device *AddDevice (char *line)
 {
 	Device  *device;
@@ -365,11 +369,9 @@ static Device *AddDevice (char *line)
 
 	return(device);
 }
+#endif
 
-
-
-
-
+#if 0
 static void GetDeviceInformation (Device *device, char *data)
 {
 	if (device == NULL)
@@ -395,9 +397,9 @@ static void GetDeviceInformation (Device *device, char *data)
 
 	return;
 }
+#endif
 
-
-
+#if 0
 static void GetMoreDeviceInformation (Device *device, char *data)
 {
 	if (device == NULL)
@@ -413,8 +415,9 @@ static void GetMoreDeviceInformation (Device *device, char *data)
 
 	return;
 }
+#endif
 
-
+#if 0
 static void GetDeviceString (Device *device, char *data)
 {
 	if (device == NULL)
@@ -443,8 +446,9 @@ static void GetDeviceString (Device *device, char *data)
 
 	return;
 }
+#endif
 
-
+#if 0
 static void GetBandwidth (Device *device, char *data)
 {
 	DeviceBandwidth *bandwidth;
@@ -464,8 +468,9 @@ static void GetBandwidth (Device *device, char *data)
 
 	return;
 }
+#endif
 
-
+#if 0
 static void AddConfig (Device *device, char *data)
 {
 	DeviceConfig    *config;
@@ -500,7 +505,7 @@ static void AddConfig (Device *device, char *data)
 
 	return;
 }
-
+#endif
 
 static void AddInterface (Device *device, char *data)
 {
@@ -737,66 +742,40 @@ void usb_initialize_list (void)
 
 static void device_parse(struct Device *parent, const char *directory);
 
+static void interface_parse(struct Device *device, const char *dir)
+{
+}
+
+static void interfaces_parse(struct Device *device, const char *dir)
+{
+}
 
 
-static void device_parse(struct Device *parent, const char *directory)
+static void device_parse(struct Device *parent, const char *dir)
 {
 	Device  *device;
 
-	if (check_dir_present(directory))
+	if (check_dir_present(dir))
 		return;
 
 	device = (Device *)(g_malloc0 (sizeof(Device)));
 
-#if 0
+	if (parent == rootDevice)
+		device->level = 0;
+	else
+		device->level = 1;	// FIXME - not really needed anymore
+	device->parentNumber = 0;	// FIXME - not needed
+	device->count = 0;		// FIXME - not needed
 
-	/* parse the line */
-	device->busNumber       = GetInt (line, TOPOLOGY_BUS_STRING, 10);
-	device->level           = GetInt (line, TOPOLOGY_LEVEL_STRING, 10);
-	device->parentNumber    = GetInt (line, TOPOLOGY_PARENT_STRING, 10);
-	device->portNumber      = GetInt (line, TOPOLOGY_PORT_STRING, 10);
-	device->count           = GetInt (line, TOPOLOGY_COUNT_STRING, 10);
-	device->deviceNumber    = GetInt (line, TOPOLOGY_DEVICENUMBER_STRING, 10);
-	device->speed           = GetInt (line, TOPOLOGY_SPEED_STRING, 10);
-	device->maxChildren     = GetInt (line, TOPOLOGY_MAXCHILDREN_STRING, 10);
 
-	if (device->deviceNumber == -1)
-		device->deviceNumber = 0;
-
-	/* Set up the parent / child relationship */
-	if (device->level == 0) {
-		/* this is the root, don't go looking for a parent */
-		device->parent = rootDevice;
-		++rootDevice->maxChildren;
-		rootDevice->child[rootDevice->maxChildren-1] = device;
-	} else {
-		/* need to find this device's parent */
-		device->parent = usb_find_device (device->parentNumber, device->busNumber);
-		if (device->parent == NULL) {
-			printf ("can't find parent...not good.\n");
-		}
-		device->parent->child[device->portNumber] = device;
-	}
-
-	return(device);
-
-#endif
-#if 0
-
-	char *busstring = sysfs_read(directory, "busnum");
-	char *devstring = sysfs_read(directory, "devnum");
-	char *speed = sysfs_read(directory, "speed");
-	char *maxchild = sysfs_read(directory, "maxchild");
-	int busnum = strtol(busstring, NULL, 10);
-	int devnum = strtol(devstring, NULL, 10);
 	int portnum = 0;
 
-	if (level > 0) {
+	if (parent != rootDevice) {
 		/*
 		 * The port number is the last number of the file (if present)
 		 * before the '.' - 1
 		 */
-		const char *temp = &directory[strlen(directory)];
+		const char *temp = &dir[strlen(dir)];
 
 		while (*temp != '.')
 			--temp;
@@ -805,64 +784,69 @@ static void device_parse(struct Device *parent, const char *directory)
 		if (portnum < 0)
 			portnum = 0;
 	}
+	device->portNumber	= portnum;
+	device->busNumber	= sysfs_int(dir, "busnum", 10);
+	device->deviceNumber	= sysfs_int(dir, "devnum", 10);
+	device->speed		= sysfs_int(dir, "speed", 10);
+	device->maxChildren	= sysfs_int(dir, "maxchild", 10);
 
-	printf("\n");
-	printf("T:  Bus=%2.2d Lev=%2.2d Prnt=%2.2d Port=%2.2d Cnt=%2.2d Dev#=%3d Spd=%-4s MxCh=%2s\n",
-	       busnum, level, parent, portnum, count, devnum, speed, maxchild);
+	device->parent = parent;
 
-	free(busstring);
-	free(devstring);
-	free(speed);
-	free(maxchild);
+	if (parent == rootDevice) {
+		++rootDevice->maxChildren;
+		rootDevice->child[rootDevice->maxChildren-1] = device;
+	} else {
+		parent->child[portnum] = device;
+	}
 
-	char *ver = sysfs_read(directory, "version");
-	char *devclass = sysfs_read(directory, "bDeviceClass");
-	char *devsubclass = sysfs_read(directory, "bDeviceSubClass");
-	char *devprotocol = sysfs_read(directory, "bDeviceProtocol");
-	char *maxps0 = sysfs_read(directory, "bMaxPacketSize0");
-	char *numconfigs = sysfs_read(directory, "bNumConfigurations");
+	device->vendorId	= sysfs_int(dir, "idVendor", 16);
+	device->productId	= sysfs_int(dir, "idProduct", 16);
+
+	device->version		= sysfs_string(dir, "version");
+	device->class		= sysfs_string(dir, "bDeviceClass");
+	device->subClass	= sysfs_string(dir, "bDeviceSubClass");
+	device->protocol	= sysfs_string(dir, "bDeviceProtocol");
+	device->maxPacketSize	= sysfs_int(dir, "bMaxPacketSize0", 10);
+	device->numConfigs	= sysfs_int(dir, "bNumConfigurations", 10);
+
+	device->manufacturer	= sysfs_string(dir, "manufacturer");
+	device->product		= sysfs_string(dir, "product");
+	device->serialNumber	= sysfs_string(dir, "serial");
+
+	DeviceConfig    *config;
+
+	config = (DeviceConfig *)g_malloc0 (sizeof(DeviceConfig));
+	config->maxPower        = sysfs_string(dir, "bMaxPower");
+	config->numInterfaces   = sysfs_int(dir, "bNumInterfaces", 10);
+	config->configNumber	= sysfs_int(dir, "bConfigurationValue", 10);
+	config->attributes	= sysfs_int(dir, "bmAttributes", 16);
+
+	/* have the device now point to this config */
+	device->config[0] = config;
+
+#if 0
+	device->version         = (char *)g_malloc0 ((DEVICE_VERSION_SIZE) * sizeof(char));
+	device->class           = (char *)g_malloc0 ((DEVICE_CLASS_SIZE) * sizeof(char));
+	device->subClass        = (char *)g_malloc0 ((DEVICE_SUBCLASS_SIZE) * sizeof(char));
+	device->protocol        = (char *)g_malloc0 ((DEVICE_PROTOCOL_SIZE) * sizeof(char));
+	GetString (device->version, data, DEVICE_VERSION_STRING, DEVICE_VERSION_SIZE-1);
+	GetString (device->class, data, DEVICE_CLASS_STRING, DEVICE_CLASS_SIZE-1);
+	GetString (device->subClass, data, DEVICE_SUBCLASS_STRING, DEVICE_SUBCLASS_SIZE-1);
+	GetString (device->protocol, data, DEVICE_PROTOCOL_STRING, DEVICE_PROTOCOL_SIZE-1);
 	const char *classname = class_decode(devclass);
 
-	printf("D:  Ver=%5s Cls=%s(%s) Sub=%s Prot=%s MxPS=%2s #Cfgs=%3s\n",
-	       ver, devclass, classname, devsubclass, devprotocol,
-	       maxps0, numconfigs);
+#endif
 
-	free(ver);
-	free(devclass);
-	free(devsubclass);
-	free(devprotocol);
-	free(maxps0);
-	free(numconfigs);
-
-	char *vendid = sysfs_read(directory, "idVendor");
-	char *prodid = sysfs_read(directory, "idProduct");
+#if 0
 	char *bcddevice = sysfs_read(directory, "bcdDevice");
 
-	printf("P:  Vendor=%s ProdID=%s Rev=%c%c.%c%c\n",
-	       vendid, prodid,
-	       bcddevice[0], bcddevice[1], bcddevice[2], bcddevice[3]);
+	device->revisionNumber  = (char *)g_malloc0 ((DEVICE_REVISION_NUMBER_SIZE) * sizeof(char));
+	GetString (device->revisionNumber, data, DEVICE_REVISION_STRING, DEVICE_REVISION_NUMBER_SIZE);
 
-	free(vendid);
-	free(prodid);
-	free(bcddevice);
+#endif
 
-	print_string(directory, "manufacturer", "Manufacturer");
-	print_string(directory, "product", "Product");
-	print_string(directory, "serial", "SerialNumber");
-
-	char *numifs = sysfs_read(directory, "bNumInterfaces");
-	char *cfgnum = sysfs_read(directory, "bConfigurationValue");
-	char *attr = sysfs_read(directory, "bmAttributes");
-	char *maxpower = sysfs_read(directory, "bMaxPower");
-
-	printf("C:  #Ifs=%2s Cfg#=%2s Atr=%s MxPwr=%s\n", numifs, cfgnum, attr, maxpower);
-
-	free(numifs);
-	free(cfgnum);
-	free(attr);
-	free(maxpower);
-
-	/* print endpoint 00?  ep_00??? */
+	interfaces_parse(dir);
+#if 0
 
 	print_interfaces(directory);
 
@@ -897,27 +881,27 @@ void usb_parse_line (char * line)
 	/* look at the first character to see what kind of line this is */
 	switch (line[0]) {
 		case 'T': /* topology */
-			lastDevice = AddDevice (line);
+			//lastDevice = AddDevice (line);
 			break;
 
 		case 'B': /* bandwidth */
-			GetBandwidth (lastDevice, line);
+			//GetBandwidth (lastDevice, line);  // FIXME, not in sysfs?
 			break;
 
 		case 'D': /* device information */
-			GetDeviceInformation (lastDevice, line);
+			//GetDeviceInformation (lastDevice, line);
 			break;
 
 		case 'P': /* more device information */
-			GetMoreDeviceInformation (lastDevice, line);
+			//GetMoreDeviceInformation (lastDevice, line);
 			break;
 
 		case 'S': /* device string information */
-			GetDeviceString (lastDevice, line);
+			//GetDeviceString (lastDevice, line);
 			break;
 
 		case 'C': /* config descriptor info */
-			AddConfig (lastDevice, line);
+			//AddConfig (lastDevice, line);
 			break;
 
 		case 'I': /* interface descriptor info */
