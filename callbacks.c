@@ -32,12 +32,6 @@ void on_buttonRefresh_clicked (GtkButton *button, gpointer user_data)
 }
 
 
-void on_buttonConfigure_clicked (GtkButton *button, gpointer user_data)
-{
-	configure_dialog ();
-}
-
-
 void on_buttonAbout_clicked (GtkButton *button, gpointer user_data)
 {
 	GdkPixbuf *logo;

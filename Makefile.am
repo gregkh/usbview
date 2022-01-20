@@ -13,7 +13,6 @@ usbview_SOURCES =		\
 	callbacks.c		\
 	usbtree.c usbtree.h	\
 	usbparse.c usbparse.h	\
-	configure-dialog.c      \
 	usbview_logo.xpm
 
 interface.o: $(icon_bitmaps_xpm)

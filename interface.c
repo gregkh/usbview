@@ -68,7 +68,6 @@ create_windowMain ()
 	GtkWidget *scrolledwindow1;
 	GtkWidget *hbuttonbox1;
 	GtkWidget *buttonRefresh;
-	GtkWidget *buttonConfigure;
 	GtkWidget *buttonClose;
 	GtkWidget *buttonAbout;
 	GdkPixbuf *icon;
@@ -139,13 +138,6 @@ create_windowMain ()
 	gtk_container_set_border_width (GTK_CONTAINER (buttonRefresh), 4);
 	gtk_widget_set_can_default (buttonRefresh, TRUE);
 
-	buttonConfigure = gtk_button_new_with_label ("Configure...");
-	gtk_widget_set_name (buttonConfigure, "buttonConfigure");
-	gtk_widget_show (buttonConfigure);
-	gtk_container_add (GTK_CONTAINER (hbuttonbox1), buttonConfigure);
-	gtk_container_set_border_width (GTK_CONTAINER (buttonConfigure), 4);
-	gtk_widget_set_can_default (buttonConfigure, TRUE);
-
 	buttonAbout = gtk_button_new_with_label("About");
 	gtk_widget_set_name (buttonAbout, "buttonAbout");
 	gtk_widget_show (buttonAbout);
@@ -165,9 +157,6 @@ create_windowMain ()
 			    NULL);
 	g_signal_connect (G_OBJECT (buttonRefresh), "clicked",
 			    G_CALLBACK (on_buttonRefresh_clicked),
-			    NULL);
-	g_signal_connect (G_OBJECT (buttonConfigure), "clicked",
-			    G_CALLBACK (on_buttonConfigure_clicked),
 			    NULL);
 	g_signal_connect (G_OBJECT (buttonAbout), "clicked",
 			    G_CALLBACK (on_buttonAbout_clicked),
