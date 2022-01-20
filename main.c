@@ -7,6 +7,8 @@
 	#include <config.h>
 #endif
 
+#include <stdlib.h>
+
 #include <gtk/gtk.h>
 
 #include "usbtree.h"
@@ -14,8 +16,11 @@
 int main (int argc, char *argv[])
 {
 	GtkWidget *window1;
+	gboolean is_pkexec = getenv("PKEXEC_UID") != NULL;
 
-	gtk_init (&argc, &argv);
+	// only evalute command line parameters if not running in pkexec
+	// privilege escalation context to avoid potential attack vectors
+	gtk_init (is_pkexec ? NULL : &argc, is_pkexec ? NULL : &argv);
 
 	initialize_stuff();
 
