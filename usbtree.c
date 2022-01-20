@@ -17,7 +17,7 @@
 #include <gtk/gtk.h>
 
 #include "usbtree.h"
-#include "usbparse.h"
+#include "sysfs.h"
 
 #define MAX_LINE_SIZE	1000
 
@@ -279,7 +279,8 @@ const char *verifyMessage =     " Verify that you have USB compiled into your ke
 				" have the USB core modules loaded, and have the \n"
 				" usbdevfs filesystem mounted. ";
 
-static void FileError (void)
+void FileError (void);		// FIXME
+void FileError (void)
 {
 	GtkWidget *dialog;
 
@@ -294,7 +295,8 @@ static void FileError (void)
 }
 
 
-static int FileHasChanged (void)
+int FileHasChanged (void);	// FIXME
+int FileHasChanged (void)
 {
 	struct stat	file_info;
 	int		result;
@@ -326,9 +328,11 @@ static int FileHasChanged (void)
 void LoadUSBTree (int refresh)
 {
 	static gboolean signal_connected = FALSE;
-	FILE            *usbFile;
-	char            *dataLine;
+//	FILE            *usbFile;
+//	char            *dataLine;
 	int             i;
+
+#if 0
 
 	/* if refresh is selected, then always do a refresh, otherwise look at the file first */
 	if (!refresh) {
@@ -343,10 +347,15 @@ void LoadUSBTree (int refresh)
 		return;
 	}
 
+#endif
+
 	Init();
 
 	usb_initialize_list ();
 
+	sysfs_parse();
+
+#if 0
 	dataLine = (char *)g_malloc (MAX_LINE_SIZE);
 	/* read and parse lines from the file one by one */
 	while (!feof (usbFile)
@@ -357,7 +366,7 @@ void LoadUSBTree (int refresh)
 
 	fclose (usbFile);
 	g_free (dataLine);
-
+#endif
 	usb_name_devices ();
 
 	/* build our tree */
