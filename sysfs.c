@@ -29,6 +29,7 @@
 
 #include "usbtree.h"
 #include "sysfs.h"		/* all of the usb structure definitions */
+#include "ccan/list/list.h"
 
 #define MAX_LINE_SIZE	1000
 
@@ -160,6 +161,7 @@ static int sysfs_int(const char *dir, const char *filename, int base)
 	return value;
 }
 
+#if 0
 static signed int GetInt (char *string, char *pattern, int base)
 {
 	char    *pointer;
@@ -171,6 +173,7 @@ static signed int GetInt (char *string, char *pattern, int base)
 	pointer += strlen(pattern);
 	return((int)(strtol (pointer, NULL, base)));
 }
+#endif
 
 /*  uncomment this if we ever need to read a float
 static double GetFloat (char *string, char *pattern)
@@ -186,7 +189,7 @@ static double GetFloat (char *string, char *pattern)
 }
 */
 
-
+#if 0
 static void GetString (char *dest, char *source, char *pattern, int maxSize)
 {
 	char    *pointer;
@@ -199,7 +202,7 @@ static void GetString (char *dest, char *source, char *pattern, int maxSize)
 	strncpy (dest, pointer, maxSize);
 	return;
 }
-
+#endif
 
 static void DestroyEndpoint (DeviceEndpoint *endpoint)
 {
@@ -507,6 +510,7 @@ static void AddConfig (Device *device, char *data)
 }
 #endif
 
+#if 0
 static void AddInterface (Device *device, char *data)
 {
 	DeviceConfig    *config;
@@ -566,8 +570,9 @@ static void AddInterface (Device *device, char *data)
 
 	return;
 }
+#endif
 
-
+#if 0
 static void AddEndpoint (Device *device, char *data)
 {
 	DeviceConfig    *config;
@@ -639,7 +644,7 @@ static void AddEndpoint (Device *device, char *data)
 	/* point the interface to the endpoint */
 	interface->endpoint[i] = endpoint;
 }
-
+#endif
 
 /* Build all of the names of the devices */
 static void NameDevice (Device *device)
@@ -740,16 +745,308 @@ void usb_initialize_list (void)
 	return;
 }
 
-static void device_parse(struct Device *parent, const char *directory);
+struct entity {
+	struct list_node list;
+	char *name;
+};
+
+static struct entity *entity_create(char *name)
+{
+	struct entity *e;
+
+	e = malloc(sizeof(*e));
+	memset(e, 0x00, sizeof(*e));
+	e->name = strdup(name);
+	return e;
+}
+
+static void entity_destroy(struct entity *e)
+{
+	list_del(&e->list);
+	free(e->name);
+	free(e);
+}
+
+static void entity_add(struct list_head *list, struct entity *e)
+{
+	struct entity *iter;
+
+	list_for_each(list, iter, list) {
+		if (strcmp(iter->name, e->name) > 0) {
+			list_add_before(list, &iter->list, &e->list);
+			goto exit;
+		}
+	}
+	list_add_tail(list, &e->list);
+
+exit:
+#if 0
+	printf("list = ");
+	list_for_each(list, iter, list) {
+		printf("%s ", iter->name);
+	}
+	printf("\n");
+#endif
+	return;
+}
+
+static void endpoint_parse(struct DeviceInterface *interface, const char *dir)
+{
+//	DeviceConfig    *config;
+	DeviceEndpoint  *endpoint;
+	int             i;
+//	int             configNum;
+//	int             interfaceNum;
+
+	/* find a place in this interface to place the endpoint */
+	for (i = 0; i < MAX_ENDPOINTS; ++i) {
+		if (interface->endpoint[i] == NULL) {
+			break;
+		}
+	}
+	if (i >= MAX_ENDPOINTS) {
+		/* ran out of room to hold this endpoint */
+		g_warning ("Too many endpoints for this device.\n");
+		return;
+	}
+
+	endpoint = (DeviceEndpoint *)g_malloc0 (sizeof(DeviceEndpoint));
+
+	endpoint->attribute	= sysfs_int(dir, "bmAttributes", 16);
+	endpoint->maxPacketSize	= sysfs_int(dir, "wMaxPacketSize", 16);
+
+	char *epdir	= sysfs_string(dir, "direction");
+	if (!strcmp(epdir, "in"))
+		endpoint->in = TRUE;
+	else
+		endpoint->in = FALSE;
+	free(epdir);
+
+	endpoint->type		= sysfs_string(dir, "type");
+	endpoint->interval	= sysfs_string(dir, "interval");
+	endpoint->address	= sysfs_int(dir, "bEndpointAddress", 16);
+
+	/* point the interface to the endpoint */
+	interface->endpoint[i] = endpoint;
+#if 0
+	char *direction;
+	char *type;
+
+	char *addr	= sysfs_read(dir, "bEndpointAddress");
+	char *eptype	= sysfs_read(dir, "type");
+	char *interval	= sysfs_read(dir, "interval");
+
+	type = eptype;
+	if (!strcmp(eptype, "Control"))
+		type = "Ctrl";
+	else if (!strcmp(eptype, "Interrupt"))
+		type = "Int.";
+
+	char *maxps_hex = sysfs_read(dir, "wMaxPacketSize");
+	int maxps_num = strtol(maxps_hex, NULL, 16);
+
+	/* max packet size is bits 0-10 with multiplicity values in bits 11 and 12 */
+	maxps_num = (maxps_num & 0x7ff) * (1 + ((maxps_num >> 11) & 0x03));
+
+	printf("E:  Ad=%s(%s) Atr=%s(%s) MxPS=%4d Ivl=%s\n",
+	       addr, direction, attr, type, maxps_num, interval);
+#endif
+}
+
+static void endpoints_parse(struct DeviceInterface *interface, const char *dir)
+{
+	DIR *d;
+	struct dirent *de;
+	LIST_HEAD(endpoint_list);
+	struct entity *temp;
+	struct entity *e;
+
+	d = opendir(dir);
+	if (!d) {
+		fprintf(stderr, "Can not open %s directory\n", dir);
+		return;
+	}
+
+	while ((de = readdir(d))) {
+		if (de->d_type == DT_DIR) {
+			/* See if this directory is an interface or not */
+			char endpoint[PATH_MAX];
+
+			snprintf(endpoint, PATH_MAX, "%s/%s", dir, de->d_name);
+			char *endpointaddr = sysfs_string(endpoint, "bEndpointAddress");
+			if (endpointaddr) {
+				e = entity_create(endpoint);
+				entity_add(&endpoint_list, e);
+				free(endpointaddr);
+			}
+
+		}
+	}
+
+	closedir(d);
+
+	list_for_each_safe(&endpoint_list, e, temp, list) {
+		endpoint_parse(interface, e->name);
+		entity_destroy(e);
+	}
+}
 
 static void interface_parse(struct Device *device, const char *dir)
 {
+	DeviceConfig    *config;
+	DeviceInterface *interface;
+	int             i;
+	int             configNum;
+
+	/* find the LAST config in the device */
+	configNum = -1;
+	for (i = 0; i < MAX_CONFIGS; ++i)
+		if (device->config[i])
+			configNum = i;
+	if (configNum == -1) {
+		/* no config to put this interface at, not good */
+		g_warning ("No config to put an interface at for this device.\n");
+		return;
+	}
+
+	config = device->config[configNum];
+
+	/* now find a place in this config to place the interface */
+	for (i = 0; i < MAX_INTERFACES; ++i)
+		if (config->interface[i] == NULL)
+			break;
+	if (i >= MAX_INTERFACES) {
+		/* ran out of room to hold this interface */
+		g_warning ("Too many interfaces for this device.\n");
+		return;
+	}
+
+	interface = (DeviceInterface *)g_malloc0 (sizeof(DeviceInterface));
+
+	interface->interfaceNumber	= sysfs_int(dir, "bInterfaceNumber", 10);
+	interface->alternateNumber	= sysfs_int(dir, "bAlternateSetting", 10);
+	interface->numEndpoints		= sysfs_int(dir, "bNumEndpoints", 10);
+	interface->subClass		= sysfs_int(dir, "bInterfaceSubClass", 16);
+	interface->protocol		= sysfs_int(dir, "bInterfaceProtocol", 16);
+
+	interface->class		= sysfs_string(dir, "bInterfaceClass");
+
+	char drivername[PATH_MAX];
+	char link[PATH_MAX];
+	struct stat sb;
+	int retval;
+	char *driver = "(none)";
+
+	/*
+	 * find the driver name by looking at the basename of the driver
+	 * symbolic link.
+	 * In bash this would just be:
+	 *	driver=`readlink $ifpath/driver`
+	 *	driver=`basename "$driver"`
+	 */
+	snprintf(drivername, PATH_MAX, "%s/driver", dir);
+	retval = stat(drivername, &sb);
+	memset(link, 0x00, sizeof(link));
+	if (!retval) {
+		retval = readlink(drivername, link, sizeof(link));
+		if (retval > 0) {
+			/*
+			 * crude 'basename', go to the end of the string and
+			 * walk back to find a '/' and then go forward one.
+			 */
+			driver = &link[strlen(link)];
+			while (driver[0] != '/')
+				driver--;
+			driver++;
+		}
+	}
+
+	interface->name = strdup(driver);
+
+	/* if this interface does not have a driver attached to it, save that info for later */
+	if (strncmp(interface->name, INTERFACE_DRIVERNAME_NODRIVER_STRING, INTERFACE_DRIVERNAME_STRING_MAXLENGTH) == 0) {
+		interface->driverAttached = FALSE;
+	} else {
+		interface->driverAttached = TRUE;
+	}
+
+	/* now point the config to this interface */
+	config->interface[i] = interface;
+
+	endpoints_parse(interface, dir);
 }
 
 static void interfaces_parse(struct Device *device, const char *dir)
 {
+	DIR *d;
+	struct dirent *de;
+	LIST_HEAD(interface_list);
+	struct entity *temp;
+	struct entity *e;
 
-	interface_parse(device, dir);
+	d = opendir(dir);
+	if (!d) {
+		fprintf(stderr, "Can not open %s directory\n", dir);
+		return;
+	}
+
+	while ((de = readdir(d))) {
+		if (de->d_type == DT_DIR) {
+			/* See if this directory is an interface or not */
+			char interface[PATH_MAX];
+
+			snprintf(interface, PATH_MAX, "%s/%s", dir, de->d_name);
+			char *interfacenum = sysfs_string(interface, "bInterfaceNumber");
+			if (interfacenum) {
+				e = entity_create(interface);
+				entity_add(&interface_list, e);
+				free(interfacenum);
+			}
+		}
+	}
+
+	closedir(d);
+
+	list_for_each_safe(&interface_list, e, temp, list) {
+		interface_parse(device, e->name);
+		entity_destroy(e);
+	}
+}
+
+static void device_parse(struct Device *parent, const char *directory);
+
+static void children_parse(struct Device *parent, const char *dir)
+{
+	int devcount = 0;
+	DIR *d;
+	struct dirent *de;
+
+	d = opendir(dir);
+	if (!d) {
+		fprintf(stderr, "Can not open %s directory\n", dir);
+		return;
+	}
+
+	while ((de = readdir(d))) {
+		if (de->d_type == DT_DIR) {
+			if (de->d_name[0] == '.')
+				continue;
+
+			/* See if this directory is an interface or not */
+			char device[PATH_MAX];
+
+			snprintf(device, PATH_MAX, "%s/%s", dir, de->d_name);
+			char *device_class = sysfs_string(device, "bDeviceClass");
+			if (device_class) {
+				++devcount;
+				device_parse(parent, device);
+			}
+
+			free(device_class);
+		}
+	}
+
+	closedir(d);
 }
 
 
@@ -759,6 +1056,8 @@ static void device_parse(struct Device *parent, const char *dir)
 
 	if (check_dir_present(dir))
 		return;
+
+	printf("%s ", dir);
 
 	device = (Device *)(g_malloc0 (sizeof(Device)));
 
@@ -786,6 +1085,7 @@ static void device_parse(struct Device *parent, const char *dir)
 		if (portnum < 0)
 			portnum = 0;
 	}
+	printf(" portnum %d\n", portnum);	// FIXME, is wrong...
 	device->portNumber	= portnum;
 	device->busNumber	= sysfs_int(dir, "busnum", 10);
 	device->deviceNumber	= sysfs_int(dir, "devnum", 10);
@@ -848,9 +1148,9 @@ static void device_parse(struct Device *parent, const char *dir)
 #endif
 
 	interfaces_parse(device, dir);
-#if 0
 
-	print_interfaces(directory);
+	children_parse(device, dir);
+#if 0
 
 	print_children(directory, devnum, level);
 #endif
@@ -907,11 +1207,11 @@ void usb_parse_line (char * line)
 			break;
 
 		case 'I': /* interface descriptor info */
-			AddInterface (lastDevice, line);
+			//AddInterface (lastDevice, line);
 			break;
 
 		case 'E': /* endpoint descriptor info */
-			AddEndpoint (lastDevice, line);
+			//AddEndpoint (lastDevice, line);
 			break;
 
 		default:
