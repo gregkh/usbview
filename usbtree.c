@@ -269,83 +269,10 @@ static void DisplayDevice (Device *parent, Device *device)
 }
 
 
-#define FILENAME_SIZE	1000;
-
-gchar devicesFile[1000];
-static gchar previousDevicesFile[1000];
-static time_t	previousChange;
-
-const char *verifyMessage =     " Verify that you have USB compiled into your kernel, \n"
-				" have the USB core modules loaded, and have the \n"
-				" usbdevfs filesystem mounted. ";
-
-void FileError (void);		// FIXME
-void FileError (void)
-{
-	GtkWidget *dialog;
-
-	dialog = gtk_message_dialog_new (
-				    GTK_WINDOW (windowMain),
-				    GTK_DIALOG_DESTROY_WITH_PARENT,
-				    GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE,
-				    "Can not open the file %s\n\n%s",
-				    devicesFile, verifyMessage);
-	gtk_dialog_run (GTK_DIALOG (dialog));
-	gtk_widget_destroy (dialog);
-}
-
-
-int FileHasChanged (void);	// FIXME
-int FileHasChanged (void)
-{
-	struct stat	file_info;
-	int		result;
-
-	if (strcmp (previousDevicesFile, devicesFile) == 0) {
-		/* we've looked at this filename before, so check the file time of the file */
-		result = stat (devicesFile, &file_info);
-		if (result) {
-			/* something wrong in looking for this file */
-			return 0;
-		}
-		
-		if (file_info.st_ctime == previousChange) {
-			/* no change */
-			return 0;
-		} else {
-			/* something changed */
-			previousChange = file_info.st_ctime;
-			return 1;
-		}
-	} else {
-		/* filenames are different, so save the name for the next time */
-		strcpy (previousDevicesFile, devicesFile);
-		return 1;
-	}
-}
-
-
 void LoadUSBTree (int refresh)
 {
 	static gboolean signal_connected = FALSE;
 	int             i;
-
-#if 0
-
-	/* if refresh is selected, then always do a refresh, otherwise look at the file first */
-	if (!refresh) {
-		if (!FileHasChanged()) {
-			return;
-		}
-	}
-
-	usbFile = fopen (devicesFile, "r");
-	if (usbFile == NULL) {
-		FileError();
-		return;
-	}
-
-#endif
 
 	Init();
 
@@ -375,14 +302,8 @@ void LoadUSBTree (int refresh)
 	return;
 }
 
-
-
-void initialize_stuff (void)
+void initialize_stuff(void)
 {
-	strcpy (devicesFile, "/sys/kernel/debug/usb/devices");
-	memset (&previousDevicesFile[0], 0x00, sizeof(previousDevicesFile));
-	previousChange = 0;
-
 	return;
 }
 

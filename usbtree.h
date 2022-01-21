@@ -13,7 +13,6 @@ enum {
 	N_COLUMNS
 };
 
-extern gchar		devicesFile[1000];
 extern GtkTreeStore	*treeStore;
 extern GtkWidget	*treeUSB;
 extern GtkWidget	*textDescriptionView;
