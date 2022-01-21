@@ -1,3 +1,8 @@
+version 2.2
+	- security issue fixed with polkit (CVE-2022-23220).
+	- copyright year fixups and updates
+	- tooltip added to explain red devices have no attached drivers
+
 version 2.1
 	- build warnings fixed
 	- increased max number of interfaces allowed, fixing problem with some
