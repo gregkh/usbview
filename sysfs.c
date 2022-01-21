@@ -144,7 +144,7 @@ static char *sysfs_string(const char *directory, const char *filename)
 
 	/* strip trailing \n off */
 	buffer[retval-1] = 0x00;
-	temp = strdup(buffer);
+	temp = g_strdup(buffer);
 	return temp;
 }
 
@@ -157,7 +157,7 @@ static int sysfs_int(const char *dir, const char *filename, int base)
 
 	int value = strtol(string, NULL, base);
 
-	free(string);
+	g_free(string);
 	return value;
 }
 
@@ -756,15 +756,15 @@ static struct entity *entity_create(char *name)
 
 	e = malloc(sizeof(*e));
 	memset(e, 0x00, sizeof(*e));
-	e->name = strdup(name);
+	e->name = g_strdup(name);
 	return e;
 }
 
 static void entity_destroy(struct entity *e)
 {
 	list_del(&e->list);
-	free(e->name);
-	free(e);
+	g_free(e->name);
+	g_free(e);
 }
 
 static void entity_add(struct list_head *list, struct entity *e)
@@ -820,7 +820,7 @@ static void endpoint_parse(struct DeviceInterface *interface, const char *dir)
 		endpoint->in = TRUE;
 	else
 		endpoint->in = FALSE;
-	free(epdir);
+	g_free(epdir);
 
 	endpoint->type		= sysfs_string(dir, "type");
 	endpoint->interval	= sysfs_string(dir, "interval");
@@ -877,7 +877,7 @@ static void endpoints_parse(struct DeviceInterface *interface, const char *dir)
 			if (endpointaddr) {
 				e = entity_create(endpoint);
 				entity_add(&endpoint_list, e);
-				free(endpointaddr);
+				g_free(endpointaddr);
 			}
 
 		}
@@ -961,7 +961,7 @@ static void interface_parse(struct Device *device, const char *dir)
 		}
 	}
 
-	interface->name = strdup(driver);
+	interface->name = g_strdup(driver);
 
 	/* if this interface does not have a driver attached to it, save that info for later */
 	if (strncmp(interface->name, INTERFACE_DRIVERNAME_NODRIVER_STRING, INTERFACE_DRIVERNAME_STRING_MAXLENGTH) == 0) {
@@ -1000,7 +1000,7 @@ static void interfaces_parse(struct Device *device, const char *dir)
 			if (interfacenum) {
 				e = entity_create(interface);
 				entity_add(&interface_list, e);
-				free(interfacenum);
+				g_free(interfacenum);
 			}
 		}
 	}
@@ -1042,7 +1042,7 @@ static void children_parse(struct Device *parent, const char *dir)
 				device_parse(parent, device);
 			}
 
-			free(device_class);
+			g_free(device_class);
 		}
 	}
 
@@ -1062,10 +1062,7 @@ static void device_parse(struct Device *parent, const char *dir)
 	if (parent == rootDevice)
 		device->level = 0;
 	else
-		device->level = 1;	// FIXME - not really needed anymore
-	device->parentNumber = 0;	// FIXME - not needed
-	device->count = 0;		// FIXME - not needed
-
+		device->level = 1;
 
 	int portnum = 0;
 
@@ -1111,6 +1108,15 @@ static void device_parse(struct Device *parent, const char *dir)
 	device->manufacturer	= sysfs_string(dir, "manufacturer");
 	device->product		= sysfs_string(dir, "product");
 	device->serialNumber	= sysfs_string(dir, "serial");
+	char *bcddevice = sysfs_string(dir, "bcdDevice");
+
+	device->revisionNumber  = (char *)g_malloc0 ((DEVICE_REVISION_NUMBER_SIZE) * sizeof(char));
+	device->revisionNumber[0] = bcddevice[0];
+	device->revisionNumber[1] = bcddevice[1];
+	device->revisionNumber[2] = '.';
+	device->revisionNumber[3] = bcddevice[2];
+	device->revisionNumber[4] = bcddevice[3];
+	g_free(bcddevice);
 
 	DeviceConfig    *config;
 
@@ -1124,16 +1130,7 @@ static void device_parse(struct Device *parent, const char *dir)
 	device->config[0] = config;
 
 #if 0
-	device->version         = (char *)g_malloc0 ((DEVICE_VERSION_SIZE) * sizeof(char));
-	device->class           = (char *)g_malloc0 ((DEVICE_CLASS_SIZE) * sizeof(char));
-	device->subClass        = (char *)g_malloc0 ((DEVICE_SUBCLASS_SIZE) * sizeof(char));
-	device->protocol        = (char *)g_malloc0 ((DEVICE_PROTOCOL_SIZE) * sizeof(char));
-	GetString (device->version, data, DEVICE_VERSION_STRING, DEVICE_VERSION_SIZE-1);
-	GetString (device->class, data, DEVICE_CLASS_STRING, DEVICE_CLASS_SIZE-1);
-	GetString (device->subClass, data, DEVICE_SUBCLASS_STRING, DEVICE_SUBCLASS_SIZE-1);
-	GetString (device->protocol, data, DEVICE_PROTOCOL_STRING, DEVICE_PROTOCOL_SIZE-1);
 	const char *classname = class_decode(devclass);
-
 #endif
 
 #if 0

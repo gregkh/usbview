@@ -127,10 +127,8 @@ typedef struct Device {
 	gchar		*name;
 	gint		busNumber;
 	gint		level;
-	gint		parentNumber;
 	gint		portNumber;
 	gint		connectorNumber;
-	gint		count;
 	gint		deviceNumber;
 	gint		speed;
 	gint		maxChildren;
