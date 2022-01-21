@@ -748,6 +748,8 @@ static void interface_parse(struct Device *device, const char *dir)
 
 static void interfaces_parse(struct Device *device, const char *dir)
 {
+
+	interface_parse(device, dir);
 }
 
 
@@ -845,7 +847,7 @@ static void device_parse(struct Device *parent, const char *dir)
 
 #endif
 
-	interfaces_parse(dir);
+	interfaces_parse(device, dir);
 #if 0
 
 	print_interfaces(directory);
