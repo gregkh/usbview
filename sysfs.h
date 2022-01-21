@@ -158,7 +158,6 @@ extern Device	*rootDevice;
 
 extern Device *usb_find_device (int deviceNumber, int busNumber);
 extern void usb_initialize_list	(void);
-extern void usb_parse_line	(char *line);
 void sysfs_parse(void);
 
 extern void usb_name_devices	(void);

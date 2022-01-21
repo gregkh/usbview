@@ -328,8 +328,6 @@ int FileHasChanged (void)
 void LoadUSBTree (int refresh)
 {
 	static gboolean signal_connected = FALSE;
-//	FILE            *usbFile;
-//	char            *dataLine;
 	int             i;
 
 #if 0
@@ -354,19 +352,6 @@ void LoadUSBTree (int refresh)
 	usb_initialize_list ();
 
 	sysfs_parse();
-
-#if 0
-	dataLine = (char *)g_malloc (MAX_LINE_SIZE);
-	/* read and parse lines from the file one by one */
-	while (!feof (usbFile)
-	       && fgets (dataLine, MAX_LINE_SIZE-1, usbFile) != NULL
-	       && dataLine[strlen(dataLine)-1] == '\n') {
-		usb_parse_line (dataLine);
-	}
-
-	fclose (usbFile);
-	g_free (dataLine);
-#endif
 	usb_name_devices ();
 
 	/* build our tree */
