@@ -1057,8 +1057,6 @@ static void device_parse(struct Device *parent, const char *dir)
 	if (check_dir_present(dir))
 		return;
 
-	printf("%s ", dir);
-
 	device = (Device *)(g_malloc0 (sizeof(Device)));
 
 	if (parent == rootDevice)
@@ -1074,18 +1072,17 @@ static void device_parse(struct Device *parent, const char *dir)
 	if (parent != rootDevice) {
 		/*
 		 * The port number is the last number of the file (if present)
-		 * before the '.' - 1
+		 * before the '.' or '-' - 1
 		 */
 		const char *temp = &dir[strlen(dir)];
 
-		while (*temp != '.')
+		while ((*temp != '.') && (*temp != '-'))
 			--temp;
 		temp++;
 		portnum = strtol(temp, NULL, 10) - 1;
 		if (portnum < 0)
 			portnum = 0;
 	}
-	printf(" portnum %d\n", portnum);	// FIXME, is wrong...
 	device->portNumber	= portnum;
 	device->busNumber	= sysfs_int(dir, "busnum", 10);
 	device->deviceNumber	= sysfs_int(dir, "devnum", 10);
