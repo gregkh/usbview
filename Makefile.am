@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# Copyright (c) 2022 Greg Kroah-Hartman <greg@kroah.com>
+#
 ## Process this file with automake to produce Makefile.in
 
 AM_CPPFLAGS = $(GTK_CFLAGS)
