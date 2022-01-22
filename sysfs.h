@@ -55,7 +55,7 @@ typedef struct DeviceBandwidth {
 	gint		numIsocRequests;
 } DeviceBandwidth;
 
-typedef struct Device {
+struct Device {
 	gchar		*name;
 	gint		busNumber;
 	gint		level;
@@ -82,11 +82,11 @@ typedef struct Device {
 	DeviceBandwidth	*bandwidth;
 	GtkWidget	*tree;
 	GtkTreeIter	leaf;
-} Device;
+};
 
-extern Device	*rootDevice;
+extern struct Device *rootDevice;
 
-Device *usb_find_device(int deviceNumber, int busNumber);
+struct Device *usb_find_device(int deviceNumber, int busNumber);
 void usb_initialize_list(void);
 void sysfs_parse(void);
 void usb_name_devices(void);

@@ -43,7 +43,7 @@ static void Init (void)
 
 static void PopulateListBox (int deviceId)
 {
-	Device  *device;
+	struct Device *device;
 	char    *string;
 	char    *tempString;
 	int     configNum;
@@ -217,7 +217,7 @@ static void SelectItem (GtkTreeSelection *selection, gpointer userData)
 }
 
 
-static void DisplayDevice (Device *parent, Device *device)
+static void DisplayDevice (struct Device *parent, struct Device *device)
 {
 	int		i;
 	int		configNum;

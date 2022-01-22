@@ -26,7 +26,7 @@
 #include "sysfs.h"
 #include "ccan/list/list.h"
 
-Device          *rootDevice = NULL;
+struct Device *rootDevice = NULL;
 static  DeviceBandwidth *currentBandwidth = NULL;
 
 
@@ -209,7 +209,7 @@ static void DestroyBandwidth (DeviceBandwidth *bandwidth)
 	return;
 }
 
-static void DestroyDevice (Device *device)
+static void DestroyDevice(struct Device *device)
 {
 	int     i;
 
@@ -242,10 +242,11 @@ static void DestroyDevice (Device *device)
 	return;
 }
 
-static Device *FindDeviceNode (Device *device, int deviceNumber, int busNumber)
+static struct Device *FindDeviceNode(struct Device *device,
+				     int deviceNumber, int busNumber)
 {
 	int     i;
-	Device  *result;
+	struct Device *result;
 
 	if (device == NULL)
 		return(NULL);
@@ -263,10 +264,10 @@ static Device *FindDeviceNode (Device *device, int deviceNumber, int busNumber)
 	return(NULL);
 }
 
-Device *usb_find_device (int deviceNumber, int busNumber)
+struct Device *usb_find_device (int deviceNumber, int busNumber)
 {
 	int     i;
-	Device  *result;
+	struct Device *result;
 
 	/* search through the tree to try to find a device */
 	for (i = 0; i < MAX_CHILDREN; ++i) {
@@ -278,7 +279,7 @@ Device *usb_find_device (int deviceNumber, int busNumber)
 }
 
 /* Build all of the names of the devices */
-static void NameDevice (Device *device)
+static void NameDevice (struct Device *device)
 {
 	int     configNum;
 	int     interfaceNum;
@@ -363,7 +364,7 @@ void usb_initialize_list (void)
 		rootDevice = NULL;
 	}
 
-	rootDevice = (Device *)g_malloc0 (sizeof(Device));
+	rootDevice = (struct Device *)g_malloc0 (sizeof(struct Device));
 
 	/* clean up any bandwidth devices */
 	if (currentBandwidth != NULL) {
@@ -667,12 +668,12 @@ static void children_parse(struct Device *parent, const char *dir)
 
 static void device_parse(struct Device *parent, const char *dir)
 {
-	Device  *device;
+	struct Device *device;
 
 	if (check_dir_present(dir))
 		return;
 
-	device = (Device *)(g_malloc0 (sizeof(Device)));
+	device = (struct Device *)(g_malloc0 (sizeof(struct Device)));
 
 	if (parent == rootDevice)
 		device->level = 0;
