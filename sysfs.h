@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /*
- * usbparse.h for USBView - a USB device viewer
- * Copyright (c) 1999, 2000, 2021 by Greg Kroah-Hartman, greg@kroah.com
+ * sysfs.h for USBView - a USB device viewer
+ * Copyright (c) 1999, 2000, 2021-2022 by Greg Kroah-Hartman, greg@kroah.com
  */
-#ifndef __USB_PARSE_H
-#define __USB_PARSE_H
+#ifndef __SYSFS_H
+#define __SYSFS_H
 
 /* should make these dynamic someday... */
 #define MAX_ENDPOINTS				32
@@ -27,7 +27,6 @@ typedef struct DeviceEndpoint {
 	gchar		*interval;
 } DeviceEndpoint;
 
-
 typedef struct DeviceInterface {
 	gchar		*name;
 	gint		interfaceNumber;
@@ -39,8 +38,6 @@ typedef struct DeviceInterface {
 	DeviceEndpoint	*endpoint[MAX_ENDPOINTS];
 	gboolean	driverAttached;		/* TRUE if driver is attached to this interface currently */
 } DeviceInterface;
-	
-
 
 typedef struct DeviceConfig {
 	gint		configNumber;
@@ -50,7 +47,6 @@ typedef struct DeviceConfig {
 	DeviceInterface	*interface[MAX_INTERFACES];
 } DeviceConfig;
 
-
 typedef struct DeviceBandwidth {
 	gint		allocated;
 	gint		total;
@@ -58,7 +54,6 @@ typedef struct DeviceBandwidth {
 	gint		numInterruptRequests;
 	gint		numIsocRequests;
 } DeviceBandwidth;
-
 
 typedef struct Device {
 	gchar		*name;
@@ -89,16 +84,13 @@ typedef struct Device {
 	GtkTreeIter	leaf;
 } Device;
 
-
 extern Device	*rootDevice;
-
 
 extern Device *usb_find_device (int deviceNumber, int busNumber);
 extern void usb_initialize_list	(void);
 void sysfs_parse(void);
 
 extern void usb_name_devices	(void);
-
 
 #endif	/* __USB_PARSE_H */
 
