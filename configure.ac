@@ -27,13 +27,6 @@ AC_ARG_ENABLE(desktop,
 	[desktop=yes])
 AC_MSG_RESULT([$desktop])
 
-AC_MSG_CHECKING([whether to try to install policykit file])
-AC_ARG_ENABLE(polkit,
-	[AS_HELP_STRING([--enable-policykit],[try to install policykit file (default=yes)])],
-	[polkit=$enableval],
-	[polkit=yes])
-AC_MSG_RESULT([$polkit])
-
 # Checks for programs.
 
 AC_PROG_CC
@@ -49,7 +42,6 @@ AS_IF([test "$have_convert" = "no"],
        icons=no])
 
 AM_CONDITIONAL(DESKTOP,[test x${desktop} = xyes])
-AM_CONDITIONAL(POLKIT,[test x${polkit} = xyes])
 AM_CONDITIONAL(ICONS,[test x${icons} = xyes])
 
 # Checks for libraries.
