@@ -1,3 +1,9 @@
+# usbview old-style "Changelog" file
+# SPDX-License-Identifier: GPL-2.0-only
+# Copyright (c) 2022 Greg Kroah-Hartman <greg@kroah.com>
+#
+#
+
 version 2.2
 	- security issue fixed with polkit (CVE-2022-23220).
 	- copyright year fixups and updates
