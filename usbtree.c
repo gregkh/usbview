@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * usbtree.c for USBView - a USB device viewer
- * Copyright (c) 1999, 2000, 2021 by Greg Kroah-Hartman, <greg@kroah.com>
+ * Copyright (c) 1999, 2000, 2021-2022 by Greg Kroah-Hartman, <greg@kroah.com>
  */
 #ifdef HAVE_CONFIG_H
 	#include <config.h>
