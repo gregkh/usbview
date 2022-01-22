@@ -166,7 +166,7 @@ static void DestroyEndpoint (DeviceEndpoint *endpoint)
 }
 
 
-static void DestroyInterface (DeviceInterface *interface)
+static void DestroyInterface (struct DeviceInterface *interface)
 {
 	int     i;
 
@@ -312,7 +312,7 @@ static void NameDevice (struct Device *device)
 				struct DeviceConfig *config = device->config[configNum];
 				for (interfaceNum = 0; interfaceNum < MAX_INTERFACES; ++interfaceNum) {
 					if (config->interface[interfaceNum]) {
-						DeviceInterface *interface = config->interface[interfaceNum];
+						struct DeviceInterface *interface = config->interface[interfaceNum];
 						if (interface->name != NULL) {
 							if (strstr (interface->name, "none") == NULL) {
 								if (strcmp (interface->name, "hid") == 0) {
@@ -510,7 +510,7 @@ static void endpoints_parse(struct DeviceInterface *interface, const char *dir)
 static void interface_parse(struct Device *device, const char *dir)
 {
 	struct DeviceConfig *config;
-	DeviceInterface *interface;
+	struct DeviceInterface *interface;
 	int             i;
 	int             configNum;
 
@@ -537,7 +537,7 @@ static void interface_parse(struct Device *device, const char *dir)
 		return;
 	}
 
-	interface = (DeviceInterface *)g_malloc0 (sizeof(DeviceInterface));
+	interface = g_malloc0(sizeof(struct DeviceInterface));
 
 	interface->interfaceNumber	= sysfs_int(dir, "bInterfaceNumber", 10);
 	interface->alternateNumber	= sysfs_int(dir, "bAlternateSetting", 10);

@@ -27,7 +27,7 @@ typedef struct DeviceEndpoint {
 	gchar		*interval;
 } DeviceEndpoint;
 
-typedef struct DeviceInterface {
+struct DeviceInterface {
 	gchar		*name;
 	gint		interfaceNumber;
 	gint		alternateNumber;
@@ -37,14 +37,14 @@ typedef struct DeviceInterface {
 	gchar		*class;
 	DeviceEndpoint	*endpoint[MAX_ENDPOINTS];
 	gboolean	driverAttached;		/* TRUE if driver is attached to this interface currently */
-} DeviceInterface;
+};
 
 struct DeviceConfig {
 	gint		configNumber;
 	gint		numInterfaces;
 	gint		attributes;
 	gchar		*maxPower;
-	DeviceInterface	*interface[MAX_INTERFACES];
+	struct DeviceInterface *interface[MAX_INTERFACES];
 };
 
 struct DeviceBandwidth {

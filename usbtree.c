@@ -157,7 +157,7 @@ static void PopulateListBox (int deviceId)
 			/* show all of the interfaces for this config */
 			for (interfaceNum = 0; interfaceNum < MAX_INTERFACES; ++interfaceNum) {
 				if (config->interface[interfaceNum]) {
-					DeviceInterface *interface = config->interface[interfaceNum];
+					struct DeviceInterface *interface = config->interface[interfaceNum];
 
 					sprintf (string, "\n\n\tInterface Number: %i", interface->interfaceNumber);
 					gtk_text_buffer_insert_at_cursor(textDescriptionBuffer, string, strlen(string));
@@ -240,7 +240,7 @@ static void DisplayDevice (struct Device *parent, struct Device *device)
 			struct DeviceConfig *config = device->config[configNum];
 			for (interfaceNum = 0; interfaceNum < MAX_INTERFACES; ++interfaceNum) {
 				if (config->interface[interfaceNum]) {
-					DeviceInterface *interface = config->interface[interfaceNum];
+					struct DeviceInterface *interface = config->interface[interfaceNum];
 					if (interface->driverAttached == FALSE) {
 						driverAttached = FALSE;
 						break;
