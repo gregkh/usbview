@@ -47,13 +47,13 @@ typedef struct DeviceConfig {
 	DeviceInterface	*interface[MAX_INTERFACES];
 } DeviceConfig;
 
-typedef struct DeviceBandwidth {
+struct DeviceBandwidth {
 	gint		allocated;
 	gint		total;
 	gint		percent;
 	gint		numInterruptRequests;
 	gint		numIsocRequests;
-} DeviceBandwidth;
+};
 
 struct Device {
 	gchar		*name;
@@ -79,7 +79,7 @@ struct Device {
 	DeviceConfig	*config[MAX_CONFIGS];
 	struct Device	*parent;
 	struct Device	*child[MAX_CHILDREN];
-	DeviceBandwidth	*bandwidth;
+	struct DeviceBandwidth	*bandwidth;
 	GtkWidget	*tree;
 	GtkTreeIter	leaf;
 };

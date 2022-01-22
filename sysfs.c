@@ -27,7 +27,7 @@
 #include "ccan/list/list.h"
 
 struct Device *rootDevice = NULL;
-static  DeviceBandwidth *currentBandwidth = NULL;
+static struct DeviceBandwidth *currentBandwidth = NULL;
 
 
 /* taken from all-io.h from util-linux repo */
@@ -203,7 +203,7 @@ static void DestroyConfig (DeviceConfig *config)
 }
 
 
-static void DestroyBandwidth (DeviceBandwidth *bandwidth)
+static void DestroyBandwidth (struct DeviceBandwidth *bandwidth)
 {
 	/* nothing dynamic in the bandwidth structure yet. */
 	return;
