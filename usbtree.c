@@ -145,7 +145,7 @@ static void PopulateListBox (int deviceId)
 	/* display all the info for the configs */
 	for (configNum = 0; configNum < MAX_CONFIGS; ++configNum) {
 		if (device->config[configNum]) {
-			DeviceConfig    *config = device->config[configNum];
+			struct DeviceConfig *config = device->config[configNum];
 
 			/* show this config */
 			sprintf (string, "\n\nConfig Number: %i\n\tNumber of Interfaces: %i\n\t"
@@ -237,7 +237,7 @@ static void DisplayDevice (struct Device *parent, struct Device *device)
 	/* determine if this device has drivers attached to all interfaces */
 	for (configNum = 0; configNum < MAX_CONFIGS; ++configNum) {
 		if (device->config[configNum]) {
-			DeviceConfig    *config = device->config[configNum];
+			struct DeviceConfig *config = device->config[configNum];
 			for (interfaceNum = 0; interfaceNum < MAX_INTERFACES; ++interfaceNum) {
 				if (config->interface[interfaceNum]) {
 					DeviceInterface *interface = config->interface[interfaceNum];

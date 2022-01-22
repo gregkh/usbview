@@ -185,7 +185,7 @@ static void DestroyInterface (DeviceInterface *interface)
 }
 
 
-static void DestroyConfig (DeviceConfig *config)
+static void DestroyConfig (struct DeviceConfig *config)
 {
 	int     i;
 
@@ -309,7 +309,7 @@ static void NameDevice (struct Device *device)
 		/* look through all of the interfaces of this device, adding them all up to form a name */
 		for (configNum = 0; configNum < MAX_CONFIGS; ++configNum) {
 			if (device->config[configNum]) {
-				DeviceConfig    *config = device->config[configNum];
+				struct DeviceConfig *config = device->config[configNum];
 				for (interfaceNum = 0; interfaceNum < MAX_INTERFACES; ++interfaceNum) {
 					if (config->interface[interfaceNum]) {
 						DeviceInterface *interface = config->interface[interfaceNum];
@@ -509,7 +509,7 @@ static void endpoints_parse(struct DeviceInterface *interface, const char *dir)
 
 static void interface_parse(struct Device *device, const char *dir)
 {
-	DeviceConfig    *config;
+	struct DeviceConfig *config;
 	DeviceInterface *interface;
 	int             i;
 	int             configNum;
@@ -734,9 +734,9 @@ static void device_parse(struct Device *parent, const char *dir)
 	device->revisionNumber[4] = bcddevice[3];
 	g_free(bcddevice);
 
-	DeviceConfig    *config;
+	struct DeviceConfig *config;
 
-	config = (DeviceConfig *)g_malloc0 (sizeof(DeviceConfig));
+	config = g_malloc0(sizeof(struct DeviceConfig));
 	config->maxPower        = sysfs_string(dir, "bMaxPower");
 	config->numInterfaces   = sysfs_int(dir, "bNumInterfaces", 10);
 	config->configNumber	= sysfs_int(dir, "bConfigurationValue", 10);

@@ -39,13 +39,13 @@ typedef struct DeviceInterface {
 	gboolean	driverAttached;		/* TRUE if driver is attached to this interface currently */
 } DeviceInterface;
 
-typedef struct DeviceConfig {
+struct DeviceConfig {
 	gint		configNumber;
 	gint		numInterfaces;
 	gint		attributes;
 	gchar		*maxPower;
 	DeviceInterface	*interface[MAX_INTERFACES];
-} DeviceConfig;
+};
 
 struct DeviceBandwidth {
 	gint		allocated;
@@ -76,7 +76,7 @@ struct Device {
 	gchar		*manufacturer;
 	gchar		*product;
 	gchar		*serialNumber;
-	DeviceConfig	*config[MAX_CONFIGS];
+	struct DeviceConfig *config[MAX_CONFIGS];
 	struct Device	*parent;
 	struct Device	*child[MAX_CHILDREN];
 	struct DeviceBandwidth	*bandwidth;
