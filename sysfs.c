@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /*
- * usbparse.c for USBView - a USB device viewer
- * Copyright (c) 1999, 2000 by Greg Kroah-Hartman, <greg@kroah.com>
+ * sysfs.c for USBView - a USB device viewer
+ * Copyright (c) 1999, 2000, 2022 by Greg Kroah-Hartman, <greg@kroah.com>
  */
 
 #ifdef HAVE_CONFIG_H
