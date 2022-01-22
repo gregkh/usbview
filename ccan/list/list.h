@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 /* Licensed under BSD-MIT - see LICENSE file for details */
 #ifndef CCAN_LIST_H
 #define CCAN_LIST_H

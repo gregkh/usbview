@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: CC0-1.0
 /* CC0 (Public domain) - see LICENSE file for details */
 #ifndef CCAN_CONTAINER_OF_H
 #define CCAN_CONTAINER_OF_H
