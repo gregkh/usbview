@@ -176,7 +176,7 @@ static void PopulateListBox (int deviceId)
 					/* show all of the endpoints for this interface */
 					for (endpointNum = 0; endpointNum < MAX_ENDPOINTS; ++endpointNum) {
 						if (interface->endpoint[endpointNum]) {
-							DeviceEndpoint  *endpoint = interface->endpoint[endpointNum];
+							struct DeviceEndpoint *endpoint = interface->endpoint[endpointNum];
 
 							sprintf (string, "\n\n\t\t\tEndpoint Address: %.2x\n\t\t\t"
 								 "Direction: %s\n\t\t\tAttribute: %i\n\t\t\t"

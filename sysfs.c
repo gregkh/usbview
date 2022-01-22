@@ -152,7 +152,7 @@ static int sysfs_int(const char *dir, const char *filename, int base)
 	return value;
 }
 
-static void DestroyEndpoint (DeviceEndpoint *endpoint)
+static void DestroyEndpoint (struct DeviceEndpoint *endpoint)
 {
 	if (endpoint == NULL)
 		return;
@@ -422,7 +422,7 @@ exit:
 
 static void endpoint_parse(struct DeviceInterface *interface, const char *dir)
 {
-	DeviceEndpoint  *endpoint;
+	struct DeviceEndpoint *endpoint;
 	int             i;
 
 	/* find a place in this interface to place the endpoint */
@@ -437,7 +437,7 @@ static void endpoint_parse(struct DeviceInterface *interface, const char *dir)
 		return;
 	}
 
-	endpoint = (DeviceEndpoint *)g_malloc0 (sizeof(DeviceEndpoint));
+	endpoint = g_malloc0(sizeof(struct DeviceEndpoint));
 
 	endpoint->attribute	= sysfs_int(dir, "bmAttributes", 16);
 	endpoint->maxPacketSize	= sysfs_int(dir, "wMaxPacketSize", 16);

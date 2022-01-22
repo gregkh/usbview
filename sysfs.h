@@ -18,14 +18,14 @@
 #define INTERFACE_DRIVERNAME_NODRIVER_STRING	"(none)"
 #define INTERFACE_DRIVERNAME_STRING_MAXLENGTH	50
 
-typedef struct DeviceEndpoint {
+struct DeviceEndpoint {
 	gint		address;
 	gboolean	in;		/* TRUE if in, FALSE if out */
 	gint		attribute;
 	gchar		*type;
 	gint		maxPacketSize;
 	gchar		*interval;
-} DeviceEndpoint;
+};
 
 struct DeviceInterface {
 	gchar		*name;
@@ -35,7 +35,7 @@ struct DeviceInterface {
 	gint		subClass;
 	gint		protocol;
 	gchar		*class;
-	DeviceEndpoint	*endpoint[MAX_ENDPOINTS];
+	struct DeviceEndpoint *endpoint[MAX_ENDPOINTS];
 	gboolean	driverAttached;		/* TRUE if driver is attached to this interface currently */
 };
 
