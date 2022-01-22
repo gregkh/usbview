@@ -19,14 +19,14 @@ extern GtkWidget	*textDescriptionView;
 extern GtkTextBuffer	*textDescriptionBuffer;
 extern GtkWidget	*windowMain;
 
-extern void	LoadUSBTree		(int refresh);
-extern void	initialize_stuff	(void);
-extern GtkWidget * create_windowMain	(void);
+void LoadUSBTree(int refresh);
+void initialize_stuff(void);
+GtkWidget *create_windowMain(void);
 
-extern void	on_buttonClose_clicked		(GtkButton *button, gpointer user_data);
-extern gboolean	on_window1_delete_event		(GtkWidget *widget, GdkEvent *event, gpointer user_data);
-extern void	on_buttonRefresh_clicked	(GtkButton *button, gpointer user_data);
-extern void	on_buttonAbout_clicked		(GtkButton *button, gpointer user_data);
-extern gint	on_timer_timeout		(gpointer user_data);
+void on_buttonClose_clicked(GtkButton *button, gpointer user_data);
+gboolean on_window1_delete_event(GtkWidget *widget, GdkEvent *event, gpointer user_data);
+void on_buttonRefresh_clicked(GtkButton *button, gpointer user_data);
+void on_buttonAbout_clicked(GtkButton *button, gpointer user_data);
+gint on_timer_timeout(gpointer user_data);
 
 #endif	/* __USB_TREE_H */

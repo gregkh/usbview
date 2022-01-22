@@ -86,11 +86,10 @@ typedef struct Device {
 
 extern Device	*rootDevice;
 
-extern Device *usb_find_device (int deviceNumber, int busNumber);
-extern void usb_initialize_list	(void);
+Device *usb_find_device(int deviceNumber, int busNumber);
+void usb_initialize_list(void);
 void sysfs_parse(void);
-
-extern void usb_name_devices	(void);
+void usb_name_devices(void);
 
 #endif	/* __USB_PARSE_H */
 
