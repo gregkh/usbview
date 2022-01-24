@@ -16,11 +16,8 @@
 int main (int argc, char *argv[])
 {
 	GtkWidget *window1;
-	gboolean is_pkexec = getenv("PKEXEC_UID") != NULL;
 
-	// only evalute command line parameters if not running in pkexec
-	// privilege escalation context to avoid potential attack vectors
-	gtk_init (is_pkexec ? NULL : &argc, is_pkexec ? NULL : &argv);
+	gtk_init (&argc, &argv);
 
 	initialize_stuff();
 

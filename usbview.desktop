@@ -2,7 +2,7 @@
 Name=USBView
 GenericName=USB Device Viewer
 Comment=View USB devices attached to system
-Exec=pkexec /usr/bin/usbview
+Exec=usbview
 Icon=usbview
 Terminal=false
 Type=Application

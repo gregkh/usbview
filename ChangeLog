@@ -3,6 +3,9 @@
 # Copyright (c) 2022 Greg Kroah-Hartman <greg@kroah.com>
 #
 
+version 3.0.x
+	- remove now-unnecessary policykit/pkexec support
+
 version 3.0
 	- remove need for debugfs/usbdevfs/usbfs file entirely, rely only on
 	  sysfs now.  This removes the need to run the program as root, which

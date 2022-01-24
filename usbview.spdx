@@ -147,12 +147,6 @@ LicenseConcluded: NOASSERTION
 LicenseInfoInFile: GPL-2.0-only
 FileCopyrightText: <text>Copyright (c) 1999, 2000 by Greg Kroah-Hartman, <greg@kroah.com></text>
 
-FileName: ./org.freedesktop.pkexec.usbview.policy
-SPDXID: SPDXRef-e1edd9361c0b2f7f3a558b68a2678aa1
-FileChecksum: SHA1: 0b4c127e5936771ffe64804894c307167d2cd258
-LicenseConcluded: NOASSERTION
-FileCopyrightText: NONE
-
 FileName: ./sysfs.c
 SPDXID: SPDXRef-63056d996de2c47eaf5023eb00f93cce
 FileChecksum: SHA1: a2233ef39597b84d31656e763859e31eb2f11a0b
