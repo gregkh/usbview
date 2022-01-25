@@ -26,6 +26,11 @@
 #include "sysfs.h"
 #include "ccan/list/list.h"
 
+// PATH_MAX is not defined in GNU Hurd. Here, 1000 is way more than sufficient.
+#ifndef PATH_MAX
+#define PATH_MAX 1000
+#endif
+
 struct Device *rootDevice = NULL;
 static struct DeviceBandwidth *currentBandwidth = NULL;
 
