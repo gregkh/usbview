@@ -31,8 +31,10 @@ EXTRA_DIST = $(man_MANS) usbview_icon.svg usbview.desktop	\
 	LICENSES/GPL-2.0-only.txt
 
 desktopdir = $(datadir)/applications
+metainfodir = $(datadir)/metainfo
 if DESKTOP
 desktop_DATA = usbview.desktop
+metainfo_DATA = com.kroah.usbview.metainfo.xml
 endif
 
 icondir = $(datadir)/icons
