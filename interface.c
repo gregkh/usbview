@@ -52,7 +52,7 @@ query_tooltip_cb(GtkWidget *widget, gint x, gint y,
 	/* Get the color, if it's red, set tooltip to indicate device has no driver. */
 	gtk_tree_model_get_iter(model, &iter, path);
 	gtk_tree_model_get(model, &iter, COLOR_COLUMN, &color, -1);
-	if (strncmp(color, "red", 4) == 0) {
+	if (color != NULL && strncmp(color, "red", 4) == 0) {
 		gtk_tooltip_set_text(tooltip, "This device has no attached driver");
 		return_val = TRUE;
 	}

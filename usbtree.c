@@ -224,7 +224,7 @@ static void DisplayDevice (struct Device *parent, struct Device *device)
 	int		interfaceNum;
 	gboolean	driverAttached = TRUE;
 	gint		deviceAddr;
-	const gchar	*color = "black";
+	const gchar	*color = NULL;
 
 	if (device == NULL)
 		return;
