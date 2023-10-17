@@ -150,7 +150,7 @@ static void PopulateListBox (int deviceId)
 			/* show this config */
 			sprintf (string, "\n\nConfig Number: %i\n\tNumber of Interfaces: %i\n\t"
 				 "Attributes: %.2x\n\tMaxPower Needed: %s",
-				 config->configNumber, config->numInterfaces, 
+				 config->configNumber, config->numInterfaces,
 				 config->attributes, config->maxPower);
 			gtk_text_buffer_insert_at_cursor(textDescriptionBuffer, string,strlen(string));
 
@@ -169,7 +169,7 @@ static void PopulateListBox (int deviceId)
 
 					sprintf (string, "\n\t\tAlternate Number: %i\n\t\tClass: %s\n\t\t"
 						 "Sub Class: %.2x\n\t\tProtocol: %.2x\n\t\tNumber of Endpoints: %i",
-						 interface->alternateNumber, interface->class, 
+						 interface->alternateNumber, interface->class,
 						 interface->subClass, interface->protocol, interface->numEndpoints);
 					gtk_text_buffer_insert_at_cursor(textDescriptionBuffer, string, strlen(string));
 
@@ -181,7 +181,7 @@ static void PopulateListBox (int deviceId)
 							sprintf (string, "\n\n\t\t\tEndpoint Address: %.2x\n\t\t\t"
 								 "Direction: %s\n\t\t\tAttribute: %i\n\t\t\t"
 								 "Type: %s\n\t\t\tMax Packet Size: %i\n\t\t\tInterval: %s",
-								 endpoint->address, 
+								 endpoint->address,
 								 endpoint->in ? "in" : "out", endpoint->attribute,
 								 endpoint->type, endpoint->maxPacketSize, endpoint->interval);
 							gtk_text_buffer_insert_at_cursor(textDescriptionBuffer, string,strlen(string));
@@ -224,6 +224,7 @@ static void DisplayDevice (struct Device *parent, struct Device *device)
 	int		interfaceNum;
 	gboolean	driverAttached = TRUE;
 	gint		deviceAddr;
+	const gchar	*tooltip = NULL;
 	const gchar	*color = NULL;
 
 	if (device == NULL)
@@ -251,13 +252,16 @@ static void DisplayDevice (struct Device *parent, struct Device *device)
 	}
 
 	/* change the color of this leaf if there are no drivers attached to it */
-	if (driverAttached == FALSE)
+	if (driverAttached == FALSE) {
 		color = "red";
+		tooltip = "This device has no attached driver";
+	}
 
 	gtk_tree_store_set (treeStore, &device->leaf,
 			    NAME_COLUMN, device->name,
 			    DEVICE_ADDR_COLUMN, deviceAddr,
 			    COLOR_COLUMN, color,
+			    TOOLTIP_COLUMN, tooltip,
 			    -1);
 
 	/* create all of the children's leafs */
@@ -306,4 +310,3 @@ void initialize_stuff(void)
 {
 	return;
 }
-
