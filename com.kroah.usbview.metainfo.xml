@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>com.kroah.usbview</id>
+
+  <name>USBView</name>
+  <summary>A USB device tree viewer</summary>
+
+  <metadata_license>FSFAP</metadata_license>
+  <project_license>GPL-2.0-only</project_license>
+
+  <description>
+    <p>
+      USBView is a small application to show what the device tree of the USB bus looks like.
+      It shows a graphical representation of the devices that are currently plugged in,
+      showing the topology of the USB bus.
+      It also displays information on each individual device on the bus.
+    </p>
+  </description>
+
+  <launchable type="desktop-id">usbview.desktop</launchable>
+
+  <content_rating/>
+</component>
