@@ -2,82 +2,82 @@ SPDXVersion: SPDX-2.1
 DataLicense: CC0-1.0
 SPDXID: SPDXRef-DOCUMENT
 DocumentName: usbview
-DocumentNamespace: http://spdx.org/spdxdocs/spdx-v2.1-11d2b718-a8d1-4376-8c1f-886c57ddd5b3
+DocumentNamespace: http://spdx.org/spdxdocs/spdx-v2.1-a9287fb6-2365-4719-9ccb-06ff24241234
 Creator: Person: Greg Kroah-Hartman <greg@kroah.com>
-Creator: Tool: reuse-0.14.0
-Created: 2022-01-22T11:23:10Z
+Creator: Tool: reuse-2.1.0
+Created: 2023-10-22T11:46:53Z
 CreatorComment: <text>This document was created automatically using available reuse information consistent with REUSE.</text>
-Relationship: SPDXRef-DOCUMENT describes SPDXRef-673f2c1a8c3004f07d378f435314b669
-Relationship: SPDXRef-DOCUMENT describes SPDXRef-04a6b90e3cfe0dc6e8f10ede01c05191
-Relationship: SPDXRef-DOCUMENT describes SPDXRef-39759fe63ae91295a48bec4dcd0a0762
-Relationship: SPDXRef-DOCUMENT describes SPDXRef-d52f70c965c82d8a37d8c8950fd120a3
-Relationship: SPDXRef-DOCUMENT describes SPDXRef-e41d20d67c2a939b92afc6c599a5a974
-Relationship: SPDXRef-DOCUMENT describes SPDXRef-7906b00fd63b5415920c41fc49e6fb43
-Relationship: SPDXRef-DOCUMENT describes SPDXRef-7175da89ad24909fd84552f21f561b20
-Relationship: SPDXRef-DOCUMENT describes SPDXRef-1192ac04f10621e46d56660f341c5d66
-Relationship: SPDXRef-DOCUMENT describes SPDXRef-d6ce407d5c010ccaa476eedc22198734
-Relationship: SPDXRef-DOCUMENT describes SPDXRef-0d2dd56a0375a0a4e6fde40118d29c30
-Relationship: SPDXRef-DOCUMENT describes SPDXRef-8720d2fcbfbd8dcc34d5a2faa6cf5104
-Relationship: SPDXRef-DOCUMENT describes SPDXRef-969469fe7cd98225e4c62d3a7dc254cd
-Relationship: SPDXRef-DOCUMENT describes SPDXRef-0552ff56de5eac46f3f8d381e94ae861
-Relationship: SPDXRef-DOCUMENT describes SPDXRef-fd6bb44930f596c9d0d7f434f7589128
-Relationship: SPDXRef-DOCUMENT describes SPDXRef-0001ef2ffce380dcbce145e7ce900ecb
-Relationship: SPDXRef-DOCUMENT describes SPDXRef-b57dbed9b0e4e0bb52bbbd3e693bf5df
-Relationship: SPDXRef-DOCUMENT describes SPDXRef-e1edd9361c0b2f7f3a558b68a2678aa1
-Relationship: SPDXRef-DOCUMENT describes SPDXRef-63056d996de2c47eaf5023eb00f93cce
-Relationship: SPDXRef-DOCUMENT describes SPDXRef-e0d496f2ff528d3c858c1733d38f50c9
-Relationship: SPDXRef-DOCUMENT describes SPDXRef-9ffc384e7f22d0ce9cb553b2062b6337
-Relationship: SPDXRef-DOCUMENT describes SPDXRef-02b4486ba2a14c8fc9f50a3d7f6b26ae
-Relationship: SPDXRef-DOCUMENT describes SPDXRef-3076232c6ee827e6dfff6ee8e5d32639
-Relationship: SPDXRef-DOCUMENT describes SPDXRef-244390ab94d2e8f188249fe6246d5a6d
-Relationship: SPDXRef-DOCUMENT describes SPDXRef-71e626b36c03f7a22f8cb6f69ce2295d
-Relationship: SPDXRef-DOCUMENT describes SPDXRef-c5ebf602de3adf711363bbd5f0f10efe
-Relationship: SPDXRef-DOCUMENT describes SPDXRef-e21daa131bcb92e83ca93aa640b66028
+Relationship: SPDXRef-DOCUMENT describes SPDXRef-af757b707a7df157d48678eff4e62eac
+Relationship: SPDXRef-DOCUMENT describes SPDXRef-e2153fe3ba8152ebc727c4824ee7337c
+Relationship: SPDXRef-DOCUMENT describes SPDXRef-2dcb4377a58651d5eae07b05e9e885b6
+Relationship: SPDXRef-DOCUMENT describes SPDXRef-fe8c25904ac74abf3a1c17a5eb2ab2b0
+Relationship: SPDXRef-DOCUMENT describes SPDXRef-15375c669ee326296dbc83ea7c483a41
+Relationship: SPDXRef-DOCUMENT describes SPDXRef-9284ac22f8518afa94b327efe9c90538
+Relationship: SPDXRef-DOCUMENT describes SPDXRef-d324605884e4312a7f2b6aee65cd4d2d
+Relationship: SPDXRef-DOCUMENT describes SPDXRef-c6b3a82be18f75ee7a05a568b391b8bf
+Relationship: SPDXRef-DOCUMENT describes SPDXRef-0f62092c7a9d9815df2df8b6958306af
+Relationship: SPDXRef-DOCUMENT describes SPDXRef-250f19b4509f500cc89de2b1abafeb0b
+Relationship: SPDXRef-DOCUMENT describes SPDXRef-ad9a5ec48dee5b9adb0a9e451e383969
+Relationship: SPDXRef-DOCUMENT describes SPDXRef-7652a985504658fd064d8bfae1747ee8
+Relationship: SPDXRef-DOCUMENT describes SPDXRef-75cee34b41a71b3b013d939d09811403
+Relationship: SPDXRef-DOCUMENT describes SPDXRef-485752152149364e149dba35cc73c625
+Relationship: SPDXRef-DOCUMENT describes SPDXRef-2183fb9e39bb1ff5bf7f481aa1cc3447
+Relationship: SPDXRef-DOCUMENT describes SPDXRef-66d380db6db52c0098ebf8c214e820b2
+Relationship: SPDXRef-DOCUMENT describes SPDXRef-ea03c6e3042f071effab145109806c78
+Relationship: SPDXRef-DOCUMENT describes SPDXRef-10cfedd6373ce3fe2296d60f9d36a186
+Relationship: SPDXRef-DOCUMENT describes SPDXRef-a8975d94e1e4ad48994c82ff48f25e14
+Relationship: SPDXRef-DOCUMENT describes SPDXRef-a3a19b39f90875a0b55f6c21900ed05a
+Relationship: SPDXRef-DOCUMENT describes SPDXRef-5864d4e966d35437c29027ba0646586c
+Relationship: SPDXRef-DOCUMENT describes SPDXRef-4e40e661397514e816ebd492e1710257
+Relationship: SPDXRef-DOCUMENT describes SPDXRef-43179f15ed6fe3b883ecc4941a2d8a94
+Relationship: SPDXRef-DOCUMENT describes SPDXRef-d718a08e04ac1847aea69b49fd11025a
+Relationship: SPDXRef-DOCUMENT describes SPDXRef-c78a2b046e621d98c0e20776c29a7edb
+Relationship: SPDXRef-DOCUMENT describes SPDXRef-a365373ff97b945c58093e6576db3d9a
 
 FileName: ./.gitignore
-SPDXID: SPDXRef-673f2c1a8c3004f07d378f435314b669
+SPDXID: SPDXRef-af757b707a7df157d48678eff4e62eac
 FileChecksum: SHA1: 3a74b2ff42504d7603466f2c4bd9fe19d5fa4872
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: GPL-2.0-only
 FileCopyrightText: <text>Copyright (c) 2022 Greg Kroah-Hartman <greg@kroah.com></text>
 
 FileName: ./AUTHORS
-SPDXID: SPDXRef-04a6b90e3cfe0dc6e8f10ede01c05191
+SPDXID: SPDXRef-e2153fe3ba8152ebc727c4824ee7337c
 FileChecksum: SHA1: 574f8d14fc250efe98fe9ebb15ec936e724495e3
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: GPL-2.0-only
 FileCopyrightText: <text>Copyright (c) 1999-2012, 2021-2022 by Greg Kroah-Hartman, greg@kroah.com</text>
 
 FileName: ./ChangeLog
-SPDXID: SPDXRef-39759fe63ae91295a48bec4dcd0a0762
-FileChecksum: SHA1: 36eac80a7434ae36a3b04de0e76e7a478dc7ac63
+SPDXID: SPDXRef-2dcb4377a58651d5eae07b05e9e885b6
+FileChecksum: SHA1: 1097d51bc4261dcd4ba93785b7e1c8f986230aed
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: GPL-2.0-only
 FileCopyrightText: <text>Copyright (c) 2022 Greg Kroah-Hartman <greg@kroah.com></text>
 
 FileName: ./Makefile.am
-SPDXID: SPDXRef-d52f70c965c82d8a37d8c8950fd120a3
-FileChecksum: SHA1: 1568d2119217e39124b49f5b06d6d7b22652c968
+SPDXID: SPDXRef-fe8c25904ac74abf3a1c17a5eb2ab2b0
+FileChecksum: SHA1: 5f1e843658aaecffce6ff494ec918f0eb86d29ef
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: GPL-2.0-only
 FileCopyrightText: <text>Copyright (c) 2022 Greg Kroah-Hartman <greg@kroah.com></text>
 
 FileName: ./README
-SPDXID: SPDXRef-e41d20d67c2a939b92afc6c599a5a974
+SPDXID: SPDXRef-15375c669ee326296dbc83ea7c483a41
 FileChecksum: SHA1: f5185253ff8f16abb0dfb485667ee3e482b8eeb1
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: GPL-2.0-only
 FileCopyrightText: <text>Copyright (c) 1999-2012, 2021-2022 by Greg Kroah-Hartman, greg@kroah.com</text>
 
 FileName: ./autogen.sh
-SPDXID: SPDXRef-7906b00fd63b5415920c41fc49e6fb43
+SPDXID: SPDXRef-9284ac22f8518afa94b327efe9c90538
 FileChecksum: SHA1: ce6330b2ba084b3c2fb2d34571dc3bdc3adb0b4e
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: GPL-2.0-only
 FileCopyrightText: <text>Copyright (c) 2009,2010 Greg Kroah-Hartman <gregkh@suse.de></text>
 
 FileName: ./callbacks.c
-SPDXID: SPDXRef-7175da89ad24909fd84552f21f561b20
+SPDXID: SPDXRef-d324605884e4312a7f2b6aee65cd4d2d
 FileChecksum: SHA1: ca943582e897159dad2f1b406db7eb7c3f792ce0
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: GPL-2.0-only
@@ -85,124 +85,130 @@ FileCopyrightText: <text>Copyright (c) 1999, 2000 by Greg Kroah-Hartman, <greg@k
 Copyright © 1999-2012, 2021-2022",</text>
 
 FileName: ./ccan/check_type/check_type.h
-SPDXID: SPDXRef-1192ac04f10621e46d56660f341c5d66
+SPDXID: SPDXRef-c6b3a82be18f75ee7a05a568b391b8bf
 FileChecksum: SHA1: dcb6d2f713d116e0b63810a8de435614adc2c396
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: CC0-1.0
 FileCopyrightText: NONE
 
 FileName: ./ccan/config.h
-SPDXID: SPDXRef-d6ce407d5c010ccaa476eedc22198734
+SPDXID: SPDXRef-0f62092c7a9d9815df2df8b6958306af
 FileChecksum: SHA1: cfde79b783ad2f94ed5da27236f366411376eaa7
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: CC0-1.0
 FileCopyrightText: NONE
 
 FileName: ./ccan/container_of/container_of.h
-SPDXID: SPDXRef-0d2dd56a0375a0a4e6fde40118d29c30
+SPDXID: SPDXRef-250f19b4509f500cc89de2b1abafeb0b
 FileChecksum: SHA1: 659d386d04ea43b6342138d166fe6f3a21b988fd
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: CC0-1.0
 FileCopyrightText: NONE
 
 FileName: ./ccan/list/list.h
-SPDXID: SPDXRef-8720d2fcbfbd8dcc34d5a2faa6cf5104
+SPDXID: SPDXRef-ad9a5ec48dee5b9adb0a9e451e383969
 FileChecksum: SHA1: 74d16d358dba58139a36e75096fef780b5b48c0e
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: MIT
 FileCopyrightText: NONE
 
 FileName: ./ccan/str/str.h
-SPDXID: SPDXRef-969469fe7cd98225e4c62d3a7dc254cd
+SPDXID: SPDXRef-7652a985504658fd064d8bfae1747ee8
 FileChecksum: SHA1: faa0d06168c5518dc503c398293a7e8ea96be94e
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: CC0-1.0
 FileCopyrightText: NONE
 
 FileName: ./ccan/str/str_debug.h
-SPDXID: SPDXRef-0552ff56de5eac46f3f8d381e94ae861
+SPDXID: SPDXRef-75cee34b41a71b3b013d939d09811403
 FileChecksum: SHA1: 231540f6e3e0fc02299f0169ab221948cf1fe6cb
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: CC0-1.0
 FileCopyrightText: NONE
 
+FileName: ./com.kroah.usbview.metainfo.xml
+SPDXID: SPDXRef-485752152149364e149dba35cc73c625
+FileChecksum: SHA1: 1c5d9430f6b1551b1e940d40b0775b13dbed92d4
+LicenseConcluded: NOASSERTION
+FileCopyrightText: NONE
+
 FileName: ./configure.ac
-SPDXID: SPDXRef-fd6bb44930f596c9d0d7f434f7589128
-FileChecksum: SHA1: 2c9a3ab29efdcad954a45a9f2b06cb2845977f38
+SPDXID: SPDXRef-2183fb9e39bb1ff5bf7f481aa1cc3447
+FileChecksum: SHA1: 4028b78a87b40d82ce5fcb2fea8637340ab93d38
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: GPL-2.0-only
 FileCopyrightText: <text>Copyright (c) 2022 Greg Kroah-Hartman <greg@kroah.com></text>
 
 FileName: ./interface.c
-SPDXID: SPDXRef-0001ef2ffce380dcbce145e7ce900ecb
-FileChecksum: SHA1: 69f3a62bab2c126604e7f2af7a69695f690ec942
+SPDXID: SPDXRef-66d380db6db52c0098ebf8c214e820b2
+FileChecksum: SHA1: 5ff88186bc5f1cecff9312eabc61544f47abe700
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: GPL-2.0-only
 FileCopyrightText: <text>Copyright (c) 1999, 2000, 2009 by Greg Kroah-Hartman, <greg@kroah.com></text>
 
 FileName: ./main.c
-SPDXID: SPDXRef-b57dbed9b0e4e0bb52bbbd3e693bf5df
-FileChecksum: SHA1: 2bbd95ff4e3dfe715e2c5478704e83c2bd6c5e5f
+SPDXID: SPDXRef-ea03c6e3042f071effab145109806c78
+FileChecksum: SHA1: fef900212573c442cd835cc70b3dc42d6c19f029
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: GPL-2.0-only
 FileCopyrightText: <text>Copyright (c) 1999, 2000 by Greg Kroah-Hartman, <greg@kroah.com></text>
 
 FileName: ./sysfs.c
-SPDXID: SPDXRef-63056d996de2c47eaf5023eb00f93cce
+SPDXID: SPDXRef-10cfedd6373ce3fe2296d60f9d36a186
 FileChecksum: SHA1: a2233ef39597b84d31656e763859e31eb2f11a0b
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: GPL-2.0-only
 FileCopyrightText: <text>Copyright (c) 1999, 2000, 2022 by Greg Kroah-Hartman, <greg@kroah.com></text>
 
 FileName: ./sysfs.h
-SPDXID: SPDXRef-e0d496f2ff528d3c858c1733d38f50c9
+SPDXID: SPDXRef-a8975d94e1e4ad48994c82ff48f25e14
 FileChecksum: SHA1: a84039bb08513853edd3e9370eaef2c74d105c5f
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: GPL-2.0-only
 FileCopyrightText: <text>Copyright (c) 1999, 2000, 2021-2022 by Greg Kroah-Hartman, greg@kroah.com</text>
 
 FileName: ./usbtree.c
-SPDXID: SPDXRef-9ffc384e7f22d0ce9cb553b2062b6337
-FileChecksum: SHA1: c6a3d3fa6249e29cf453cc2eb85148a5b7fe9af1
+SPDXID: SPDXRef-a3a19b39f90875a0b55f6c21900ed05a
+FileChecksum: SHA1: 847f50c52060a860aa304de04378db400a27be78
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: GPL-2.0-only
 FileCopyrightText: <text>Copyright (c) 1999, 2000, 2021-2022 by Greg Kroah-Hartman, <greg@kroah.com></text>
 
 FileName: ./usbtree.h
-SPDXID: SPDXRef-02b4486ba2a14c8fc9f50a3d7f6b26ae
-FileChecksum: SHA1: 8d1470559ff32e64c80d2b1f3989e36f5ad3dd5d
+SPDXID: SPDXRef-5864d4e966d35437c29027ba0646586c
+FileChecksum: SHA1: 93ed93968376f93c3648618221bce0bc4905f709
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: GPL-2.0-only
 FileCopyrightText: <text>Copyright (c) 1999, 2000 by Greg Kroah-Hartman, greg@kroah.com</text>
 
 FileName: ./usbview.8
-SPDXID: SPDXRef-3076232c6ee827e6dfff6ee8e5d32639
+SPDXID: SPDXRef-4e40e661397514e816ebd492e1710257
 FileChecksum: SHA1: 1a4eeeecfa4447d3600acb422b0028960f6a6c36
 LicenseConcluded: NOASSERTION
 LicenseInfoInFile: GPL-2.0-only
 FileCopyrightText: <text>Copyright (c) 1999-2012, 2021-2022 by Greg Kroah-Hartman <greg@kroah.com></text>
 
 FileName: ./usbview.desktop
-SPDXID: SPDXRef-244390ab94d2e8f188249fe6246d5a6d
-FileChecksum: SHA1: a0a53e7894883e0f9bee231d470db84d9d039467
+SPDXID: SPDXRef-43179f15ed6fe3b883ecc4941a2d8a94
+FileChecksum: SHA1: fb5e92853ecb872b1df4aa65efb2859f8624c75d
 LicenseConcluded: NOASSERTION
 FileCopyrightText: NONE
 
 FileName: ./usbview_icon.svg
-SPDXID: SPDXRef-71e626b36c03f7a22f8cb6f69ce2295d
+SPDXID: SPDXRef-d718a08e04ac1847aea69b49fd11025a
 FileChecksum: SHA1: 9490ae1ab95b9e87d8ae962d45b29b03e696f7b3
 LicenseConcluded: NOASSERTION
 FileCopyrightText: NONE
 
 FileName: ./usbview_logo.xcf
-SPDXID: SPDXRef-c5ebf602de3adf711363bbd5f0f10efe
+SPDXID: SPDXRef-c78a2b046e621d98c0e20776c29a7edb
 FileChecksum: SHA1: 6a720f1ea150258c58a75bf195cd4962d4078706
 LicenseConcluded: NOASSERTION
 FileCopyrightText: <text>Copyright (C) 1999-2012 ...          �   !   ?�               	          "          
 Copyright (C) 1999-2012\nGreg Kroah-Hartman &lt;greg@kroah.com&gt;</span></span></markup>")</text>
 
 FileName: ./usbview_logo.xpm
-SPDXID: SPDXRef-e21daa131bcb92e83ca93aa640b66028
+SPDXID: SPDXRef-a365373ff97b945c58093e6576db3d9a
 FileChecksum: SHA1: dafd2b5f02ae9e4605dd36035cc3d507574e5325
 LicenseConcluded: NOASSERTION
 FileCopyrightText: NONE

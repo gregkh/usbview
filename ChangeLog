@@ -1,10 +1,13 @@
 # usbview old-style "Changelog" file
 # SPDX-License-Identifier: GPL-2.0-only
-# Copyright (c) 2022 Greg Kroah-Hartman <greg@kroah.com>
+# Copyright (c) 2022-2023 Greg Kroah-Hartman <greg@kroah.com>
 #
 
-version 3.0.x
+version 3.1
 	- remove now-unnecessary policykit/pkexec support
+	- appstream metadata added
+	- gtk+ dark theme fixes
+	- gtk+ tooltip fixes
 
 version 3.0
 	- remove need for debugfs/usbdevfs/usbfs file entirely, rely only on

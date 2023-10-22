@@ -28,6 +28,7 @@ interface.o: $(icon_bitmaps_xpm)
 
 EXTRA_DIST = $(man_MANS) usbview_icon.svg usbview.desktop	\
 	usbview_logo.xcf				\
+	com.kroah.usbview.metainfo.xml			\
 	LICENSES/GPL-2.0-only.txt
 
 desktopdir = $(datadir)/applications
