@@ -204,8 +204,7 @@ FileName: ./usbview_logo.xcf
 SPDXID: SPDXRef-c78a2b046e621d98c0e20776c29a7edb
 FileChecksum: SHA1: 6a720f1ea150258c58a75bf195cd4962d4078706
 LicenseConcluded: NOASSERTION
-FileCopyrightText: <text>Copyright (C) 1999-2012 ...          �   !   ?�               	          "          
-Copyright (C) 1999-2012\nGreg Kroah-Hartman &lt;greg@kroah.com&gt;</span></span></markup>")</text>
+FileCopyrightText: <text>Copyright (C) 1999-2012\nGreg Kroah-Hartman &lt;greg@kroah.com&gt;</text>
 
 FileName: ./usbview_logo.xpm
 SPDXID: SPDXRef-a365373ff97b945c58093e6576db3d9a
