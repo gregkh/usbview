@@ -57,7 +57,7 @@ endif
 $(icon_bitmaps_png): usbview_icon.svg
 	mkdir -p $$(dirname $@)
 if HAVE_CONVERT
-	$(CONVERT) -geometry $$(basename $$(dirname $$(dirname $@))) $< $@
+	$(CONVERT) -background none -density 300x300 -geometry $$(basename $$(dirname $$(dirname $@))) -density 96x96 $< $@
 else
 	echo "error: unable to generate $@ from $<"
 	exit 1
@@ -66,7 +66,7 @@ endif
 $(icon_bitmaps_xpm): usbview_icon.svg
 	mkdir -p $$(dirname $@)
 if HAVE_CONVERT
-	$(CONVERT) -geometry $$(basename $$(dirname $$(dirname $@))) $< $@
+	$(CONVERT) -background none -density 300x300 -geometry $$(basename $$(dirname $$(dirname $@))) -density 96x96 $< $@
 else
 	echo "error: unable to generate $@ from $<"
 	exit 1
