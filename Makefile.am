@@ -3,8 +3,8 @@
 #
 ## Process this file with automake to produce Makefile.in
 
-AM_CPPFLAGS = $(GTK_CFLAGS)
-usbview_LDADD = $(GTK_LIBS)
+AM_CPPFLAGS = $(GTK_CFLAGS) $(LIBUDEV_CFLAGS)
+usbview_LDADD = $(GTK_LIBS) $(LIBUDEV_LIBS)
 
 bin_PROGRAMS = usbview
 
