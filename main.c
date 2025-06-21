@@ -4,117 +4,76 @@
  * Copyright (c) 1999, 2000 by Greg Kroah-Hartman, <greg@kroah.com>
  */
 #ifdef HAVE_CONFIG_H
-#include <config.h>
+	#include <config.h>
 #endif
 
 #include <stdlib.h>
 
 #include <gtk/gtk.h>
 
+#include <sys/inotify.h>
+
 #include "usbtree.h"
 
-#include <libudev.h>
-#include <glib-unix.h>
 
-static struct udev *udev = NULL;
-static struct udev_monitor *mon = NULL;
-static guint udev_source_id = 0;
+static int inotify_fd;
 
-static gboolean udev_mon_cb(gint fd, GIOCondition condition, gpointer user_data)
+static gboolean inotify_cb(GIOChannel *source, GIOCondition condition, gpointer data)
 {
-    struct udev_device *dev;
-    struct udev_device *parent_dev;
-    const char *action;
-    const char *dev_id_str;
+	char buf[4096];
+	ssize_t len;
+	struct inotify_event *event;
 
-    dev = udev_monitor_receive_device(mon);
-    if (!dev)
-    {
-        g_warning("failed to receive device from udev monitor");
-        return TRUE;
-    }
+	while ((len = read(inotify_fd, buf, sizeof(buf))) > 0) {
+	}
+	
+	LoadUSBTree(666);
 
-    action = udev_device_get_action(dev);
-    if (action)
-    {
-        parent_dev = udev_device_get_parent(dev);
-        dev_id_str = udev_device_get_property_value(dev, "ID_MODEL");
-
-        const char *devtype = udev_device_get_devtype(dev);
-        if (devtype && strcmp(devtype, "usb_device") != 0)
-        {
-            udev_device_unref(dev);
-            return TRUE;
-        }
-
-        if (strncmp(action, "remove", 7) == 0)
-        {
-            g_message("a device was removed (from %s)", udev_device_get_property_value(parent_dev, "ID_MODEL"));
-        }
-        else if (strncmp(action, "add", 3) == 0)
-        {
-            g_message("add a device: > %s < (from %s)",
-                      dev_id_str ? dev_id_str : "unknown",
-                      udev_device_get_property_value(parent_dev, "ID_MODEL"));
-        }
-        else
-        {
-            g_debug("udev action: %s for device: %s (%s)",
-                      action,
-                      udev_device_get_property_value(dev, "ID_MODEL"),
-                      parent_dev ? udev_device_get_property_value(parent_dev, "ID_MODEL") : "");
-        }
-
-        LoadUSBTree(666);
-    }
-
-    udev_device_unref(dev);
-    return TRUE;
+	return TRUE;
 }
 
-static void init_udev_mon(void)
+static void init_inotify(void) 
 {
-    udev = udev_new();
-    if (!udev)
-    {
-        g_warning("failed to create udev context");
-        return;
-    }
+	const char *path = "/sys/bus/usb/devices";
+	inotify_fd = inotify_init1(IN_NONBLOCK);
+	if (inotify_fd < 0) {
+		perror("inotify_init1");
+		return;
+	}
 
-    mon = udev_monitor_new_from_netlink(udev, "udev");
-    if (!mon)
-    {
-        g_warning("failed to create udev monitor");
-        udev_unref(udev);
-        return;
-    }
+	if (inotify_add_watch(inotify_fd, path, IN_ALL_EVENTS) < 0) {
+		perror("inotify_add_watch");
+		close(inotify_fd);
+		inotify_fd = -1;
+		return;
+	}
 
-    udev_monitor_filter_add_match_subsystem_devtype(mon, "usb", NULL);
-    udev_monitor_enable_receiving(mon);
-
-    udev_source_id = g_unix_fd_add(udev_monitor_get_fd(mon), G_IO_IN | G_IO_ERR | G_IO_HUP,
-                                   udev_mon_cb, NULL);
+	GIOChannel *ch = g_io_channel_unix_new(inotify_fd);
+	g_io_add_watch(ch, G_IO_IN, inotify_cb, NULL);
+	g_io_channel_unref(ch);
 }
 
-int main(int argc, char *argv[])
+
+int main (int argc, char *argv[])
 {
-    GtkWidget *window1;
+	GtkWidget *window1;
 
-    gtk_init(&argc, &argv);
-    // Initialize udev monitor
-    init_udev_mon();
+	gtk_init (&argc, &argv);
 
-    initialize_stuff();
+	initialize_stuff();
 
-    /*
-     * The following code was added by Glade to create one of each component
-     * (except popup menus), just so that you see something after building
-     * the project. Delete any components that you don't want shown initially.
-     */
-    window1 = create_windowMain();
-    gtk_widget_show(window1);
+	init_inotify();
 
-    LoadUSBTree(0);
-    gtk_main();
-    return 0;
+	/*
+	 * The following code was added by Glade to create one of each component
+	 * (except popup menus), just so that you see something after building
+	 * the project. Delete any components that you don't want shown initially.
+	 */
+	window1 = create_windowMain ();
+	gtk_widget_show (window1);
+
+	LoadUSBTree(0);
+	gtk_main ();
+	return 0;
 }
+

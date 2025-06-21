@@ -48,7 +48,6 @@ AM_CONDITIONAL(ICONS,[test x${icons} = xyes])
 
 AC_SEARCH_LIBS([strerror],[cposix])
 PKG_CHECK_MODULES([GTK], [gtk+-3.0 >= 3.0])
-PKG_CHECK_MODULES([LIBUDEV], [libudev])
 AC_SUBST([GTK_FLAGS])
 AC_SUBST([GTK_LIBS])
 

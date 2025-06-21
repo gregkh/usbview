@@ -1,3 +1,7 @@
 {
-    "stm32-for-vscode.openOCDPath": false
+    "stm32-for-vscode.openOCDPath": false,
+    "files.associations": {
+        ".fantomasignore": "ignore",
+        "usbtree.h": "c"
+    }
 }
