@@ -19,6 +19,7 @@ extern GtkWidget	*treeUSB;
 extern GtkWidget	*textDescriptionView;
 extern GtkTextBuffer	*textDescriptionBuffer;
 extern GtkWidget	*windowMain;
+extern GMainLoop	*mainloop;
 
 void LoadUSBTree(int refresh);
 void initialize_stuff(void);

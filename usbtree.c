@@ -67,7 +67,7 @@ static void PopulateListBox (int deviceId)
 
 	/* freeze the display */
 	/* this keeps the annoying scroll from happening */
-	gtk_widget_freeze_child_notify(textDescriptionView);
+	/* gtk_widget_freeze_child_notify is removed in GTK4 */
 
 	string = (char *)g_malloc (1000);
 
@@ -194,7 +194,7 @@ static void PopulateListBox (int deviceId)
 	}
 
 	/* thaw the display */
-	gtk_widget_thaw_child_notify(textDescriptionView);
+	/* gtk_widget_thaw_child_notify is removed in GTK4 */
 
 	/* clean up our string */
 	g_free (string);
@@ -291,7 +291,7 @@ void LoadUSBTree (int refresh)
 		DisplayDevice (rootDevice, rootDevice->child[i]);
 	}
 
-	gtk_widget_show (treeUSB);
+	gtk_widget_set_visible (treeUSB, TRUE);
 
 	gtk_tree_view_expand_all (GTK_TREE_VIEW (treeUSB));
 

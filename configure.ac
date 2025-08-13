@@ -4,8 +4,8 @@ dnl Process this file with autoconf to produce a configure script.
 
 # Prologue.
 
-AC_PREREQ([2.69])
-AC_INIT([USBView],[3.1],[Greg Kroah-Hartman <greg@kroah.com>],[usbview],[http://www.kroah.com/linux-usb/])
+AC_PREREQ([2.72])
+AC_INIT([USBView],[3.2],[Greg Kroah-Hartman <greg@kroah.com>],[usbview],[http://www.kroah.com/linux-usb/])
 AC_CONFIG_SRCDIR([usbtree.c])
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE([foreign subdir-objects -Wall])
@@ -47,7 +47,7 @@ AM_CONDITIONAL(ICONS,[test x${icons} = xyes])
 # Checks for libraries.
 
 AC_SEARCH_LIBS([strerror],[cposix])
-PKG_CHECK_MODULES([GTK], [gtk+-3.0 >= 3.0])
+PKG_CHECK_MODULES([GTK], [gtk4 >= 4.0])
 AC_SUBST([GTK_FLAGS])
 AC_SUBST([GTK_LIBS])
 

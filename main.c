@@ -17,7 +17,7 @@ int main (int argc, char *argv[])
 {
 	GtkWidget *window1;
 
-	gtk_init (&argc, &argv);
+	gtk_init ();
 
 	initialize_stuff();
 
@@ -27,10 +27,15 @@ int main (int argc, char *argv[])
 	 * the project. Delete any components that you don't want shown initially.
 	 */
 	window1 = create_windowMain ();
-	gtk_widget_show (window1);
+	gtk_widget_set_visible (window1, TRUE);
 
 	LoadUSBTree(0);
-	gtk_main ();
+	
+	/* Create and run main loop */
+	mainloop = g_main_loop_new (NULL, FALSE);
+	g_main_loop_run (mainloop);
+	g_main_loop_unref (mainloop);
+	
 	return 0;
 }
 

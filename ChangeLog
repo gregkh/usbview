@@ -3,6 +3,9 @@
 # Copyright (c) 2022-2023 Greg Kroah-Hartman <greg@kroah.com>
 #
 
+version 3.2
+	- port to Gtk4
+
 version 3.1
 	- remove now-unnecessary policykit/pkexec support
 	- appstream metadata added
