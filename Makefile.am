@@ -24,8 +24,6 @@ usbview_SOURCES =		\
 	ccan/list/list.h		\
 	usbview_logo.xpm
 
-interface.o: $(icon_bitmaps_xpm)
-
 EXTRA_DIST = $(man_MANS) usbview_icon.svg usbview.desktop	\
 	usbview_logo.xcf				\
 	com.kroah.usbview.metainfo.xml			\
@@ -48,22 +46,11 @@ icon_bitmaps_png = \
        hicolor/64x64/apps/usbview.png \
        hicolor/256x256/apps/usbview.png
 
-icon_bitmaps_xpm = hicolor/64x64/apps/usbview_icon.xpm
-
 if ICONS
 nobase_icon_DATA = $(icon_scalable) $(icon_bitmaps_png)
 endif
 
 $(icon_bitmaps_png): usbview_icon.svg
-	mkdir -p $$(dirname $@)
-if HAVE_CONVERT
-	$(CONVERT) -background none -density 300x300 -geometry $$(basename $$(dirname $$(dirname $@))) -density 96x96 $< $@
-else
-	echo "error: unable to generate $@ from $<"
-	exit 1
-endif
-
-$(icon_bitmaps_xpm): usbview_icon.svg
 	mkdir -p $$(dirname $@)
 if HAVE_CONVERT
 	$(CONVERT) -background none -density 300x300 -geometry $$(basename $$(dirname $$(dirname $@))) -density 96x96 $< $@
@@ -78,7 +65,7 @@ $(icon_scalable): usbview_icon.svg
 	mkdir -p $$(dirname $@)
 	cp $< $@
 
-CLEANFILES = $(icon_scalable) $(icon_bitmaps_png) $(icon_bitmaps_xpm)
+CLEANFILES = $(icon_scalable) $(icon_bitmaps_png)
 
 # gtk_update_icon_cache = gtk-update-icon-cache -f -t $(datadir)/icons/hicolor; gtk-update-icon-cache -f -t $(datadir)/icons/HighContrast
 #
