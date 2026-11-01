@@ -31,11 +31,13 @@ AC_MSG_RESULT([$desktop])
 
 AC_PROG_CC
 AC_CHECK_PROG([have_convert],[convert],[yes],[no])
+AC_PATH_PROG([RSVG_CONVERT],[rsvg-convert])
 
 # Set automake conditionals.
 
 AC_SUBST(CONVERT,[convert])
 AM_CONDITIONAL(HAVE_CONVERT, [test "$have_convert" = "yes"])
+AM_CONDITIONAL(HAVE_RSVG_CONVERT, [test -n "$RSVG_CONVERT"])
 
 AS_IF([test "$have_convert" = "no"],
       [AC_MSG_WARN([no bitmap conversion utility, disabling icon installation])

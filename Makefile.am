@@ -54,19 +54,33 @@ if ICONS
 nobase_icon_DATA = $(icon_scalable) $(icon_bitmaps_png)
 endif
 
+# Rasterize the SVG with rsvg-convert when available.  ImageMagick may
+# delegate SVG rendering to inkscape, which crashes (Gio::DBus::Error)
+# when several instances are started at once by a parallel make.
 $(icon_bitmaps_png): usbview_icon.svg
 	mkdir -p $$(dirname $@)
+if HAVE_RSVG_CONVERT
+	size=$$(basename $$(dirname $$(dirname $@))); \
+	$(RSVG_CONVERT) --width=$${size%x*} --height=$${size#*x} --keep-aspect-ratio --output=$@ $<
+else
 if HAVE_CONVERT
-	$(CONVERT) -background none -density 300x300 -geometry $$(basename $$(dirname $$(dirname $@))) -density 96x96 $< $@
+# Work around the inkscape crash above, in case ImageMagick hands the SVG
+# to inkscape: SELF_CALL makes inkscape register as a non-unique
+# GApplication, so concurrent instances do not race on D-Bus.  See
+# https://gitlab.com/inkscape/inkscape/-/work_items/4716
+	SELF_CALL=1 $(CONVERT) -background none -density 300x300 -geometry $$(basename $$(dirname $$(dirname $@))) -density 96x96 $< $@
 else
 	echo "error: unable to generate $@ from $<"
 	exit 1
 endif
+endif
 
-$(icon_bitmaps_xpm): usbview_icon.svg
+# The XPM is converted from the PNG of the same size, so ImageMagick
+# never has to render SVG itself.
+$(icon_bitmaps_xpm): hicolor/64x64/apps/usbview.png
 	mkdir -p $$(dirname $@)
 if HAVE_CONVERT
-	$(CONVERT) -background none -density 300x300 -geometry $$(basename $$(dirname $$(dirname $@))) -density 96x96 $< $@
+	$(CONVERT) $< $@
 else
 	echo "error: unable to generate $@ from $<"
 	exit 1
