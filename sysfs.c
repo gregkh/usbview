@@ -119,17 +119,20 @@ static int check_dir_present(const char *filename)
 
 static char *sysfs_string(const char *directory, const char *filename)
 {
-	char full_filename[PATH_MAX];
+	char *full_filename;
 	char buffer[256];
 	char *temp;
 	int retval;
 
-	snprintf(full_filename, PATH_MAX, "%s/%s", directory, filename);
+	full_filename = g_build_filename(directory, filename, NULL);
 
-	if (check_file_present(full_filename))
+	if (check_file_present(full_filename)) {
+		g_free(full_filename);
 		return NULL;
+	}
 
 	retval = openreadclose(full_filename, buffer, sizeof(buffer));
+	g_free(full_filename);
 	if (retval <= 0)
 		return NULL;
 
@@ -486,15 +489,14 @@ static void endpoints_parse(struct DeviceInterface *interface, const char *dir)
 	while ((de = readdir(d))) {
 		if (de->d_type == DT_DIR) {
 			/* See if this directory is an interface or not */
-			char endpoint[PATH_MAX];
-
-			snprintf(endpoint, PATH_MAX, "%s/%s", dir, de->d_name);
+			char *endpoint = g_build_filename(dir, de->d_name, NULL);
 			char *endpointaddr = sysfs_string(endpoint, "bEndpointAddress");
 			if (endpointaddr) {
 				e = entity_create(endpoint);
 				entity_add(&endpoint_list, e);
 				g_free(endpointaddr);
 			}
+			g_free(endpoint);
 
 		}
 	}
@@ -547,12 +549,6 @@ static void interface_parse(struct Device *device, const char *dir)
 
 	interface->class		= sysfs_string(dir, "bInterfaceClass");
 
-	char drivername[PATH_MAX];
-	char link[PATH_MAX];
-	struct stat sb;
-	int retval;
-	char *driver = "(none)";
-
 	/*
 	 * find the driver name by looking at the basename of the driver
 	 * symbolic link.
@@ -560,24 +556,16 @@ static void interface_parse(struct Device *device, const char *dir)
 	 *	driver=`readlink $ifpath/driver`
 	 *	driver=`basename "$driver"`
 	 */
-	snprintf(drivername, PATH_MAX, "%s/driver", dir);
-	retval = stat(drivername, &sb);
-	memset(link, 0x00, sizeof(link));
-	if (!retval) {
-		retval = readlink(drivername, link, sizeof(link));
-		if (retval > 0) {
-			/*
-			 * crude 'basename', go to the end of the string and
-			 * walk back to find a '/' and then go forward one.
-			 */
-			driver = &link[strlen(link)];
-			while (driver[0] != '/')
-				driver--;
-			driver++;
-		}
-	}
+	char *drivername = g_build_filename(dir, "driver", NULL);
+	char *link = g_file_read_link(drivername, NULL);
 
-	interface->name = g_strdup(driver);
+	if (link) {
+		interface->name = g_path_get_basename(link);
+		g_free(link);
+	} else {
+		interface->name = g_strdup(INTERFACE_DRIVERNAME_NODRIVER_STRING);
+	}
+	g_free(drivername);
 
 	/* if this interface does not have a driver attached to it, save that info for later */
 	if (strncmp(interface->name, INTERFACE_DRIVERNAME_NODRIVER_STRING,
@@ -610,15 +598,14 @@ static void interfaces_parse(struct Device *device, const char *dir)
 	while ((de = readdir(d))) {
 		if (de->d_type == DT_DIR) {
 			/* See if this directory is an interface or not */
-			char interface[PATH_MAX];
-
-			snprintf(interface, PATH_MAX, "%s/%s", dir, de->d_name);
+			char *interface = g_build_filename(dir, de->d_name, NULL);
 			char *interfacenum = sysfs_string(interface, "bInterfaceNumber");
 			if (interfacenum) {
 				e = entity_create(interface);
 				entity_add(&interface_list, e);
 				g_free(interfacenum);
 			}
+			g_free(interface);
 		}
 	}
 
@@ -650,9 +637,7 @@ static void children_parse(struct Device *parent, const char *dir)
 				continue;
 
 			/* See if this directory is an interface or not */
-			char device[PATH_MAX];
-
-			snprintf(device, PATH_MAX, "%s/%s", dir, de->d_name);
+			char *device = g_build_filename(dir, de->d_name, NULL);
 			char *device_class = sysfs_string(device, "bDeviceClass");
 			if (device_class) {
 				++devcount;
@@ -660,6 +645,7 @@ static void children_parse(struct Device *parent, const char *dir)
 			}
 
 			g_free(device_class);
+			g_free(device);
 		}
 	}
 
@@ -753,19 +739,18 @@ static void device_parse(struct Device *parent, const char *dir)
 
 void sysfs_parse(void)
 {
-	char filename[PATH_MAX];
+	const char *devices = "/sys/bus/usb/devices/";
 	int i;
 
-	snprintf(filename, PATH_MAX, "/sys/bus/usb/devices/");
-
-	if (check_dir_present(filename)) {
-		fprintf(stderr, "%s must be present, exiting...\n", filename);
+	if (check_dir_present(devices)) {
+		fprintf(stderr, "%s must be present, exiting...\n", devices);
 		return;
 	}
 
 	for (i = 1; i < 100; ++i) {
-		snprintf(filename, PATH_MAX, "/sys/bus/usb/devices/usb%d/", i);
+		char *filename = g_strdup_printf("%susb%d/", devices, i);
 		device_parse(rootDevice, filename);
+		g_free(filename);
 	}
 }
 
