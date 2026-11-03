@@ -36,6 +36,7 @@ create_windowMain ()
 	GtkWidget *buttonAbout;
 	GdkPixbuf *icon;
 	GtkCellRenderer *treeRenderer;
+	GtkAccelGroup *accelGroup;
 
 	windowMain = gtk_window_new (GTK_WINDOW_TOPLEVEL);
 	gtk_widget_set_name (windowMain, "windowMain");
@@ -100,26 +101,38 @@ create_windowMain ()
 	//gtk_button_box_set_child_size (GTK_BUTTON_BOX (hbuttonbox1), 50, 25);
 	//gtk_button_box_set_child_ipadding (GTK_BUTTON_BOX (hbuttonbox1), 25, 10);
 
-	buttonRefresh = gtk_button_new_with_label("Refresh");
+	buttonRefresh = gtk_button_new_with_mnemonic("_Refresh");
 	gtk_widget_set_name (buttonRefresh, "buttonRefresh");
 	gtk_widget_show (buttonRefresh);
 	gtk_container_add (GTK_CONTAINER (hbuttonbox1), buttonRefresh);
 	gtk_container_set_border_width (GTK_CONTAINER (buttonRefresh), 4);
 	gtk_widget_set_can_default (buttonRefresh, TRUE);
 
-	buttonAbout = gtk_button_new_with_label("About");
+	buttonAbout = gtk_button_new_with_mnemonic("_About");
 	gtk_widget_set_name (buttonAbout, "buttonAbout");
 	gtk_widget_show (buttonAbout);
 	gtk_container_add (GTK_CONTAINER (hbuttonbox1), buttonAbout);
 	gtk_container_set_border_width (GTK_CONTAINER (buttonAbout), 4);
 	gtk_widget_set_can_default (buttonAbout, TRUE);
 
-	buttonClose = gtk_button_new_with_label("Quit");
+	buttonClose = gtk_button_new_with_mnemonic("_Quit");
 	gtk_widget_set_name (buttonClose, "buttonClose");
 	gtk_widget_show (buttonClose);
 	gtk_container_add (GTK_CONTAINER (hbuttonbox1), buttonClose);
 	gtk_container_set_border_width (GTK_CONTAINER (buttonClose), 4);
 	gtk_widget_set_can_default (buttonClose, TRUE);
+
+	/* keyboard shortcuts: Ctrl+Q / Ctrl+W quit, Ctrl+R / F5 refresh */
+	accelGroup = gtk_accel_group_new ();
+	gtk_window_add_accel_group (GTK_WINDOW (windowMain), accelGroup);
+	gtk_widget_add_accelerator (buttonClose, "clicked", accelGroup,
+				    GDK_KEY_q, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+	gtk_widget_add_accelerator (buttonClose, "clicked", accelGroup,
+				    GDK_KEY_w, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+	gtk_widget_add_accelerator (buttonRefresh, "clicked", accelGroup,
+				    GDK_KEY_r, GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+	gtk_widget_add_accelerator (buttonRefresh, "clicked", accelGroup,
+				    GDK_KEY_F5, 0, GTK_ACCEL_VISIBLE);
 
 	g_signal_connect (G_OBJECT (windowMain), "delete_event",
 			    G_CALLBACK (on_window1_delete_event),

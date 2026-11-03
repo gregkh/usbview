@@ -17,7 +17,19 @@
     </p>
   </description>
 
+  <developer id="com.kroah">
+    <name>Greg Kroah-Hartman</name>
+  </developer>
+
+  <url type="homepage">https://github.com/gregkh/usbview</url>
+  <url type="bugtracker">https://github.com/gregkh/usbview/issues</url>
+  <url type="vcs-browser">https://github.com/gregkh/usbview</url>
+
   <launchable type="desktop-id">usbview.desktop</launchable>
 
-  <content_rating/>
+  <content_rating type="oars-1.1"/>
+  <releases>
+    <release version="3.1" date="2023-10-22"/>
+    <release version="3.0" date="2022-01-22"/>
+  </releases>
 </component>
